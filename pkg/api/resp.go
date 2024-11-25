@@ -7,17 +7,17 @@ import (
 )
 
 func Ping(c *gin.Context) {
-	OKResponse(c, "success")
+	OKResponse(c, "success", nil)
 	c.Done()
 }
 
 type ResponseOK struct {
-	Msg    string      `json:"msg"`
-	Reason string      `json:"reason"`
-	Data   interface{} `json:"data"`
+	Msg    string            `json:"msg"`
+	Reason string            `json:"reason"`
+	Data   map[string]string `json:"data"`
 }
 
-func OKResponse(c *gin.Context, msg string) {
+func OKResponse(c *gin.Context, msg string, data map[string]string) {
 	if msg == "" {
 		msg = "success"
 	}
@@ -25,7 +25,7 @@ func OKResponse(c *gin.Context, msg string) {
 		200, ResponseOK{
 			Msg:    msg,
 			Reason: "",
-			Data:   struct{}{},
+			Data:   data,
 		},
 	)
 	c.Done()

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"BTM-backend/internal"
+	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"fmt"
 	"net/http"
@@ -29,7 +29,7 @@ func ErrHandler(c *gin.Context) {
 			log.Error("gin ErrHandler panic recover: %+v\n", zap.Any("error", err))
 			obj := ErrorJsonResp{
 				Msg:    "internal server error",
-				Code:   internal.ErrInternalPanicError,
+				Code:   error_code.ErrInternalPanicError,
 				Reason: "",
 			}
 			c.AbortWithStatusJSON(http.StatusInternalServerError, obj)

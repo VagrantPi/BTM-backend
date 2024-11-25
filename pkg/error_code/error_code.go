@@ -1,4 +1,4 @@
-package internal
+package error_code
 
 const (
 	// system error

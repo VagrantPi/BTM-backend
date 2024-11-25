@@ -27,6 +27,10 @@ func init() {
 	loadConfig()
 }
 
+func NewConfigs() Config {
+	return C
+}
+
 func setFile() {
 	// 只有不在 cloud run 才能 load config
 	path, err := osutil.FilePath("configs", "dev.env")

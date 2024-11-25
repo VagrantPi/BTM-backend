@@ -16,6 +16,7 @@ import (
 )
 
 func main() {
+
 	h2 := h2c.NewHandler(setupGin(), &http2.Server{})
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%s", configs.C.Port),
