@@ -86,12 +86,12 @@ type Customer struct {
 	Created time.Time `gorm:"type:timestamptz;not null;default:now()"`
 
 	// Foreign Key Relationships
-	SMSOverrideByUser         *User `gorm:"foreignKey:SMSOverrideBy"`
-	IDCardDataOverrideByUser  *User `gorm:"foreignKey:IDCardDataOverrideBy"`
-	IDCardPhotoOverrideByUser *User `gorm:"foreignKey:IDCardPhotoOverrideBy"`
-	FrontCameraOverrideByUser *User `gorm:"foreignKey:FrontCameraOverrideBy"`
-	SanctionsOverrideByUser   *User `gorm:"foreignKey:SanctionsOverrideBy"`
-	AuthorizedOverrideByUser  *User `gorm:"foreignKey:AuthorizedOverrideBy"`
-	USSSnOverrideByUser       *User `gorm:"foreignKey:USSSnOverrideBy"`
-	SubscriberInfoByUser      *User `gorm:"foreignKey:SubscriberInfoBy"`
+	// SMSOverrideByUser         *User `gorm:"foreignKey:SMSOverrideBy"`
+	// IDCardDataOverrideByUser  *User `gorm:"foreignKey:IDCardDataOverrideBy"`
+	// IDCardPhotoOverrideByUser *User `gorm:"foreignKey:IDCardPhotoOverrideBy"`
+	// FrontCameraOverrideByUser *User `gorm:"foreignKey:FrontCameraOverrideBy"`
+	// SanctionsOverrideByUser   *User `gorm:"foreignKey:SanctionsOverrideBy"`
+	// AuthorizedOverrideByUser  *User `gorm:"foreignKey:AuthorizedOverrideBy"`
+	// USSSnOverrideByUser       *User `gorm:"foreignKey:USSSnOverrideBy"`
+	// SubscriberInfoByUser      *User `gorm:"foreignKey:SubscriberInfoBy"`
 }

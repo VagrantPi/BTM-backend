@@ -8,5 +8,6 @@ import (
 
 func UserRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/user")
-	group.GET("/get", user.GetUser)
+	group.POST("/login", user.LoginBTMAdmin)
+	group.GET("/info", user.GetBTMUserInfo)
 }

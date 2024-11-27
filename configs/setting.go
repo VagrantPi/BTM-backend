@@ -13,10 +13,15 @@ type Config struct {
 	Gin           GinConfig
 	TimeoutSecond time.Duration
 	Db            DbConfig
+	JWT           JWTConfig
 }
 
 type GinConfig struct {
 	Mode string
+}
+
+type JWTConfig struct {
+	Secret string
 }
 
 type DbConfig struct {
@@ -54,6 +59,9 @@ func loadConfig() {
 			MaxOpenConns:       viper.GetInt("db.max_open_conns"),
 			MaxIdleConns:       viper.GetInt("db.max_idle_conns"),
 			ConnMaxLifetimeSec: viper.GetInt("db.conn_max_life_time_sec"),
+		},
+		JWT: JWTConfig{
+			Secret: viper.GetString("jwt.secret"),
 		},
 	}
 }
