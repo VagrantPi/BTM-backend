@@ -1,11 +1,9 @@
 package domain
 
-import "BTM-backend/internal/repo/model"
-
 type Repository interface {
 	// customers
-	GetCustomerByPhone(phone string) (*model.Customer, error)
+	GetCustomers(limit int, page int) ([]Customer, int, error)
 
 	// BTMUser
-	GetBTMUserByAccount(account string) (*model.BTMUser, error)
+	GetBTMUserByAccount(account string) (*BTMUser, error)
 }

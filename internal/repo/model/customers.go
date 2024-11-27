@@ -13,9 +13,9 @@ const (
 )
 
 type Customer struct {
-	ID      uuid.UUID  `gorm:"type:uuid;primary_key"`
-	Phone   *string    `gorm:"type:text"`
-	PhoneAt *time.Time `gorm:"type:timestamptz"`
+	ID      uuid.UUID `gorm:"type:uuid;primary_key"`
+	Phone   string    `gorm:"type:text"`
+	PhoneAt time.Time `gorm:"type:timestamptz"`
 
 	// ID Card Related
 	IDCardDataNumber     *string    `gorm:"column:id_card_data_number;type:text"`

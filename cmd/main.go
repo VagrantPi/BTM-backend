@@ -51,8 +51,8 @@ func setupGin() http.Handler {
 	// apiGroup.POST("/ping", pkg.Wrap(&di.ApiPing))
 
 	// 以下 API 以 /api 為前綴
-	// routeClient(apiGroup)
 	controller.UserRouter(apiGroup)
+	controller.CustomerRouter(apiGroup)
 
 	return r
 }
