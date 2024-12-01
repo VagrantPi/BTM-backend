@@ -3,6 +3,8 @@ package impl
 import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
+
+	"github.com/google/uuid"
 )
 
 func (repo *repository) GetCustomers(limit int, page int) ([]domain.Customer, int, error) {
@@ -24,6 +26,15 @@ func (repo *repository) GetCustomers(limit int, page int) ([]domain.Customer, in
 		resp = append(resp, CustomerModelToDomain(customer))
 	}
 	return resp, int(total), nil
+}
+
+func (repo *repository) GetCustomerById(id uuid.UUID) (*domain.Customer, error) {
+	modelCustomer := model.Customer{}
+	if err := repo.db.Where("id = ?", id).First(&modelCustomer).Error; err != nil {
+		return nil, err
+	}
+	customer := CustomerModelToDomain(modelCustomer)
+	return &customer, nil
 }
 
 func CustomerModelToDomain(customer model.Customer) domain.Customer {

@@ -4,11 +4,14 @@ import (
 	"BTM-backend/configs"
 	"BTM-backend/internal/di"
 	"BTM-backend/internal/domain"
+	"BTM-backend/pkg/api"
+	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/pkg/tools"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-kratos/kratos/v2/errors"
 	"go.uber.org/zap"
 )
 
@@ -35,33 +38,33 @@ func LoginBTMAdmin(c *gin.Context) {
 	var req LoginBTMAdminReq
 	err := c.BindJSON(&req)
 	if err != nil {
-		log.Error("c.BindJSON(&req)", zap.Any("err", err))
-		_ = c.Error(err)
+		log.Error("BindJSON error", zap.Any("err", err))
+		api.ErrResponse(c, "BindJSON error", errors.BadRequest(error_code.ErrInvalidRequest, "BindJSON error").WithCause(err))
 		return
 	}
 
 	repo, err := di.NewRepo()
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
-		_ = c.Error(err)
+		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
 		return
 	}
 	user, err := repo.GetBTMUserByAccount(req.Username)
 	if err != nil {
 		log.Error("GetBTMUserByAccount", zap.Any("err", err))
-		_ = c.Error(err)
+		api.ErrResponse(c, "GetBTMUserByAccount", errors.InternalServer(error_code.ErrDiError, "GetBTMUserByAccount").WithCause(err))
 		return
 	}
 
 	if user == nil {
 		log.Error("user not found")
-		_ = c.Error(fmt.Errorf("login failed"))
+		api.ErrResponse(c, "user not found", errors.NotFound(error_code.ErrForbidden, "login failed"))
 		return
 	}
 
 	if tools.CheckPassword(user.Password, req.Password) {
 		log.Error("password not match")
-		_ = c.Error(fmt.Errorf("login failed"))
+		api.ErrResponse(c, "password not match", errors.Forbidden(error_code.ErrForbidden, "login failed"))
 		return
 	}
 
@@ -69,9 +72,10 @@ func LoginBTMAdmin(c *gin.Context) {
 		Account: req.Username,
 		Role:    user.Roles,
 	}, configs.C.JWT.Secret)
+	fmt.Printf("token: %v\n", token)
 	if err != nil {
 		log.Error("GenerateJWT", zap.Any("err", err))
-		_ = c.Error(err)
+		api.ErrResponse(c, "GenerateJWT", errors.InternalServer(error_code.ErrJWT, "GenerateJWT").WithCause(err))
 		return
 	}
 

@@ -16,4 +16,7 @@ func UserRouter(apiGroup *gin.RouterGroup) {
 func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/customer")
 	group.GET("/list", customer.GetCustomersList)
+	group.GET("/whitelist", customer.GetWhitelist)
+	group.POST("/whitelist", customer.CreateWhitelist)
+	group.DELETE("/whitelist", customer.DeleteWhitelist)
 }

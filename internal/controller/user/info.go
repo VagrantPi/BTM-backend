@@ -40,7 +40,7 @@ func GetBTMUserInfo(c *gin.Context) {
 	userInfo, err := parseToken(token)
 	if err != nil {
 		log.Error("parseToken error", zap.Any("err", err))
-		_ = c.Error(err)
+		api.ErrResponse(c, "parseToken error", errors.BadRequest(error_code.ErrForbidden, "parseToken error").WithCause(err))
 		return
 	}
 

@@ -3,10 +3,13 @@ package customer
 import (
 	"BTM-backend/internal/di"
 	"BTM-backend/internal/domain"
+	"BTM-backend/pkg/api"
+	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-kratos/kratos/v2/errors"
 	"go.uber.org/zap"
 )
 
@@ -35,7 +38,7 @@ func GetCustomersList(c *gin.Context) {
 	err := c.BindQuery(&req)
 	if err != nil {
 		log.Error("c.BindQuery(&req)", zap.Any("err", err))
-		_ = c.Error(err)
+		api.ErrResponse(c, "c.BindQuery(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.BindQuery(&req)").WithCause(err))
 		return
 	}
 
@@ -44,14 +47,14 @@ func GetCustomersList(c *gin.Context) {
 	repo, err := di.NewRepo()
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
-		_ = c.Error(err)
+		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
 		return
 	}
 
 	customers, total, err := repo.GetCustomers(req.Limit, req.Page)
 	if err != nil {
 		log.Error("repo.GetCustomers()", zap.Any("err", err))
-		_ = c.Error(err)
+		api.ErrResponse(c, "repo.GetCustomers()", errors.NotFound(error_code.ErrDBError, "repo.GetCustomers()").WithCause(err))
 		return
 	}
 
