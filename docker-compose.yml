@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  btm-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - configs/dev.env
+    restart: unless-stopped
