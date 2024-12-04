@@ -49,7 +49,7 @@ func setupGin() http.Handler {
 	apiGroup.GET("/ping", api.Ping)
 
 	// 後台
-	r.Static("/admin", "./dist")
+	r.Static("/dist", "./dist")
 
 	// 以下 API 以 /api 為前綴
 	controller.UserRouter(apiGroup)
