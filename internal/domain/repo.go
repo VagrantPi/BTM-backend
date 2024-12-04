@@ -6,6 +6,7 @@ type Repository interface {
 	// customers
 	GetCustomers(limit int, page int) ([]Customer, int, error)
 	GetCustomerById(id uuid.UUID) (*Customer, error)
+	SearchCustomersByPhone(phone string, limit int, page int) ([]Customer, int, error)
 
 	// BTMUser
 	GetBTMUserByAccount(account string) (*BTMUser, error)
@@ -15,4 +16,5 @@ type Repository interface {
 	GetWhiteListByCustomerId(customerID uuid.UUID, limit int, page int) (list []BTMWhitelist, total int64, err error)
 	UpdateWhitelist(whitelist *BTMWhitelist) error
 	DeleteWhitelist(id int64) error
+	SearchWhitelistByAddress(customerID uuid.UUID, address string, limit int, page int) (list []BTMWhitelist, total int64, err error)
 }
