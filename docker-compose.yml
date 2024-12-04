@@ -9,4 +9,6 @@ services:
       - "8080:8080"
     env_file:
       - configs/dev.env
+    volumes:
+      - ./dist:/app/dist
     restart: unless-stopped
