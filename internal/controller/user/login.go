@@ -20,11 +20,6 @@ type LoginBTMAdminReq struct {
 	Password string `json:"password"`
 }
 
-type LoginBTMAdminResp struct {
-	Code int64                 `json:"code"`
-	Data LoginBTMAdminRespItem `json:"data"`
-}
-
 type LoginBTMAdminRespItem struct {
 	Token string `json:"token"`
 }
@@ -79,12 +74,10 @@ func LoginBTMAdmin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(
-		200, LoginBTMAdminResp{
-			Code: 20000,
-			Data: LoginBTMAdminRespItem{
-				Token: token,
-			},
+	c.JSON(200, api.DefaultRep{
+		Code: 20000,
+		Data: LoginBTMAdminRespItem{
+			Token: token,
 		},
-	)
+	})
 }

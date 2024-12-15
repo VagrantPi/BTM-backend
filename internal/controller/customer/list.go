@@ -18,11 +18,6 @@ type GetCustomersListReq struct {
 	Page  int `form:"page"`
 }
 
-type GetCustomersListRep struct {
-	Code int                     `json:"code"`
-	Data GetCustomersListRepItem `json:"data"`
-}
-
 type GetCustomersListRepItem struct {
 	Total int               `json:"total"`
 	Items []domain.Customer `json:"items"`
@@ -58,14 +53,12 @@ func GetCustomersList(c *gin.Context) {
 		return
 	}
 
-	c.JSON(
-		200, GetCustomersListRep{
-			Code: 20000,
-			Data: GetCustomersListRepItem{
-				Total: total,
-				Items: customers,
-			},
+	c.JSON(200, api.DefaultRep{
+		Code: 20000,
+		Data: GetCustomersListRepItem{
+			Total: total,
+			Items: customers,
 		},
-	)
+	})
 	c.Done()
 }

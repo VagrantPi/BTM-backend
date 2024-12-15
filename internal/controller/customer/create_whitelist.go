@@ -20,11 +20,6 @@ type CreateWhitelistReq struct {
 	Address    string    `json:"address" binding:"required"`
 }
 
-type CreateWhitelistRep struct {
-	Code int         `json:"code"`
-	Data interface{} `json:"data"`
-}
-
 func CreateWhitelist(c *gin.Context) {
 	log := logger.Zap().WithClassFunction("api", "CreateWhitelist")
 	defer func() {
@@ -79,7 +74,7 @@ func CreateWhitelist(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, CreateWhitelistRep{
+	c.JSON(200, api.DefaultRep{
 		Code: 20000,
 		Data: whitelist,
 	})

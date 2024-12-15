@@ -20,11 +20,6 @@ type SearchWhitelistReq struct {
 	Page       int    `form:"page"`
 }
 
-type SearchWhitelistRep struct {
-	Code int                `json:"code"`
-	Data SearchWhitelistData `json:"data"`
-}
-
 type SearchWhitelistData struct {
 	Total int64                 `json:"total"`
 	Items []domain.BTMWhitelist `json:"items"`
@@ -85,7 +80,7 @@ func SearchWhitelist(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, SearchWhitelistRep{
+	c.JSON(200, api.DefaultRep{
 		Code: 20000,
 		Data: SearchWhitelistData{
 			Total: total,

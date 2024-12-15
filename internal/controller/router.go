@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"BTM-backend/internal/controller/config"
 	"BTM-backend/internal/controller/customer"
 	"BTM-backend/internal/controller/user"
 
@@ -21,4 +22,8 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/whitelist/search", customer.SearchWhitelist)
 	group.POST("/whitelist", customer.CreateWhitelist)
 	group.DELETE("/whitelist", customer.DeleteWhitelist)
+}
+
+func UserConfigRouter(apiGroup *gin.RouterGroup) {
+	apiGroup.GET("/config", config.GetConfig)
 }

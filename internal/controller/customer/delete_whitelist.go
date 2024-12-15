@@ -48,7 +48,7 @@ func DeleteWhitelist(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, CreateWhitelistRep{
+	c.JSON(200, api.DefaultRep{
 		Code: 20000,
 	})
 }

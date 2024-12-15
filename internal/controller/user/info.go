@@ -14,11 +14,6 @@ import (
 	"go.uber.org/zap"
 )
 
-type GetBTMUserInfoResp struct {
-	Code int64                  `json:"code"`
-	Data GetBTMUserInfoRespItem `json:"data"`
-}
-
 type GetBTMUserInfoRespItem struct {
 	Name  string   `json:"name"`
 	Roles []string `json:"roles"`
@@ -45,15 +40,13 @@ func GetBTMUserInfo(c *gin.Context) {
 	}
 
 	roles := tools.Role(userInfo.Role)
-	c.JSON(
-		200, GetBTMUserInfoResp{
-			Code: 20000,
-			Data: GetBTMUserInfoRespItem{
-				Name:  userInfo.Account,
-				Roles: roles.ToStrings(),
-			},
+	c.JSON(200, api.DefaultRep{
+		Code: 20000,
+		Data: GetBTMUserInfoRespItem{
+			Name:  userInfo.Account,
+			Roles: roles.ToStrings(),
 		},
-	)
+	})
 	c.Done()
 
 }

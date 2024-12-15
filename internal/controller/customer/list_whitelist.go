@@ -83,7 +83,7 @@ func GetWhitelist(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, GetWhitelistRep{
+	c.JSON(200, api.DefaultRep{
 		Code: 20000,
 		Data: GetWhitelistData{
 			Total: total,
