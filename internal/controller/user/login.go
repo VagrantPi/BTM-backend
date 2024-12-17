@@ -8,7 +8,6 @@ import (
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/pkg/tools"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
@@ -66,11 +65,19 @@ func LoginBTMAdmin(c *gin.Context) {
 	token, err := tools.GenerateJWT(domain.UserJwt{
 		Account: req.Username,
 		Role:    user.Roles,
+		Id:      user.Id,
 	}, configs.C.JWT.Secret)
-	fmt.Printf("token: %v\n", token)
 	if err != nil {
 		log.Error("GenerateJWT", zap.Any("err", err))
 		api.ErrResponse(c, "GenerateJWT", errors.InternalServer(error_code.ErrJWT, "GenerateJWT").WithCause(err))
+		return
+	}
+
+	// 寫入現有有效 token
+	err = repo.CreateOrUpdateLastLoginToken(user.Id, token)
+	if err != nil {
+		log.Error("CreateOrUpdateLastLoginToken", zap.Any("err", err))
+		api.ErrResponse(c, "CreateOrUpdateLastLoginToken", errors.InternalServer(error_code.ErrDiError, "CreateOrUpdateLastLoginToken").WithCause(err))
 		return
 	}
 

@@ -4,18 +4,22 @@ import (
 	"BTM-backend/internal/controller/config"
 	"BTM-backend/internal/controller/customer"
 	"BTM-backend/internal/controller/user"
+	"BTM-backend/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func UserRouter(apiGroup *gin.RouterGroup) {
-	group := apiGroup.Group("/user")
-	group.POST("/login", user.LoginBTMAdmin)
+	openGroup := apiGroup.Group("/user")
+	openGroup.POST("/login", user.LoginBTMAdmin)
+
+	group := apiGroup.Group("/user", middleware.Auth())
 	group.GET("/info", user.GetBTMUserInfo)
+	group.POST("/logout", user.LogoutBTMAdmin)
 }
 
 func CustomerRouter(apiGroup *gin.RouterGroup) {
-	group := apiGroup.Group("/customer")
+	group := apiGroup.Group("/customer", middleware.Auth())
 	group.GET("/list", customer.GetCustomersList)
 	group.GET("/search", customer.SearchCustomers)
 	group.GET("/whitelist", customer.GetWhitelist)
@@ -25,5 +29,5 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 }
 
 func UserConfigRouter(apiGroup *gin.RouterGroup) {
-	apiGroup.GET("/config", config.GetConfig)
+	apiGroup.GET("/config", middleware.Auth(), config.GetConfig)
 }

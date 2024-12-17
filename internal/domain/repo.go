@@ -17,6 +17,11 @@ type Repository interface {
 	DeleteWhitelist(id int64) error
 	SearchWhitelistByAddress(customerID uuid.UUID, address string, limit int, page int) (list []BTMWhitelist, total int64, err error)
 
+	// BTMLoginToken
+	IsLastLoginToken(userID uint, loginToken string) (bool, error)
+	CreateOrUpdateLastLoginToken(userID uint, loginToken string) error
+	DeleteLastLoginToken(userID uint) error
+
 	/**
 	 * lamassu original
 	 **/

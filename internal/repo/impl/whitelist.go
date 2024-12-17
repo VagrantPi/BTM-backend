@@ -5,11 +5,20 @@ import (
 	"BTM-backend/internal/repo/model"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm/clause"
 )
 
 func (repo *repository) CreateWhitelist(whitelist *domain.BTMWhitelist) error {
 	modelWhitelist := WhitelistDomainToModel(*whitelist)
-	return repo.db.Create(&modelWhitelist).Error
+	return repo.db.Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "customer_id"}, {Name: "crypto_code"}, {Name: "address"}},
+		DoUpdates: clause.Assignments(map[string]interface{}{
+			"customer_id": whitelist.CustomerID,
+			"crypto_code": whitelist.CryptoCode,
+			"address":     whitelist.Address,
+			"deleted_at":  nil,
+		}),
+	}).Create(&modelWhitelist).Error
 }
 
 func (repo *repository) GetWhiteListByCustomerId(customerID uuid.UUID, limit int, page int) ([]domain.BTMWhitelist, int64, error) {

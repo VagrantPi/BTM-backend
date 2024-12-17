@@ -8,5 +8,5 @@ import (
 
 func main() {
 	db := db.ConnectToDatabase()
-	db.AutoMigrate(&model.BTMUser{}, &model.BTMWhitelist{})
+	db.AutoMigrate(&model.BTMUser{}, &model.BTMWhitelist{}, &model.BTMLoginToken{})
 }

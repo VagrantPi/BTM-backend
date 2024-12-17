@@ -1,13 +1,11 @@
 package user
 
 import (
-	"BTM-backend/configs"
-	"BTM-backend/internal/domain"
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/pkg/tools"
-	"encoding/json"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
@@ -32,8 +30,12 @@ func GetBTMUserInfo(c *gin.Context) {
 		return
 	}
 
-	userInfo, err := parseToken(token)
+	userInfo, err := tools.ParseToken(token)
 	if err != nil {
+		if strings.Contains(err.Error(), "Token is expired") {
+			api.ErrResponse(c, "Token is expired", errors.BadRequest(error_code.ErrTokenExpired, "Token is expired").WithCause(err))
+			return
+		}
 		log.Error("parseToken error", zap.Any("err", err))
 		api.ErrResponse(c, "parseToken error", errors.BadRequest(error_code.ErrForbidden, "parseToken error").WithCause(err))
 		return
@@ -49,21 +51,4 @@ func GetBTMUserInfo(c *gin.Context) {
 	})
 	c.Done()
 
-}
-
-func parseToken(token string) (claim domain.UserJwt, err error) {
-	// var data []byte
-	data, err := tools.ParseJWT(token, configs.C.JWT.Secret)
-	if err != nil {
-		err = errors.Unauthorized(error_code.ErrInvalidJWTParse, "ParseJWT").WithCause(err)
-		return
-	}
-
-	err = json.Unmarshal(data, &claim)
-	if err != nil {
-		err = errors.Unauthorized(error_code.ErrInvalidJWT, "Unmarshal").WithCause(err)
-		return
-	}
-
-	return
 }

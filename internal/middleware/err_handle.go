@@ -26,7 +26,7 @@ func ErrHandler(c *gin.Context) {
 
 	defer func() {
 		if err := recover(); err != nil {
-			log.Error("gin ErrHandler panic recover: %+v\n", zap.Any("error", err))
+			log.Error("gin ErrHandler panic recover:", zap.Error(err.(*errors.Error)))
 			obj := ErrorJsonResp{
 				Msg:    "internal server error",
 				Code:   error_code.ErrInternalPanicError,

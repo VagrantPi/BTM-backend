@@ -5,6 +5,7 @@ const (
 	ErrInvalidJWTParse = "ErrInvalidJWTParse"
 	ErrInvalidJWT      = "ErrInvalidJWT"
 	ErrJWT             = "ErrJWT"
+	ErrTokenExpired    = "ErrTokenExpired"
 
 	// whitelist
 	ErrWhitelistDuplicate = "ErrWhitelistDuplicate"

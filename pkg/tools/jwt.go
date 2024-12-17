@@ -1,11 +1,14 @@
 package tools
 
 import (
+	"BTM-backend/configs"
+	"BTM-backend/internal/domain"
+	"BTM-backend/pkg/error_code"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -16,6 +19,7 @@ func GenerateJWT(v any, secret string) (string, error) {
 
 	var claims = jwt.MapClaims{
 		"random": time.Now().UnixMicro(),
+		"exp":    time.Now().Add(3 * 24 * time.Hour).Unix(),
 	}
 	inrec, _ := json.Marshal(v)
 	err := json.Unmarshal(inrec, &claims)
@@ -58,5 +62,21 @@ func ParseJWT(tokenString string, secret string) ([]byte, error) {
 		return inrec, nil
 	}
 
-	return nil, errors.New("invalid token")
+	return nil, errors.Unauthorized(error_code.ErrInvalidJWT, "ParseJWT")
+}
+
+func ParseToken(token string) (claim domain.UserJwt, err error) {
+	data, err := ParseJWT(token, configs.C.JWT.Secret)
+	if err != nil {
+		err = errors.Unauthorized(error_code.ErrInvalidJWTParse, "ParseJWT").WithCause(err)
+		return
+	}
+
+	err = json.Unmarshal(data, &claim)
+	if err != nil {
+		err = errors.Unauthorized(error_code.ErrInvalidJWT, "Unmarshal").WithCause(err)
+		return
+	}
+
+	return
 }
