@@ -22,6 +22,11 @@ type Repository interface {
 	CreateOrUpdateLastLoginToken(userID uint, loginToken string) error
 	DeleteLastLoginToken(userID uint) error
 
+	// BTMRole
+	InitRawRole() error
+	GetRawRoleByRoleName(roleName string) (role BTMRole, err error)
+	GetRawRoles() (roles []BTMRole, err error)
+
 	/**
 	 * lamassu original
 	 **/

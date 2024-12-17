@@ -7,6 +7,11 @@ const (
 	RoleEditor
 )
 
+var AllRoles = []Role{
+	RoleAdmin,
+	RoleEditor,
+}
+
 func (t *Role) has(input Role) bool {
 	return (*t)&input != 0
 }
@@ -14,6 +19,11 @@ func (t *Role) has(input Role) bool {
 var StringToRole = map[string]int64{
 	"admin":  int64(RoleAdmin),
 	"editor": int64(RoleEditor),
+}
+
+var RoleToString = map[Role]string{
+	RoleAdmin:  "admin",
+	RoleEditor: "editor",
 }
 
 func (t *Role) ToStrings() []string {

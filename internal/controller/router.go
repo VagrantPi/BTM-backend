@@ -16,6 +16,8 @@ func UserRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/user", middleware.Auth())
 	group.GET("/info", user.GetBTMUserInfo)
 	group.POST("/logout", user.LogoutBTMAdmin)
+	group.GET("/role/routes", user.GetBTMUserRoleRoutes)
+	group.GET("/role/roles", user.GetBTMUserRoles)
 }
 
 func CustomerRouter(apiGroup *gin.RouterGroup) {

@@ -1,11 +1,11 @@
 package user
 
 import (
+	"BTM-backend/internal/domain"
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/pkg/tools"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
@@ -23,21 +23,17 @@ func GetBTMUserInfo(c *gin.Context) {
 		_ = log.Sync()
 	}()
 
-	token := c.GetHeader("token")
-	if token == "" {
-		log.Error("token is empty")
-		api.ErrResponse(c, "token is empty", errors.BadRequest(error_code.ErrForbidden, "token is empty"))
+	u, exist := c.Get("userInfo")
+	if !exist {
+		log.Error("c.Get(userInfo) error")
+		api.ErrResponse(c, "c.Get(userInfo) error", errors.BadRequest(error_code.ErrForbidden, "c.Get(userInfo) error"))
 		return
 	}
 
-	userInfo, err := tools.ParseToken(token)
-	if err != nil {
-		if strings.Contains(err.Error(), "Token is expired") {
-			api.ErrResponse(c, "Token is expired", errors.BadRequest(error_code.ErrTokenExpired, "Token is expired").WithCause(err))
-			return
-		}
-		log.Error("parseToken error", zap.Any("err", err))
-		api.ErrResponse(c, "parseToken error", errors.BadRequest(error_code.ErrForbidden, "parseToken error").WithCause(err))
+	userInfo, isUser := u.(domain.UserJwt)
+	if !isUser {
+		log.Error("c.Get(userInfo) parse error", zap.Any("u", u))
+		api.ErrResponse(c, "c.Get(userInfo) parse error", errors.BadRequest(error_code.ErrForbidden, "c.Get(userInfo) parse error"))
 		return
 	}
 

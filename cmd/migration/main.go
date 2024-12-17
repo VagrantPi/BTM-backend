@@ -1,12 +1,27 @@
 package main
 
 import (
-	_ "BTM-backend/configs"
+	"BTM-backend/internal/di"
 	"BTM-backend/internal/repo/model"
 	"BTM-backend/third_party/db"
 )
 
 func main() {
 	db := db.ConnectToDatabase()
-	db.AutoMigrate(&model.BTMUser{}, &model.BTMWhitelist{}, &model.BTMLoginToken{})
+	db.AutoMigrate(
+		&model.BTMUser{},
+		&model.BTMRole{},
+		&model.BTMWhitelist{},
+		&model.BTMLoginToken{},
+	)
+
+	// Initialize the repository
+	repo, err := di.NewRepo()
+	if err != nil {
+		panic(err)
+	}
+	// Now you can call InitRawRole
+	if err := repo.InitRawRole(); err != nil {
+		panic(err)
+	}
 }

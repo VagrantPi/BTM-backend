@@ -6,7 +6,6 @@ import (
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
@@ -36,8 +35,6 @@ func GetCustomersList(c *gin.Context) {
 		api.ErrResponse(c, "c.BindQuery(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.BindQuery(&req)").WithCause(err))
 		return
 	}
-
-	fmt.Printf("req: %+v\n", req)
 
 	repo, err := di.NewRepo()
 	if err != nil {
