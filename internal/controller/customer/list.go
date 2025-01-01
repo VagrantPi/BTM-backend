@@ -27,6 +27,7 @@ func GetCustomersList(c *gin.Context) {
 	defer func() {
 		_ = log.Sync()
 	}()
+	c.Set("log", log)
 
 	req := GetCustomersListReq{}
 	err := c.BindQuery(&req)
@@ -43,7 +44,7 @@ func GetCustomersList(c *gin.Context) {
 		return
 	}
 
-	customers, total, err := repo.GetCustomers(req.Limit, req.Page)
+	customers, total, err := repo.GetCustomers(repo.GetDb(c), req.Limit, req.Page)
 	if err != nil {
 		log.Error("repo.GetCustomers()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.GetCustomers()", errors.NotFound(error_code.ErrDBError, "repo.GetCustomers()").WithCause(err))

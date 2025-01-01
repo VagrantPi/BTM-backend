@@ -16,6 +16,7 @@ func GetConfig(c *gin.Context) {
 	defer func() {
 		_ = log.Sync()
 	}()
+	c.Set("log", log)
 
 	repo, err := di.NewRepo()
 	if err != nil {
@@ -24,7 +25,9 @@ func GetConfig(c *gin.Context) {
 		return
 	}
 
-	data, err := repo.GetLatestConfData()
+	log.Info("GetConfig")
+
+	data, err := repo.GetLatestConfData(repo.GetDb(c))
 	if err != nil {
 		log.Error("GetLatestConfData", zap.Any("err", err))
 		api.ErrResponse(c, "GetLatestConfData", errors.InternalServer(error_code.ErrDiError, "GetLatestConfData").WithCause(err))

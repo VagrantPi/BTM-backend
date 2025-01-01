@@ -34,6 +34,7 @@ func GetWhitelist(c *gin.Context) {
 	defer func() {
 		_ = log.Sync()
 	}()
+	c.Set("log", log)
 
 	req := GetWhitelistReq{}
 	err := c.BindQuery(&req)
@@ -63,7 +64,7 @@ func GetWhitelist(c *gin.Context) {
 		return
 	}
 
-	customer, err := repo.GetCustomerById(customerID)
+	customer, err := repo.GetCustomerById(repo.GetDb(c), customerID)
 	if err != nil {
 		log.Error("repo.GetCustomerById", zap.Any("err", err))
 		api.ErrResponse(c, "repo.GetCustomerById", errors.NotFound(error_code.ErrDBError, "repo.GetCustomerById").WithCause(err))
@@ -76,7 +77,7 @@ func GetWhitelist(c *gin.Context) {
 		return
 	}
 
-	whitelists, total, err := repo.GetWhiteListByCustomerId(customerID, req.Limit, req.Page)
+	whitelists, total, err := repo.GetWhiteListByCustomerId(repo.GetDb(c), customerID, req.Limit, req.Page)
 	if err != nil {
 		log.Error("repo.GetWhiteListByCustomerId", zap.Any("err", err))
 		api.ErrResponse(c, "repo.GetWhiteListByCustomerId", errors.NotFound(error_code.ErrDBError, "repo.GetWhiteListByCustomerId").WithCause(err))

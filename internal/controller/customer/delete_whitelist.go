@@ -41,7 +41,7 @@ func DeleteWhitelist(c *gin.Context) {
 		return
 	}
 
-	err = repo.DeleteWhitelist(req.ID)
+	err = repo.DeleteWhitelist(repo.GetDb(c), req.ID)
 	if err != nil {
 		log.Error("repo.DeleteWhitelist", zap.Any("err", err))
 		api.ErrResponse(c, "repo.DeleteWhitelist", errors.InternalServer(error_code.ErrDBError, "repo.DeleteWhitelist").WithCause(err))

@@ -3,11 +3,13 @@ package impl
 import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
+
+	"gorm.io/gorm"
 )
 
-func (repo *repository) GetBTMUserByAccount(account string) (*domain.BTMUser, error) {
+func (repo *repository) GetBTMUserByAccount(db *gorm.DB, account string) (*domain.BTMUser, error) {
 	info := model.BTMUser{}
-	if err := repo.db.Where("account = ?", account).Find(&info).Error; err != nil {
+	if err := db.Model(&model.BTMUser{}).Where("account = ?", account).Find(&info).Error; err != nil {
 		return nil, err
 	}
 	resp := BTMUserModelToDomain(info)

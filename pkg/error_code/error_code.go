@@ -18,4 +18,18 @@ const (
 	ErrInternalError      = "ErrInternalError"
 	ErrInternalPanicError = "ErrInternalPanicError"
 	ErrForbidden          = "ErrForbidden"
+	ErrThirdPartyHttpCall = "ErrThirdPartyHttpCall"
+
+	// cib
+	ErrCibTokenParse = "ErrCibTokenParse"
+	ErrCibTokenFetch = "ErrCibTokenFetch"
+
+	// third party
+	ErrRemoveFile = "ErrRemoveFile"
+	ErrCreateFile = "ErrCreateFile"
+
+	// tools
+	ErrUnzipFile = "ErrUnzipFile"
+	ErrCsvOpen   = "ErrCsvOpen"
+	ErrCsvRead   = "ErrCsvRead"
 )

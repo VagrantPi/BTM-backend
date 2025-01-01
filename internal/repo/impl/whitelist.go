@@ -5,12 +5,13 @@ import (
 	"BTM-backend/internal/repo/model"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
-func (repo *repository) CreateWhitelist(whitelist *domain.BTMWhitelist) error {
+func (repo *repository) CreateWhitelist(db *gorm.DB, whitelist *domain.BTMWhitelist) error {
 	modelWhitelist := WhitelistDomainToModel(*whitelist)
-	return repo.db.Clauses(clause.OnConflict{
+	return db.Clauses(clause.OnConflict{
 		Columns: []clause.Column{{Name: "customer_id"}, {Name: "crypto_code"}, {Name: "address"}},
 		DoUpdates: clause.Assignments(map[string]interface{}{
 			"customer_id": whitelist.CustomerID,
@@ -21,11 +22,11 @@ func (repo *repository) CreateWhitelist(whitelist *domain.BTMWhitelist) error {
 	}).Create(&modelWhitelist).Error
 }
 
-func (repo *repository) GetWhiteListByCustomerId(customerID uuid.UUID, limit int, page int) ([]domain.BTMWhitelist, int64, error) {
+func (repo *repository) GetWhiteListByCustomerId(db *gorm.DB, customerID uuid.UUID, limit int, page int) ([]domain.BTMWhitelist, int64, error) {
 	var modelWhitelists []model.BTMWhitelist
 	var total int64
 
-	query := repo.db.Model(&model.BTMWhitelist{}).Where("customer_id = ?", customerID)
+	query := db.Model(&model.BTMWhitelist{}).Where("customer_id = ?", customerID)
 
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
@@ -42,20 +43,20 @@ func (repo *repository) GetWhiteListByCustomerId(customerID uuid.UUID, limit int
 	return whitelists, total, nil
 }
 
-func (repo *repository) UpdateWhitelist(whitelist *domain.BTMWhitelist) error {
+func (repo *repository) UpdateWhitelist(db *gorm.DB, whitelist *domain.BTMWhitelist) error {
 	modelWhitelist := WhitelistDomainToModel(*whitelist)
-	return repo.db.Save(&modelWhitelist).Error
+	return db.Save(&modelWhitelist).Error
 }
 
-func (repo *repository) DeleteWhitelist(id int64) error {
-	return repo.db.Delete(&model.BTMWhitelist{}, "id = ?", id).Error
+func (repo *repository) DeleteWhitelist(db *gorm.DB, id int64) error {
+	return db.Delete(&model.BTMWhitelist{}, "id = ?", id).Error
 }
 
-func (repo *repository) SearchWhitelistByAddress(customerID uuid.UUID, address string, limit int, page int) ([]domain.BTMWhitelist, int64, error) {
+func (repo *repository) SearchWhitelistByAddress(db *gorm.DB, customerID uuid.UUID, address string, limit int, page int) ([]domain.BTMWhitelist, int64, error) {
 	var modelWhitelists []model.BTMWhitelist
 	var total int64
 
-	query := repo.db.Model(&model.BTMWhitelist{}).
+	query := db.Model(&model.BTMWhitelist{}).
 		Where("customer_id = ?", customerID).
 		Where("address LIKE ?", address+"%")
 

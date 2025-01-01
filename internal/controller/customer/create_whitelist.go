@@ -25,6 +25,7 @@ func CreateWhitelist(c *gin.Context) {
 	defer func() {
 		_ = log.Sync()
 	}()
+	c.Set("log", log)
 
 	req := CreateWhitelistReq{}
 	err := c.ShouldBindJSON(&req)
@@ -41,7 +42,7 @@ func CreateWhitelist(c *gin.Context) {
 		return
 	}
 
-	customer, err := repo.GetCustomerById(req.CustomerID)
+	customer, err := repo.GetCustomerById(repo.GetDb(c), req.CustomerID)
 	if err != nil {
 		log.Error("repo.GetCustomerById", zap.Any("err", err))
 		api.ErrResponse(c, "repo.GetCustomerById", errors.NotFound(error_code.ErrDBError, "repo.GetCustomerById").WithCause(err))
@@ -60,7 +61,7 @@ func CreateWhitelist(c *gin.Context) {
 		Address:    req.Address,
 	}
 
-	err = repo.CreateWhitelist(whitelist)
+	err = repo.CreateWhitelist(repo.GetDb(c), whitelist)
 	if err != nil {
 		log.Error("repo.CreateWhitelist(whitelist)", zap.Any("err", err))
 		var postgresErr *pgconn.PgError

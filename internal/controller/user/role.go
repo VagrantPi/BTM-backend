@@ -25,6 +25,7 @@ func GetBTMUserRoles(c *gin.Context) {
 	defer func() {
 		_ = log.Sync()
 	}()
+	c.Set("log", log)
 
 	repo, err := di.NewRepo()
 	if err != nil {
@@ -33,7 +34,7 @@ func GetBTMUserRoles(c *gin.Context) {
 		return
 	}
 
-	list, err := repo.GetRawRoles()
+	list, err := repo.GetRawRoles(repo.GetDb(c))
 	if err != nil {
 		log.Error("GetRawRoles", zap.Any("err", err))
 		api.ErrResponse(c, "GetRawRoles", errors.InternalServer(error_code.ErrDiError, "GetRawRoles").WithCause(err))

@@ -28,6 +28,7 @@ func LoginBTMAdmin(c *gin.Context) {
 	defer func() {
 		_ = log.Sync()
 	}()
+	c.Set("log", log)
 
 	var req LoginBTMAdminReq
 	err := c.BindJSON(&req)
@@ -43,7 +44,7 @@ func LoginBTMAdmin(c *gin.Context) {
 		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
 		return
 	}
-	user, err := repo.GetBTMUserByAccount(req.Username)
+	user, err := repo.GetBTMUserByAccount(repo.GetDb(c), req.Username)
 	if err != nil {
 		log.Error("GetBTMUserByAccount", zap.Any("err", err))
 		api.ErrResponse(c, "GetBTMUserByAccount", errors.InternalServer(error_code.ErrDiError, "GetBTMUserByAccount").WithCause(err))
@@ -74,7 +75,7 @@ func LoginBTMAdmin(c *gin.Context) {
 	}
 
 	// 寫入現有有效 token
-	err = repo.CreateOrUpdateLastLoginToken(user.Id, token)
+	err = repo.CreateOrUpdateLastLoginToken(repo.GetDb(c), user.Id, token)
 	if err != nil {
 		log.Error("CreateOrUpdateLastLoginToken", zap.Any("err", err))
 		api.ErrResponse(c, "CreateOrUpdateLastLoginToken", errors.InternalServer(error_code.ErrDiError, "CreateOrUpdateLastLoginToken").WithCause(err))

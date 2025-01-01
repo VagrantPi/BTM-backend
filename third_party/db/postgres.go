@@ -3,15 +3,18 @@ package db
 import (
 	"BTM-backend/configs"
 	"BTM-backend/pkg/error_code"
+	pkgLogger "BTM-backend/pkg/logger"
+	"BTM-backend/pkg/tools"
 	"context"
 	"fmt"
 	"log"
-	"os"
+	"log/slog"
 	"sync"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"go.opentelemetry.io/otel/trace"
+	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -84,23 +87,16 @@ func newGormConfig(logSetting logger.Interface) *gorm.Config {
 }
 
 func newGormLog() logger.Interface {
-	_, isInCloudRun := os.LookupEnv("K_SERVICE")
-
 	switch {
 	case !isDebug():
 		return logger.Discard
-	case isInCloudRun:
-		return &gormLogger{logger.New(
-			log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
-			logger.Config{
-				SlowThreshold:             200 * time.Millisecond,
-				LogLevel:                  logger.Warn,
-				IgnoreRecordNotFoundError: false,
-				Colorful:                  false,
-			},
-		)}
 	default:
-		return &gormLogger{logger.Default}
+		return sLogger{
+			slog.Default(),
+			pkgLogger.Zap(),
+			logger.Config{
+				SlowThreshold: 200 * time.Millisecond,
+			}}
 	}
 }
 
@@ -124,54 +120,14 @@ func newPgDialector() gorm.Dialector {
 	)
 }
 
-type gormLogger struct {
-	log logger.Interface
+type sLogger struct {
+	log       *slog.Logger
+	pkgLogger *pkgLogger.Logger
+	logger.Config
 }
 
-func (l *gormLogger) LogMode(level logger.LogLevel) logger.Interface {
-	return &gormLogger{l.log.LogMode(level)}
-}
-
-func (l *gormLogger) Info(ctx context.Context, msg string, data ...interface{}) {
-	traceID := getTraceIDFromContext(ctx)
-	var traceMsg string
-	if traceID != "" {
-		traceMsg = fmt.Sprintf("[trace_id: %s] ", traceID)
-	}
-	l.log.Info(ctx, fmt.Sprintf("%s%s", traceMsg, msg), data...)
-}
-
-func (l *gormLogger) Warn(ctx context.Context, msg string, data ...interface{}) {
-	traceID := getTraceIDFromContext(ctx)
-	var traceMsg string
-	if traceID != "" {
-		traceMsg = fmt.Sprintf("[trace_id: %s] ", traceID)
-	}
-	l.log.Warn(ctx, fmt.Sprintf("%s%s", traceMsg, msg), data...)
-}
-
-func (l *gormLogger) Error(ctx context.Context, msg string, data ...interface{}) {
-	traceID := getTraceIDFromContext(ctx)
-	var traceMsg string
-	if traceID != "" {
-		traceMsg = fmt.Sprintf("[trace_id: %s] ", traceID)
-	}
-	l.log.Error(ctx, fmt.Sprintf("%s%s", traceMsg, msg), data...)
-}
-
-func (l *gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-	traceID := getTraceIDFromContext(ctx)
-	var traceMsg string
-	if traceID != "" {
-		traceMsg = fmt.Sprintf("[trace_id: %s] ", traceID)
-	}
-
-	fcWithTraceMsg := func() (string, int64) {
-		sql, rows := fc()
-		return traceMsg + sql, rows
-	}
-
-	l.log.Trace(ctx, begin, fcWithTraceMsg, err)
+func (l sLogger) LogMode(level logger.LogLevel) logger.Interface {
+	return l
 }
 
 func getTraceIDFromContext(ctx context.Context) string {
@@ -180,6 +136,63 @@ func getTraceIDFromContext(ctx context.Context) string {
 		return ""
 	}
 	return span.SpanContext().TraceID().String()
+}
+
+func (l sLogger) Info(ctx context.Context, msg string, data ...interface{}) {
+	m := fmt.Sprintf(msg, data...)
+	l.log.Info(m)
+}
+
+func (l sLogger) Warn(ctx context.Context, msg string, data ...interface{}) {
+	m := fmt.Sprintf(msg, data...)
+	l.log.Warn(m)
+}
+
+func (l sLogger) Error(ctx context.Context, msg string, data ...interface{}) {
+	m := fmt.Sprintf(msg, data...)
+	l.log.Error(m)
+}
+
+func (l sLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
+	var logMsg string
+	traceID := getTraceIDFromContext(ctx)
+
+	_logger, pkgLoggerOk := ctx.Value("log").(*pkgLogger.Logger)
+	if pkgLoggerOk {
+		l.pkgLogger = _logger
+	}
+
+	caller := tools.GetCallerInfo(4)
+	logMsg = logMsg + caller
+
+	elapsed := time.Since(begin)
+	sql, rows := fc()
+
+	// If there was an error, add it to the log message, or if the query was slow, add slow query log
+	errOrSlowMsg := ""
+	if err != nil {
+		errOrSlowMsg = fmt.Sprintf("ERROR: %v", err)
+	} else if elapsed > l.SlowThreshold && l.SlowThreshold != 0 {
+		errOrSlowMsg = fmt.Sprintf("SLOW SQL >= %v", l.SlowThreshold)
+
+	}
+
+	num := int64(0)
+	if rows != -1 {
+		num = rows
+	}
+	if pkgLoggerOk {
+		l.pkgLogger.Info(logMsg,
+			zap.String("err or slowMsg", errOrSlowMsg),
+			zap.String("times and rows", fmt.Sprintf("[%.3fms][rows:%d]", float64(elapsed.Microseconds())/1000.0, num)),
+			zap.String("caller", caller),
+			zap.String("sql", sql),
+			zap.String("traceID", traceID),
+			zap.Any("trace_id", traceID),
+		)
+	} else {
+		l.log.Info(fmt.Sprintf("%s[%.3fms] [rows:%d] %s", logMsg, float64(elapsed.Microseconds())/1000.0, num, sql))
+	}
 }
 
 func ProvideDb() *gorm.DB {

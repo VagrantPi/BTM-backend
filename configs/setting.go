@@ -14,6 +14,7 @@ type Config struct {
 	TimeoutSecond time.Duration
 	Db            DbConfig
 	JWT           JWTConfig
+	Cib           CibConfig
 }
 
 type GinConfig struct {
@@ -39,6 +40,12 @@ type DbConfig struct {
 	MaxIdleConns       int
 }
 
+type CibConfig struct {
+	Account string
+	Pwd     string
+	ZipPwd  string
+}
+
 func loadConfig() {
 	C = Config{
 		Port:          viper.GetString("port"),
@@ -62,6 +69,11 @@ func loadConfig() {
 		},
 		JWT: JWTConfig{
 			Secret: viper.GetString("jwt.secret"),
+		},
+		Cib: CibConfig{
+			Account: viper.GetString("cib.account"),
+			Pwd:     viper.GetString("cib.pwd"),
+			ZipPwd:  viper.GetString("cib.zip_pwd"),
 		},
 	}
 }

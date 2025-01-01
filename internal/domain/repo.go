@@ -1,41 +1,56 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type Repository interface {
+	NewTransactionBegin(ctx context.Context) (*gorm.DB, error)
+	Close(tx *gorm.DB)
+	Rollback(tx *gorm.DB)
+	TransactionCommit(tx *gorm.DB) error
+	GetDb(ctx context.Context) *gorm.DB
+	NewTxWithContext(ctx context.Context) (tx *gorm.DB, err error)
+
 	/**
 	 * BTM
 	 **/
 
 	// BTMUser
-	GetBTMUserByAccount(account string) (*BTMUser, error)
+	GetBTMUserByAccount(db *gorm.DB, account string) (*BTMUser, error)
 
 	// BTMWhitelist
-	CreateWhitelist(whitelist *BTMWhitelist) error
-	GetWhiteListByCustomerId(customerID uuid.UUID, limit int, page int) (list []BTMWhitelist, total int64, err error)
-	UpdateWhitelist(whitelist *BTMWhitelist) error
-	DeleteWhitelist(id int64) error
-	SearchWhitelistByAddress(customerID uuid.UUID, address string, limit int, page int) (list []BTMWhitelist, total int64, err error)
+	CreateWhitelist(db *gorm.DB, whitelist *BTMWhitelist) error
+	GetWhiteListByCustomerId(db *gorm.DB, customerID uuid.UUID, limit int, page int) (list []BTMWhitelist, total int64, err error)
+	UpdateWhitelist(db *gorm.DB, whitelist *BTMWhitelist) error
+	DeleteWhitelist(db *gorm.DB, id int64) error
+	SearchWhitelistByAddress(db *gorm.DB, customerID uuid.UUID, address string, limit int, page int) (list []BTMWhitelist, total int64, err error)
 
 	// BTMLoginToken
-	IsLastLoginToken(userID uint, loginToken string) (bool, error)
-	CreateOrUpdateLastLoginToken(userID uint, loginToken string) error
-	DeleteLastLoginToken(userID uint) error
+	IsLastLoginToken(db *gorm.DB, userID uint, loginToken string) (bool, error)
+	CreateOrUpdateLastLoginToken(db *gorm.DB, userID uint, loginToken string) error
+	DeleteLastLoginToken(db *gorm.DB, userID uint) error
 
 	// BTMRole
-	InitRawRole() error
-	GetRawRoleByRoleName(roleName string) (role BTMRole, err error)
-	GetRawRoles() (roles []BTMRole, err error)
+	InitRawRole(db *gorm.DB) error
+	GetRawRoleByRoleName(db *gorm.DB, roleName string) (role BTMRole, err error)
+	GetRawRoles(db *gorm.DB) (roles []BTMRole, err error)
+
+	// BTMCIB
+	UpsertBTMCIB(db *gorm.DB, cib BTMCIB) error
 
 	/**
 	 * lamassu original
 	 **/
 
 	// customers
-	GetCustomers(limit int, page int) ([]Customer, int, error)
-	GetCustomerById(id uuid.UUID) (*Customer, error)
-	SearchCustomersByPhone(phone string, limit int, page int) ([]Customer, int, error)
+	GetCustomers(db *gorm.DB, limit int, page int) ([]Customer, int, error)
+	GetCustomerById(db *gorm.DB, id uuid.UUID) (*Customer, error)
+	SearchCustomersByPhone(db *gorm.DB, phone string, limit int, page int) ([]Customer, int, error)
 
 	// userConfig
-	GetLatestConfData() (UserConfigJSON, error)
+	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)
 }

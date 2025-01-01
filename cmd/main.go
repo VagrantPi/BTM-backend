@@ -3,6 +3,7 @@ package main
 import (
 	"BTM-backend/configs"
 	"BTM-backend/internal/controller"
+	"BTM-backend/internal/cronjob"
 	"BTM-backend/internal/middleware"
 	"BTM-backend/pkg/api"
 	"fmt"
@@ -11,11 +12,15 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron/v3"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
 
 func main() {
+
+	// 背景工作
+	go BackgroundWorker()
 
 	h2 := h2c.NewHandler(setupGin(), &http2.Server{})
 	s := &http.Server{
@@ -57,4 +62,23 @@ func setupGin() http.Handler {
 	controller.UserConfigRouter(apiGroup)
 
 	return r
+}
+
+func BackgroundWorker() {
+	CronJob()
+}
+
+func CronJob() {
+	fmt.Println("開始定時任務")
+	// 使用的時區
+	nyc, _ := time.LoadLocation("Asia/Taipei")
+	// 宣告可以使用秒
+	cron := cron.New(cron.WithSeconds(), cron.WithLocation(nyc))
+
+	// 每天處理告誡名單 - 每日 1:00
+	// cron.AddFunc("0 1 * * *", func() {
+	cronjob.DownlaodCIBAndUpsert()
+	// })
+
+	cron.Start()
 }

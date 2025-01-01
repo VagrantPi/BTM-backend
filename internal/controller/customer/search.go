@@ -28,6 +28,7 @@ func SearchCustomers(c *gin.Context) {
 	defer func() {
 		_ = log.Sync()
 	}()
+	c.Set("log", log)
 
 	req := SearchCustomersReq{}
 	err := c.BindQuery(&req)
@@ -51,7 +52,7 @@ func SearchCustomers(c *gin.Context) {
 		return
 	}
 
-	customers, total, err := repo.SearchCustomersByPhone(req.Phone, req.Limit, req.Page)
+	customers, total, err := repo.SearchCustomersByPhone(repo.GetDb(c), req.Phone, req.Limit, req.Page)
 	if err != nil {
 		log.Error("repo.SearchCustomersByPhone()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.SearchCustomersByPhone()", errors.NotFound(error_code.ErrDBError, "repo.SearchCustomersByPhone()").WithCause(err))

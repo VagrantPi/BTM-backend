@@ -13,6 +13,7 @@ func main() {
 		&model.BTMRole{},
 		&model.BTMWhitelist{},
 		&model.BTMLoginToken{},
+		&model.BTM_CIB{},
 	)
 
 	// Initialize the repository

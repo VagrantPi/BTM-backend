@@ -5,13 +5,14 @@ import (
 	"BTM-backend/internal/repo/model"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
-func (repo *repository) GetCustomers(limit int, page int) ([]domain.Customer, int, error) {
+func (repo *repository) GetCustomers(db *gorm.DB, limit int, page int) ([]domain.Customer, int, error) {
 	offset := (page - 1) * limit
 	list := []model.Customer{}
 
-	sql := repo.db.Model(&model.Customer{}).Where("phone != ''")
+	sql := db.Model(&model.Customer{}).Where("phone != ''")
 	var total int64 = 0
 	if err := sql.Count(&total).Error; err != nil {
 		return nil, 0, err
@@ -28,20 +29,20 @@ func (repo *repository) GetCustomers(limit int, page int) ([]domain.Customer, in
 	return resp, int(total), nil
 }
 
-func (repo *repository) GetCustomerById(id uuid.UUID) (*domain.Customer, error) {
+func (repo *repository) GetCustomerById(db *gorm.DB, id uuid.UUID) (*domain.Customer, error) {
 	modelCustomer := model.Customer{}
-	if err := repo.db.Where("id = ?", id).First(&modelCustomer).Error; err != nil {
+	if err := db.Where("id = ?", id).First(&modelCustomer).Error; err != nil {
 		return nil, err
 	}
 	customer := CustomerModelToDomain(modelCustomer)
 	return &customer, nil
 }
 
-func (repo *repository) SearchCustomersByPhone(phone string, limit int, page int) ([]domain.Customer, int, error) {
+func (repo *repository) SearchCustomersByPhone(db *gorm.DB, phone string, limit int, page int) ([]domain.Customer, int, error) {
 	offset := (page - 1) * limit
 	list := []model.Customer{}
 
-	sql := repo.db.Model(&model.Customer{}).Where("phone LIKE ?", "%"+phone+"%")
+	sql := db.Model(&model.Customer{}).Where("phone LIKE ?", "%"+phone+"%")
 	var total int64 = 0
 	if err := sql.Count(&total).Error; err != nil {
 		return nil, 0, err
