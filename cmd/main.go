@@ -76,9 +76,9 @@ func CronJob() {
 	cron := cron.New(cron.WithSeconds(), cron.WithLocation(nyc))
 
 	// 每天處理告誡名單 - 每日 1:00
-	// cron.AddFunc("0 1 * * *", func() {
-	cronjob.DownlaodCIBAndUpsert()
-	// })
+	cron.AddFunc("0 1 * * *", func() {
+		cronjob.DownlaodCIBAndUpsert()
+	})
 
 	cron.Start()
 }

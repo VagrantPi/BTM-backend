@@ -7,10 +7,10 @@ import (
 	"BTM-backend/pkg/logger"
 	"encoding/csv"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -94,7 +94,6 @@ func GetWarningZip(token string, destFile string) error {
 	}()
 
 	targetUrl := "https://dawexchange.cib.gov.tw/WarningListServlet"
-	// config := configs.NewConfigs()
 
 	fileDate := time.Now().Format("2006-01-02")
 	data := url.Values{}
@@ -112,12 +111,18 @@ func GetWarningZip(token string, destFile string) error {
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	// Create the file
+	out, err := os.Create(destFile)
 	if err != nil {
 		return err
 	}
+	defer out.Close()
 
-	fmt.Println(string(body))
+	// Writer the body to file
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
 
 	return nil
 
