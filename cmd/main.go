@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	_ "time/tzdata"
 
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
@@ -71,7 +72,10 @@ func BackgroundWorker() {
 func CronJob() {
 	fmt.Println("開始定時任務")
 	// 使用的時區
-	nyc, _ := time.LoadLocation("Asia/Taipei")
+	nyc, err := time.LoadLocation("Asia/Taipei")
+	if err != nil {
+		log.Fatalf("Failed to load location: %v", err)
+	}
 	// 宣告可以使用秒
 	cron := cron.New(cron.WithSeconds(), cron.WithLocation(nyc))
 
