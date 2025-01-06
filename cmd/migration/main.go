@@ -4,6 +4,7 @@ import (
 	"BTM-backend/internal/di"
 	"BTM-backend/internal/repo/model"
 	"BTM-backend/third_party/db"
+	"context"
 )
 
 func main() {
@@ -21,8 +22,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// Now you can call InitRawRole
-	if err := repo.InitRawRole(); err != nil {
+
+	tx := repo.GetDb(context.Background())
+	// Initialize all roles
+	if err := repo.InitRawRole(tx); err != nil {
+		panic(err)
+	}
+
+	// Initialize the admin
+	if err := repo.InitAdmin(tx); err != nil {
 		panic(err)
 	}
 }

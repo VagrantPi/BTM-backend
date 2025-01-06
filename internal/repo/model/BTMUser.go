@@ -6,7 +6,7 @@ type BTMUser struct {
 	Db *gorm.DB `gorm:"-"`
 	gorm.Model
 
-	Account  string
+	Account  string `gorm:"uniqueIndex:user_account"`
 	Password string
 	Roles    int64
 }

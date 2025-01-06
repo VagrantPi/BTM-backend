@@ -5,6 +5,7 @@ import (
 	"BTM-backend/internal/repo/model"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func (repo *repository) GetBTMUserByAccount(db *gorm.DB, account string) (*domain.BTMUser, error) {
@@ -14,6 +15,19 @@ func (repo *repository) GetBTMUserByAccount(db *gorm.DB, account string) (*domai
 	}
 	resp := BTMUserModelToDomain(info)
 	return &resp, nil
+}
+
+func (repo *repository) InitAdmin(db *gorm.DB) error {
+	user := domain.BTMUser{
+		Account:  "admin",
+		Password: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiYWRtaW4iLCJyYW5kb20iOjE3MzMwMzkxNzg5ODc2NjgsInJvbGUiOjB9.dkefRyMNOKhLYTAd70lQ-QVfpFYrcB3KfsDY3HugLfs",
+		Roles:    1,
+	}
+	item := BTMUserDomainToModel(user)
+	return db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "account"}},
+		DoNothing: true,
+	}).Create(&item).Error
 }
 
 func BTMUserDomainToModel(user domain.BTMUser) model.BTMUser {
