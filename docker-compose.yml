@@ -11,4 +11,5 @@ services:
       - configs/dev.env
     volumes:
       - ./dist:/app/dist
+    network_mode: "host"
     restart: unless-stopped
