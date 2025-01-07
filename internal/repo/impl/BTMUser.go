@@ -20,7 +20,7 @@ func (repo *repository) GetBTMUserByAccount(db *gorm.DB, account string) (*domai
 func (repo *repository) InitAdmin(db *gorm.DB) error {
 	user := domain.BTMUser{
 		Account:  "admin",
-		Password: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiYWRtaW4iLCJyYW5kb20iOjE3MzMwMzkxNzg5ODc2NjgsInJvbGUiOjB9.dkefRyMNOKhLYTAd70lQ-QVfpFYrcB3KfsDY3HugLfs",
+		Password: "$2a$12$qzSY/1.YLuZ1FnYv4q8rlehgBA6nX/CQ9MDDwjoQeJJvDoUzkfVVO",
 		Roles:    1,
 	}
 	item := BTMUserDomainToModel(user)
