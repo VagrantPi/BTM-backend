@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"BTM-backend/internal/di"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/pkg/tools"
 	"net/http"
@@ -37,15 +36,15 @@ func Auth() gin.HandlerFunc {
 			return
 		}
 
-		repo, err := di.NewRepo()
-		if err != nil {
-			log.Error("di repo error", zap.Any("err", err))
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"code": http.StatusInternalServerError,
-				"msg":  "di repo error",
-			})
-			return
-		}
+		// repo, err := di.NewRepo()
+		// if err != nil {
+		// 	log.Error("di repo error", zap.Any("err", err))
+		// 	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		// 		"code": http.StatusInternalServerError,
+		// 		"msg":  "di repo error",
+		// 	})
+		// 	return
+		// }
 
 		// isLastLoginToken, err := repo.IsLastLoginToken(repo.GetDb(c), userInfo.Id, token)
 		// if err != nil {
