@@ -133,7 +133,7 @@ func ConvertCsvFileToBTMCIB(file io.Reader) ([]domain.BTMCIB, error) {
 	csvReader := csv.NewReader(file)
 	decoder, err := csvutil.NewDecoder(csvReader)
 	if err != nil {
-		err = errors.InternalServer(error_code.ErrCsvOpen, "open csv file err").WithCause(err)
+		err = errors.InternalServer(error_code.ErrToolsCsvOpen, "open csv file err").WithCause(err)
 		return nil, err
 	}
 
@@ -144,7 +144,7 @@ func ConvertCsvFileToBTMCIB(file io.Reader) ([]domain.BTMCIB, error) {
 		if err1 := decoder.Decode(&item); err1 == io.EOF {
 			break
 		} else if err1 != nil {
-			err = errors.InternalServer(error_code.ErrCsvRead, "read csv row err").WithCause(err)
+			err = errors.InternalServer(error_code.ErrToolsCsvRead, "read csv row err").WithCause(err)
 			return nil, err
 		}
 

@@ -30,6 +30,11 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group.DELETE("/whitelist", customer.DeleteWhitelist)
 }
 
+func CustomerInternalRouter(apiGroup *gin.RouterGroup) {
+	group := apiGroup.Group("/customer")
+	group.GET("/id_number", customer.GetCustomerIdNumber)
+}
+
 func UserConfigRouter(apiGroup *gin.RouterGroup) {
 	apiGroup.GET("/config", middleware.Auth(), config.GetConfig)
 }

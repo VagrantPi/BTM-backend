@@ -59,6 +59,11 @@ func (repo *repository) SearchCustomersByPhone(db *gorm.DB, phone string, limit 
 	return resp, int(total), nil
 }
 
+// TODO: 想辦法 Join 出 external_id
+func (repo *repository) GetSumsubExternalId(db *gorm.DB, customerId string) (string, error) {
+	return "17a1c2cf-7944-4f0b-899a-e6da2c90fc10", nil
+}
+
 func CustomerModelToDomain(customer model.Customer) domain.Customer {
 	return domain.Customer{
 		ID:    customer.ID,

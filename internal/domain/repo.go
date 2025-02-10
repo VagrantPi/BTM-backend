@@ -43,6 +43,10 @@ type Repository interface {
 	// BTMCIB
 	UpsertBTMCIB(db *gorm.DB, cib BTMCIB) error
 
+	// BTMSumsub
+	CreateBTMSumsub(db *gorm.DB, btmsumsub BTMSumsub) error
+	GetBTMSumsub(db *gorm.DB, customerId string) (*BTMSumsub, error)
+
 	/**
 	 * lamassu original
 	 **/
@@ -51,6 +55,7 @@ type Repository interface {
 	GetCustomers(db *gorm.DB, limit int, page int) ([]Customer, int, error)
 	GetCustomerById(db *gorm.DB, id uuid.UUID) (*Customer, error)
 	SearchCustomersByPhone(db *gorm.DB, phone string, limit int, page int) ([]Customer, int, error)
+	GetSumsubExternalId(db *gorm.DB, customerId string) (string, error)
 
 	// userConfig
 	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)

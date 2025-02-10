@@ -15,6 +15,7 @@ type Config struct {
 	Db            DbConfig
 	JWT           JWTConfig
 	Cib           CibConfig
+	Sumsub        SumsubConfig
 }
 
 type GinConfig struct {
@@ -46,6 +47,12 @@ type CibConfig struct {
 	ZipPwd  string
 }
 
+type SumsubConfig struct {
+	ApiUrl    string
+	AppSecret string
+	AppToken  string
+}
+
 func loadConfig() {
 	C = Config{
 		Port:          viper.GetString("port"),
@@ -74,6 +81,11 @@ func loadConfig() {
 			Account: viper.GetString("cib.account"),
 			Pwd:     viper.GetString("cib.pwd"),
 			ZipPwd:  viper.GetString("cib.zip_pwd"),
+		},
+		Sumsub: SumsubConfig{
+			ApiUrl:    viper.GetString("sumsub.api_url"),
+			AppSecret: viper.GetString("sumsub.app_secret"),
+			AppToken:  viper.GetString("sumsub.app_token"),
 		},
 	}
 }
