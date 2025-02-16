@@ -80,6 +80,29 @@ func (repo *repository) SearchCustomersByPhone(db *gorm.DB, phone string, limit 
 	return resp, int(total), nil
 }
 
+func (repo *repository) SearchCustomersByAddress(db *gorm.DB, address string, limit int, page int) ([]domain.Customer, int, error) {
+	offset := (page - 1) * limit
+	list := []model.Customer{}
+
+	sql := db.Model(&model.Customer{}).
+		Joins("INNER JOIN btm_whitelists ON customers.id = btm_whitelists.customer_id").
+		Where("btm_whitelists.address = ?", address)
+	var total int64 = 0
+	if err := sql.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := sql.Limit(limit).Offset(offset).Find(&list).Error; err != nil {
+		return nil, 0, err
+	}
+
+	resp := make([]domain.Customer, 0, len(list))
+	for _, customer := range list {
+		resp = append(resp, CustomerModelToDomain(customer))
+	}
+	return resp, int(total), nil
+}
+
 func CustomerModelToDomain(customer model.Customer) domain.Customer {
 	return domain.Customer{
 		ID:    customer.ID,

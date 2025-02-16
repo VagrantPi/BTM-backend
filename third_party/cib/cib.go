@@ -86,7 +86,6 @@ func GetToken() (string, error) {
 	return resp.Token, nil
 }
 
-// TODO:
 func GetWarningZip(token string, destFile string) error {
 	log := logger.Zap().WithClassFunction("cib", "GetWarningZip")
 	defer func() {

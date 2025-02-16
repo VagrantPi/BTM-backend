@@ -52,6 +52,7 @@ type Repository interface {
 	GetCustomerById(db *gorm.DB, id uuid.UUID) (*Customer, error)
 	SearchCustomersByPhone(db *gorm.DB, phone string, limit int, page int) ([]Customer, int, error)
 	SearchCustomersByCustomerId(db *gorm.DB, customerId string, limit int, page int) ([]Customer, int, error)
+	SearchCustomersByAddress(db *gorm.DB, address string, limit int, page int) ([]Customer, int, error)
 
 	// userConfig
 	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)

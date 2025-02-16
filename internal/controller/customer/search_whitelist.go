@@ -35,7 +35,7 @@ func SearchWhitelist(c *gin.Context) {
 	req := SearchWhitelistReq{}
 	err := c.BindQuery(&req)
 	if err != nil {
-		log.Error("c.BindQuery(&req)", zap.Any("err", err))
+		log.Error("c.BindQuery(req)", zap.Any("err", err))
 		api.ErrResponse(c, "c.BindQuery(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.BindQuery(&req)").WithCause(err))
 		return
 	}
