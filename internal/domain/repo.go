@@ -25,6 +25,7 @@ type Repository interface {
 
 	// BTMWhitelist
 	CreateWhitelist(db *gorm.DB, whitelist *BTMWhitelist) error
+	GetWhiteListById(db *gorm.DB, id int64) (data BTMWhitelist, err error)
 	GetWhiteListByCustomerId(db *gorm.DB, customerID uuid.UUID, limit int, page int) (list []BTMWhitelist, total int64, err error)
 	UpdateWhitelist(db *gorm.DB, whitelist *BTMWhitelist) error
 	DeleteWhitelist(db *gorm.DB, id int64) error
@@ -42,6 +43,10 @@ type Repository interface {
 
 	// BTMCIB
 	UpsertBTMCIB(db *gorm.DB, cib BTMCIB) error
+
+	// BTMChangeLog
+	CreateBTMChangeLog(db *gorm.DB, c BTMChangeLog) error
+	GetBTMChangeLogs(db *gorm.DB, limit int, page int) (list []BTMChangeLog, total int64, err error)
 
 	/**
 	 * lamassu original

@@ -3,12 +3,18 @@ package impl
 import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
+	"BTM-backend/pkg/error_code"
 
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 func (repo *repository) GetCustomers(db *gorm.DB, limit int, page int) ([]domain.Customer, int, error) {
+	if db == nil {
+		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
 	offset := (page - 1) * limit
 	list := []model.Customer{}
 
@@ -30,6 +36,10 @@ func (repo *repository) GetCustomers(db *gorm.DB, limit int, page int) ([]domain
 }
 
 func (repo *repository) GetCustomerById(db *gorm.DB, id uuid.UUID) (*domain.Customer, error) {
+	if db == nil {
+		return nil, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
 	modelCustomer := model.Customer{}
 	if err := db.Where("id = ?", id).First(&modelCustomer).Error; err != nil {
 		return nil, err
@@ -39,6 +49,10 @@ func (repo *repository) GetCustomerById(db *gorm.DB, id uuid.UUID) (*domain.Cust
 }
 
 func (repo *repository) SearchCustomersByCustomerId(db *gorm.DB, customerId string, limit int, page int) ([]domain.Customer, int, error) {
+	if db == nil {
+		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
 	offset := (page - 1) * limit
 	list := []model.Customer{}
 
@@ -60,6 +74,10 @@ func (repo *repository) SearchCustomersByCustomerId(db *gorm.DB, customerId stri
 }
 
 func (repo *repository) SearchCustomersByPhone(db *gorm.DB, phone string, limit int, page int) ([]domain.Customer, int, error) {
+	if db == nil {
+		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
 	offset := (page - 1) * limit
 	list := []model.Customer{}
 
@@ -81,6 +99,10 @@ func (repo *repository) SearchCustomersByPhone(db *gorm.DB, phone string, limit 
 }
 
 func (repo *repository) SearchCustomersByAddress(db *gorm.DB, address string, limit int, page int) ([]domain.Customer, int, error) {
+	if db == nil {
+		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
 	offset := (page - 1) * limit
 	list := []model.Customer{}
 

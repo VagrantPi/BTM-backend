@@ -1,7 +1,6 @@
 package user
 
 import (
-	"BTM-backend/internal/domain"
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
@@ -9,7 +8,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
-	"go.uber.org/zap"
 )
 
 type GetBTMUserInfoRespItem struct {
@@ -23,16 +21,9 @@ func GetBTMUserInfo(c *gin.Context) {
 		_ = log.Sync()
 	}()
 
-	u, exist := c.Get("userInfo")
-	if !exist {
-		log.Error("c.Get(userInfo) error")
-		api.ErrResponse(c, "c.Get(userInfo) error", errors.BadRequest(error_code.ErrForbidden, "c.Get(userInfo) error"))
-		return
-	}
-
-	userInfo, isUser := u.(domain.UserJwt)
-	if !isUser {
-		log.Error("c.Get(userInfo) parse error", zap.Any("u", u))
+	userInfo, err := tools.FetchTokenInfo(c)
+	if err != nil {
+		log.Error("c.Get(userInfo) parse error")
 		api.ErrResponse(c, "c.Get(userInfo) parse error", errors.BadRequest(error_code.ErrForbidden, "c.Get(userInfo) parse error"))
 		return
 	}

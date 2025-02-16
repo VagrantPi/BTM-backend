@@ -3,12 +3,18 @@ package impl
 import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
+	"BTM-backend/pkg/error_code"
 
+	"github.com/go-kratos/kratos/v2/errors"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 func (repo *repository) UpsertBTMCIB(db *gorm.DB, cib domain.BTMCIB) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
 	item := BTMCIBDomainToModel(cib)
 
 	return db.Clauses(clause.OnConflict{

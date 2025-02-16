@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -79,4 +80,18 @@ func ParseToken(token string) (claim domain.UserJwt, err error) {
 	}
 
 	return
+}
+
+func FetchTokenInfo(c *gin.Context) (domain.UserJwt, error) {
+	u, exist := c.Get("userInfo")
+	if !exist {
+		return domain.UserJwt{}, errors.InternalServer(error_code.ErrForbidden, "userInfo not found")
+	}
+
+	userInfo, ok := u.(domain.UserJwt)
+	if !ok {
+		return domain.UserJwt{}, errors.InternalServer(error_code.ErrForbidden, "failed to parse userInfo")
+	}
+
+	return userInfo, nil
 }
