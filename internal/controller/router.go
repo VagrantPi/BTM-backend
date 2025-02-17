@@ -4,6 +4,7 @@ import (
 	"BTM-backend/internal/controller/config"
 	"BTM-backend/internal/controller/customer"
 	"BTM-backend/internal/controller/debug"
+	"BTM-backend/internal/controller/tx"
 	"BTM-backend/internal/controller/user"
 	"BTM-backend/internal/middleware"
 
@@ -34,6 +35,11 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 
 func UserConfigRouter(apiGroup *gin.RouterGroup) {
 	apiGroup.GET("/config", middleware.Auth(), config.GetConfig)
+}
+
+func TxRouter(apiGroup *gin.RouterGroup) {
+	group := apiGroup.Group("/tx", middleware.Auth())
+	group.GET("/:customer_id/list", tx.GetTxsList)
 }
 
 // TODO: 未來增加安全性 middleware

@@ -61,4 +61,7 @@ type Repository interface {
 
 	// userConfig
 	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)
+
+	// cashInTx
+	GetCashInTxByCustomerID(db *gorm.DB, customerID string, limit int, page int) ([]CashInTx, int, error)
 }

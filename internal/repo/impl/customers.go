@@ -127,14 +127,16 @@ func (repo *repository) SearchCustomersByAddress(db *gorm.DB, address string, li
 
 func CustomerModelToDomain(customer model.Customer) domain.Customer {
 	return domain.Customer{
-		ID:    customer.ID,
-		Phone: customer.Phone,
+		ID:      customer.ID,
+		Phone:   customer.Phone,
+		Created: customer.Created,
 	}
 }
 
 func CustomerDomainToModel(customer domain.Customer) model.Customer {
 	return model.Customer{
-		ID:    customer.ID,
-		Phone: customer.Phone,
+		ID:      customer.ID,
+		Phone:   customer.Phone,
+		Created: customer.Created,
 	}
 }

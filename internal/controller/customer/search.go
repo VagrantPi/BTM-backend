@@ -111,7 +111,7 @@ func SearchCustomersByAddress(c *gin.Context) {
 	err := c.ShouldBindUri(&req)
 	if err != nil {
 		log.Error("c.ShouldBindUri(req)", zap.Any("err", err))
-		api.ErrResponse(c, "c.ShouldBindUri(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.BindQuery(&req)").WithCause(err))
+		api.ErrResponse(c, "c.ShouldBindUri(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.ShouldBindUri(&req)").WithCause(err))
 		return
 	}
 

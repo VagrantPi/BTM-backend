@@ -59,6 +59,7 @@ func setupGin() http.Handler {
 	controller.UserRouter(apiGroup)
 	controller.CustomerRouter(apiGroup)
 	controller.UserConfigRouter(apiGroup)
+	controller.TxRouter(apiGroup)
 	controller.DebugRouter(apiGroup)
 
 	return r
