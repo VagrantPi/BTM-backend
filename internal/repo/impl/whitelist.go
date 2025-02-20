@@ -8,7 +8,6 @@ import (
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 func (repo *repository) CreateWhitelist(db *gorm.DB, whitelist *domain.BTMWhitelist) error {
@@ -17,15 +16,7 @@ func (repo *repository) CreateWhitelist(db *gorm.DB, whitelist *domain.BTMWhitel
 	}
 
 	modelWhitelist := WhitelistDomainToModel(*whitelist)
-	return db.Clauses(clause.OnConflict{
-		Columns: []clause.Column{{Name: "customer_id"}, {Name: "crypto_code"}, {Name: "address"}},
-		DoUpdates: clause.Assignments(map[string]interface{}{
-			"customer_id": whitelist.CustomerID,
-			"crypto_code": whitelist.CryptoCode,
-			"address":     whitelist.Address,
-			"deleted_at":  nil,
-		}),
-	}).Create(&modelWhitelist).Error
+	return db.Create(&modelWhitelist).Error
 }
 
 func (repo *repository) GetWhiteListByCustomerId(db *gorm.DB, customerID uuid.UUID, limit int, page int) ([]domain.BTMWhitelist, int64, error) {
