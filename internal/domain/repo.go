@@ -60,6 +60,7 @@ type Repository interface {
 	SearchCustomersByCustomerId(db *gorm.DB, customerId string, limit int, page int) ([]Customer, int, error)
 	SearchCustomersByAddress(db *gorm.DB, address string, limit int, page int) ([]Customer, int, error)
 	SearchCustomersByWhitelistCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]Customer, int, error)
+	SearchCustomersByTxCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]Customer, int, error)
 
 	// userConfig
 	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)
