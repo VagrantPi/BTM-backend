@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -58,6 +59,7 @@ type Repository interface {
 	SearchCustomersByPhone(db *gorm.DB, phone string, limit int, page int) ([]Customer, int, error)
 	SearchCustomersByCustomerId(db *gorm.DB, customerId string, limit int, page int) ([]Customer, int, error)
 	SearchCustomersByAddress(db *gorm.DB, address string, limit int, page int) ([]Customer, int, error)
+	SearchCustomersByWhitelistCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]Customer, int, error)
 
 	// userConfig
 	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)

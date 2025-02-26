@@ -4,6 +4,7 @@ import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
 	"BTM-backend/pkg/error_code"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/google/uuid"
@@ -109,6 +110,33 @@ func (repo *repository) SearchCustomersByAddress(db *gorm.DB, address string, li
 	sql := db.Model(&model.Customer{}).
 		Joins("INNER JOIN btm_whitelists ON customers.id = btm_whitelists.customer_id").
 		Where("btm_whitelists.address = ?", address)
+	var total int64 = 0
+	if err := sql.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := sql.Limit(limit).Offset(offset).Find(&list).Error; err != nil {
+		return nil, 0, err
+	}
+
+	resp := make([]domain.Customer, 0, len(list))
+	for _, customer := range list {
+		resp = append(resp, CustomerModelToDomain(customer))
+	}
+	return resp, int(total), nil
+}
+
+func (repo *repository) SearchCustomersByWhitelistCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]domain.Customer, int, error) {
+	if db == nil {
+		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	offset := (page - 1) * limit
+	list := []model.Customer{}
+
+	sql := db.Model(&model.Customer{}).
+		Joins("INNER JOIN btm_whitelists ON customers.id = btm_whitelists.customer_id").
+		Where("btm_whitelists.created_at BETWEEN ? AND ?", startAt, endAt)
 	var total int64 = 0
 	if err := sql.Count(&total).Error; err != nil {
 		return nil, 0, err

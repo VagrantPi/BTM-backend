@@ -6,7 +6,9 @@ import (
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
+	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
@@ -146,6 +148,70 @@ func SearchCustomersByAddress(c *gin.Context) {
 	c.JSON(200, api.DefaultRep{
 		Code: 20000,
 		Data: SearchCustomersByAddressRepItem{
+			Total: total,
+			Items: customers,
+		},
+	})
+	c.Done()
+}
+
+type SearchCustomersByWhitelistCreatedAtReq struct {
+	DateStart time.Time `form:"date_start" binding:"required"`
+	DateEnd   time.Time `form:"date_end" binding:"required"`
+	Limit     int       `form:"limit"`
+	Page      int       `form:"page"`
+}
+
+type SearchCustomersByWhitelistCreatedAtRepItem struct {
+	Total int               `json:"total"`
+	Items []domain.Customer `json:"items"`
+}
+
+func SearchCustomersByWhitelistCreatedAt(c *gin.Context) {
+	log := logger.Zap().WithClassFunction("api", "SearchCustomersByWhitelistCreatedAt")
+	defer func() {
+		_ = log.Sync()
+	}()
+	c.Set("log", log)
+
+	req := SearchCustomersByWhitelistCreatedAtReq{}
+	err := c.BindQuery(&req)
+	if err != nil {
+		log.Error("c.BindQuery(req)", zap.Any("err", err))
+		api.ErrResponse(c, "c.BindQuery(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.BindQuery(&req)").WithCause(err))
+		return
+	}
+
+	if req.Limit <= 0 {
+		req.Limit = 10
+	}
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+
+	fmt.Println("req.DateStart", req.DateStart)
+	fmt.Println("req.DateEnd", req.DateEnd)
+
+	repo, err := di.NewRepo()
+	if err != nil {
+		log.Error("di.NewRepo()", zap.Any("err", err))
+		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
+		return
+	}
+
+	var customers []domain.Customer
+	var total int
+
+	customers, total, err = repo.SearchCustomersByWhitelistCreatedAt(repo.GetDb(c), req.DateStart, req.DateEnd, req.Limit, req.Page)
+	if err != nil {
+		log.Error("repo.SearchCustomersByWhitelistCreatedAt", zap.Any("err", err))
+		api.ErrResponse(c, "repo.SearchCustomersByWhitelistCreatedAt", errors.NotFound(error_code.ErrDBError, "repo.SearchCustomersByWhitelistCreatedAtByCustomerId()").WithCause(err))
+		return
+	}
+
+	c.JSON(200, api.DefaultRep{
+		Code: 20000,
+		Data: SearchCustomersByWhitelistCreatedAtRepItem{
 			Total: total,
 			Items: customers,
 		},

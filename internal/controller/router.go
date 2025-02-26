@@ -26,6 +26,7 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/customer", middleware.Auth())
 	group.GET("/list", customer.GetCustomersList)
 	group.GET("/search", customer.SearchCustomers)
+	group.GET("/search/whitelist_created_at", customer.SearchCustomersByWhitelistCreatedAt)
 	group.GET("/search/address/:address", customer.SearchCustomersByAddress)
 	group.GET("/whitelist", customer.GetWhitelist)
 	group.GET("/whitelist/search", customer.SearchWhitelist)
