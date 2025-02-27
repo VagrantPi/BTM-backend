@@ -34,11 +34,6 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group.DELETE("/whitelist", customer.DeleteWhitelist)
 }
 
-func CustomerInternalRouter(apiGroup *gin.RouterGroup) {
-	group := apiGroup.Group("/customer")
-	group.GET("/id_number", customer.GetCustomerIdNumber)
-}
-
 func UserConfigRouter(apiGroup *gin.RouterGroup) {
 	apiGroup.GET("/config", middleware.Auth(), config.GetConfig)
 }
@@ -48,8 +43,8 @@ func TxRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/list", tx.GetTxsList)
 }
 
-// TODO: 未來增加安全性 middleware
-func DebugRouter(apiGroup *gin.RouterGroup) {
-	group := apiGroup.Group("/debug", middleware.Auth())
-	group.GET("/logs", debug.GetBTMChangeLogs)
+func InternalRouter(apiGroup *gin.RouterGroup) {
+	group := apiGroup.Group("/btm", middleware.ServerKeyAuth())
+	group.GET("/id_number", customer.GetCustomerIdNumber)
+	group.GET("/debug/logs", debug.GetBTMChangeLogs)
 }

@@ -58,10 +58,9 @@ func setupGin() http.Handler {
 	// 以下 API 以 /api 為前綴
 	controller.UserRouter(apiGroup)
 	controller.CustomerRouter(apiGroup)
-	controller.CustomerInternalRouter(apiGroup)
+	controller.InternalRouter(apiGroup)
 	controller.UserConfigRouter(apiGroup)
 	controller.TxRouter(apiGroup)
-	controller.DebugRouter(apiGroup)
 
 	return r
 }

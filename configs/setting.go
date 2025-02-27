@@ -10,6 +10,7 @@ var C Config
 
 type Config struct {
 	Port          string
+	ServerKey     string
 	Gin           GinConfig
 	TimeoutSecond time.Duration
 	Db            DbConfig
@@ -56,6 +57,7 @@ type SumsubConfig struct {
 func loadConfig() {
 	C = Config{
 		Port:          viper.GetString("port"),
+		ServerKey:     viper.GetString("server_key"),
 		TimeoutSecond: viper.GetDuration("timeout_second"),
 		Gin: GinConfig{
 			Mode: viper.GetString("gin.mode"),
