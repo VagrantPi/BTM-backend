@@ -7,7 +7,6 @@ import (
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/third_party/sumsub"
-	"fmt"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -85,8 +84,6 @@ func GetCustomerIdNumber(c *gin.Context) {
 			return
 		}
 
-		fmt.Println("idNumber", idNumber)
-		fmt.Println("data", data)
 		// store db
 		err = repo.CreateBTMSumsub(repo.GetDb(c), domain.BTMSumsub{
 			CustomerId: customerID,

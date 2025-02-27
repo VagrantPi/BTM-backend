@@ -1,0 +1,1565 @@
+{
+	"info": {
+		"_postman_id": "0b063a62-a39e-436b-8b8c-c6f48e0055c8",
+		"name": "BTM",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42635720"
+	},
+	"item": [
+		{
+			"name": "後台用戶",
+			"item": [
+				{
+					"name": "登入",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"_sQK6TVYg3tAx:jy_jXa\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"_sQK6TVYg3tAx:jy_jXa\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/user/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "2fe6e516-9040-400e-9f23-8bf4d6580375"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:04:31 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "219"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiYWRtaW4iLCJleHAiOjE3NDA4OTU0NzEsImlkIjo4LCJyYW5kb20iOjE3NDA2MzYyNzEwMjQ0NTQsInJvbGUiOjF9.lCYnFZAnGr1TJ3Q5M25x5KoM0PdPYiT1aD-6Z4FvxF0\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "用戶資訊",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/user/info",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"info"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success - admin",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/user/info",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"info"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "3abec6bd-505d-4f50-945c-b5ee815e0f9a"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:06:36 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "56"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"name\": \"admin\",\n        \"roles\": [\n            \"admin\"\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "登出",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/user/logout",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"logout"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/user/logout",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "92a3d1ce-6ec2-4f69-8a4e-f3bdefa372b7"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:08:04 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "26"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": null\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "用戶",
+			"item": [
+				{
+					"name": "白名單",
+					"item": [
+						{
+							"name": "用戶白名單清單",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/customer/whitelist?limit=10&page=1&customer_id=021ec907-d578-4a53-a424-e9335c3994d7",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"customer",
+										"whitelist"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "customer_id",
+											"value": "021ec907-d578-4a53-a424-e9335c3994d7"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "token",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{url}}/api/customer/whitelist?limit=10&page=1&customer_id=021ec907-d578-4a53-a424-e9335c3994d7",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"customer",
+												"whitelist"
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "10"
+												},
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "customer_id",
+													"value": "021ec907-d578-4a53-a424-e9335c3994d7"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "X-Request-Id",
+											"value": "cd4b7ee5-8888-422a-be12-2d5aaf5eb94d"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 27 Feb 2025 06:21:00 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "229"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"total\": 1,\n        \"items\": [\n            {\n                \"id\": 141,\n                \"customer_id\": \"021ec907-d578-4a53-a424-e9335c3994d7\",\n                \"crypto_code\": \"BTC\",\n                \"address\": \"test2\",\n                \"created_at\": \"2025-02-27T05:10:45.69171Z\",\n                \"updated_at\": \"2025-02-27T05:10:45.69171Z\"\n            }\n        ]\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "用戶白名單清單搜尋(address)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/customer/whitelist/search?limit=10&page=1&customer_id=021ec907-d578-4a53-a424-e9335c3994d7&address=te",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"customer",
+										"whitelist",
+										"search"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "customer_id",
+											"value": "021ec907-d578-4a53-a424-e9335c3994d7"
+										},
+										{
+											"key": "address",
+											"value": "te"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "token",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{url}}/api/customer/whitelist/search?limit=10&page=1&customer_id=021ec907-d578-4a53-a424-e9335c3994d7&address=te",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"customer",
+												"whitelist",
+												"search"
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "10"
+												},
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "customer_id",
+													"value": "021ec907-d578-4a53-a424-e9335c3994d7"
+												},
+												{
+													"key": "address",
+													"value": "te"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "X-Request-Id",
+											"value": "106f88e0-d456-4a4a-82f1-1e589a9948ff"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 27 Feb 2025 06:22:26 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "229"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"total\": 1,\n        \"items\": [\n            {\n                \"id\": 141,\n                \"customer_id\": \"021ec907-d578-4a53-a424-e9335c3994d7\",\n                \"crypto_code\": \"BTC\",\n                \"address\": \"test2\",\n                \"created_at\": \"2025-02-27T05:10:45.69171Z\",\n                \"updated_at\": \"2025-02-27T05:10:45.69171Z\"\n            }\n        ]\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "新增用戶白名單",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"customer_id\": \"021ec907-d578-4a53-a424-e9335c3994d7\",\n    \"crypto_code\": \"BTC\",\n    \"address\": \"test4\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/customer/whitelist",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"customer",
+										"whitelist"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "faild - duplicated",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "token",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"customer_id\": \"021ec907-d578-4a53-a424-e9335c3994d7\",\n    \"crypto_code\": \"BTC\",\n    \"address\": \"test2\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/api/customer/whitelist",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"customer",
+												"whitelist"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "X-Request-Id",
+											"value": "19498e64-676b-409b-b109-ed965d4cf759"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 27 Feb 2025 06:30:00 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "86"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 20000,\n    \"msg\": \"duplicated whitelist\",\n    \"reason\": \"ErrWhitelistDuplicate\",\n    \"data\": {}\n}"
+								},
+								{
+									"name": "success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "token",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"customer_id\": \"021ec907-d578-4a53-a424-e9335c3994d7\",\n    \"crypto_code\": \"BTC\",\n    \"address\": \"test4\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/api/customer/whitelist",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"customer",
+												"whitelist"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "X-Request-Id",
+											"value": "3252dada-6bc1-497b-8ce9-24dfa2576faa"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 27 Feb 2025 06:32:38 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "193"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"id\": 0,\n        \"customer_id\": \"021ec907-d578-4a53-a424-e9335c3994d7\",\n        \"crypto_code\": \"BTC\",\n        \"address\": \"test4\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "刪除用戶白名單",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"id\": 145\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/customer/whitelist",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"customer",
+										"whitelist"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "faild - duplicated",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "token",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"customer_id\": \"021ec907-d578-4a53-a424-e9335c3994d7\",\n    \"crypto_code\": \"BTC\",\n    \"address\": \"test2\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/api/customer/whitelist",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"customer",
+												"whitelist"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "X-Request-Id",
+											"value": "19498e64-676b-409b-b109-ed965d4cf759"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 27 Feb 2025 06:30:00 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "86"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 20000,\n    \"msg\": \"duplicated whitelist\",\n    \"reason\": \"ErrWhitelistDuplicate\",\n    \"data\": {}\n}"
+								},
+								{
+									"name": "success",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "token",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": 145\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/api/customer/whitelist",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"customer",
+												"whitelist"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "X-Request-Id",
+											"value": "3ce770ce-c7a8-4b2e-9458-2bb08ddb4b14"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 27 Feb 2025 06:33:38 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "26"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 20000,\n    \"data\": null\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "用戶清單（包含綁定白名單時間）",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/customer/list?limit=10&page=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"list"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/customer/list?limit=10&page=1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"customer",
+										"list"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "a5d6620b-a5a9-43b2-9159-6daa8374430a"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:13:28 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1694"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"total\": 32,\n        \"items\": [\n            {\n                \"id\": \"021ec907-d578-4a53-a424-e9335c3994d7\",\n                \"phone\": \"+886935351283\",\n                \"created_at\": \"2024-12-18T02:52:56.924363Z\",\n                \"first_white_list_created\": \"2025-02-27T05:10:45.69171Z\"\n            },\n            {\n                \"id\": \"0e7a7a40-a51d-413f-9e4a-c7f985e2fb04\",\n                \"phone\": \"+886958376799\",\n                \"created_at\": \"2025-02-13T07:26:35.335049Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"17a1c2cf-7944-4f0b-899a-e6da2c90fc10\",\n                \"phone\": \"+886976528832\",\n                \"created_at\": \"2024-11-28T08:31:47.537148Z\",\n                \"first_white_list_created\": \"2024-12-09T08:23:33.387932Z\"\n            },\n            {\n                \"id\": \"219a5501-ff00-417b-bee9-47092584daf9\",\n                \"phone\": \"+886976528841\",\n                \"created_at\": \"2024-12-04T16:11:45.580373Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"2cf9ed86-0f59-4817-bc3b-b2acf5ea52aa\",\n                \"phone\": \"+886976528835\",\n                \"created_at\": \"2024-12-04T16:11:22.359973Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"33854adb-e5ab-4bba-8840-b245f0c011ed\",\n                \"phone\": \"+886936145687\",\n                \"created_at\": \"2025-01-13T07:15:00.497853Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"4d22ef5e-accf-4382-a619-de7f6951c89f\",\n                \"phone\": \"+886976528839\",\n                \"created_at\": \"2024-12-04T16:11:37.082697Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"50565d5f-7730-4f5b-bddc-b4132d70d9ff\",\n                \"phone\": \"+886976528830\",\n                \"created_at\": \"2024-12-09T08:09:29.967952Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"63cc9f2f-08e9-4544-b281-d1f16c3cf96f\",\n                \"phone\": \"+886921600291\",\n                \"created_at\": \"2024-12-06T04:16:04.153766Z\",\n                \"first_white_list_created\": \"2024-12-06T04:27:14.906169Z\"\n            },\n            {\n                \"id\": \"68000a12-cc3d-4683-a2ef-46253d2e90d7\",\n                \"phone\": \"+886981554736\",\n                \"created_at\": \"2024-12-24T07:06:36.753154Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "用戶清單搜尋(id/phone)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/customer/search?query=883&limit=10&page=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"search"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "883",
+									"description": "id / phone"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/customer/search?query=883&limit=10&page=1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"customer",
+										"search"
+									],
+									"query": [
+										{
+											"key": "query",
+											"value": "883",
+											"description": "id / phone"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "6dc7639f-3b3c-47dd-843d-33e21a4674bd"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:15:44 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1524"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"total\": 17,\n        \"items\": [\n            {\n                \"id\": \"17a1c2cf-7944-4f0b-899a-e6da2c90fc10\",\n                \"phone\": \"+886976528832\",\n                \"created_at\": \"2024-11-28T08:31:47.537148Z\",\n                \"first_white_list_created\": \"2024-12-09T08:23:33.387932Z\"\n            },\n            {\n                \"id\": \"2cf9ed86-0f59-4817-bc3b-b2acf5ea52aa\",\n                \"phone\": \"+886976528835\",\n                \"created_at\": \"2024-12-04T16:11:22.359973Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"4d22ef5e-accf-4382-a619-de7f6951c89f\",\n                \"phone\": \"+886976528839\",\n                \"created_at\": \"2024-12-04T16:11:37.082697Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"50565d5f-7730-4f5b-bddc-b4132d70d9ff\",\n                \"phone\": \"+886976528830\",\n                \"created_at\": \"2024-12-09T08:09:29.967952Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"72aebafc-1898-459c-8926-2807aad5528a\",\n                \"phone\": \"+886976528837\",\n                \"created_at\": \"2024-12-04T16:11:29.553445Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"8c86148c-b3dd-47d9-88bb-23620a29812c\",\n                \"phone\": \"+886973528832\",\n                \"created_at\": \"2025-02-17T10:19:59.59269Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"a62adb03-87cf-47fe-a57b-2fa9f1b8b40d\",\n                \"phone\": \"+886976528836\",\n                \"created_at\": \"2024-12-04T16:11:25.959721Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"a766f778-1709-449f-a5c7-468070fc3230\",\n                \"phone\": \"+886976528838\",\n                \"created_at\": \"2024-12-04T16:11:33.670981Z\",\n                \"first_white_list_created\": \"0001-01-01T00:00:00Z\"\n            },\n            {\n                \"id\": \"af1838df-d073-4f72-98e9-896b0f8f531b\",\n                \"phone\": \"+886976528831\",\n                \"created_at\": \"2024-11-28T08:34:54.639998Z\",\n                \"first_white_list_created\": \"2024-12-04T16:18:08.940521Z\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "用戶清單搜尋(address)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/customer/search/address/:address",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"search",
+								"address",
+								":address"
+							],
+							"variable": [
+								{
+									"key": "address",
+									"value": "test2"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/customer/search/address/:address",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"customer",
+										"search",
+										"address",
+										":address"
+									],
+									"variable": [
+										{
+											"key": "address",
+											"value": "test2"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "babe20db-6587-4e00-8c69-ce60aedd33a4"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:16:30 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "212"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"total\": 1,\n        \"items\": [\n            {\n                \"id\": \"021ec907-d578-4a53-a424-e9335c3994d7\",\n                \"phone\": \"+886935351283\",\n                \"created_at\": \"2024-12-18T02:52:56.924363Z\",\n                \"first_white_list_created\": \"2025-02-27T05:10:45.69171Z\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "用戶清單搜尋(白名單建立時間)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/customer/search/whitelist_created_at?date_start=2024-12-31T16:00:00.000Z&date_end=2025-02-27T16:00:00.000Z",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"search",
+								"whitelist_created_at"
+							],
+							"query": [
+								{
+									"key": "date_start",
+									"value": "2024-12-31T16:00:00.000Z"
+								},
+								{
+									"key": "date_end",
+									"value": "2025-02-27T16:00:00.000Z"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/customer/search/whitelist_created_at?date_start=2024-12-31T16:00:00.000Z&date_end=2025-02-27T16:00:00.000Z",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"customer",
+										"search",
+										"whitelist_created_at"
+									],
+									"query": [
+										{
+											"key": "date_start",
+											"value": "2024-12-31T16:00:00.000Z"
+										},
+										{
+											"key": "date_end",
+											"value": "2025-02-27T16:00:00.000Z"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "ba863cf5-150d-448d-83f4-54e3239628b2"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:18:22 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "382"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"total\": 5,\n        \"items\": [\n            {\n                \"id\": \"021ec907-d578-4a53-a424-e9335c3994d7\",\n                \"phone\": \"+886935351283\",\n                \"created_at\": \"2024-12-18T02:52:56.924363Z\",\n                \"first_white_list_created\": \"2025-02-27T05:10:45.69171Z\"\n            },\n            {\n                \"id\": \"17a1c2cf-7944-4f0b-899a-e6da2c90fc10\",\n                \"phone\": \"+886976528832\",\n                \"created_at\": \"2024-11-28T08:31:47.537148Z\",\n                \"first_white_list_created\": \"2025-01-03T07:54:36.542516Z\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "取得身分證",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/customer/id_number?customer_id=17a1c2cf-7944-4f0b-899a-e6da2c90fc10",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"id_number"
+							],
+							"query": [
+								{
+									"key": "customer_id",
+									"value": "17a1c2cf-7944-4f0b-899a-e6da2c90fc10"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/customer/id_number?customer_id=17a1c2cf-7944-4f0b-899a-e6da2c90fc10",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"customer",
+										"id_number"
+									],
+									"query": [
+										{
+											"key": "customer_id",
+											"value": "17a1c2cf-7944-4f0b-899a-e6da2c90fc10"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "2cfe2ffc-1d78-4bda-9cff-cfc694dbb45b"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:46:51 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "53"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"id_number\": \"Mock-1TLBD8LBXU\"\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "權限",
+			"item": [
+				{
+					"name": "權限 router 表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/user/role/routes",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"role",
+								"routes"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/user/role/routes",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"role",
+										"routes"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "10b427bc-df9c-4002-9814-964a4a4a6874"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:10:24 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1864"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": \"\\n[\\n   {\\n      \\\"path\\\":\\\"/permission\\\",\\n      \\\"component\\\":\\\"layout/Layout\\\",\\n      \\\"redirect\\\":\\\"/permission/page\\\",\\n      \\\"alwaysShow\\\":true,\\n      \\\"name\\\":\\\"Permission\\\",\\n      \\\"meta\\\":{\\n         \\\"title\\\":\\\"Permission\\\",\\n         \\\"icon\\\":\\\"lock\\\",\\n         \\\"roles\\\":[\\n            \\\"admin\\\"\\n         ]\\n      },\\n      \\\"children\\\":[\\n         {\\n            \\\"path\\\":\\\"role\\\",\\n            \\\"component\\\":\\\"views/permission/role\\\",\\n            \\\"name\\\":\\\"RolePermission\\\",\\n            \\\"meta\\\":{\\n               \\\"title\\\":\\\"Role Permission\\\",\\n               \\\"roles\\\":[\\n                  \\\"admin\\\"\\n               ]\\n            }\\n         }\\n      ]\\n   },\\n   {\\n      \\\"path\\\":\\\"/whitelist\\\",\\n      \\\"component\\\":\\\"layout/Layout\\\",\\n      \\\"meta\\\":{\\n         \\\"roles\\\":[\\n            \\\"admin\\\",\\n            \\\"editor\\\"\\n         ]\\n      },\\n      \\\"children\\\":[\\n         {\\n            \\\"path\\\":\\\"index\\\",\\n            \\\"component\\\":\\\"views/whitelist/index\\\",\\n            \\\"name\\\":\\\"WhiteList\\\",\\n            \\\"meta\\\":{\\n               \\\"title\\\":\\\"WhiteList\\\",\\n               \\\"icon\\\":\\\"education\\\",\\n               \\\"roles\\\":[\\n                  \\\"admin\\\",\\n                  \\\"editor\\\"\\n               ],\\n               \\\"noCache\\\":true\\n            }\\n         },\\n         {\\n            \\\"path\\\":\\\"/whitelist/view\\\",\\n            \\\"component\\\":\\\"views/whitelist/components/view\\\",\\n            \\\"name\\\":\\\"WhiteListView\\\",\\n            \\\"hidden\\\":true,\\n            \\\"meta\\\":{\\n               \\\"title\\\":\\\"WhiteList View\\\",\\n               \\\"roles\\\":[\\n                  \\\"admin\\\",\\n                  \\\"editor\\\"\\n               ],\\n               \\\"noCache\\\":true\\n            }\\n         }\\n      ]\\n   },\\n   {\\n      \\\"path\\\":\\\"*\\\",\\n      \\\"redirect\\\":\\\"/404\\\",\\n      \\\"hidden\\\":true\\n   }\\n]\\n\"\n}"
+						}
+					]
+				},
+				{
+					"name": "所有權限",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/user/role/roles",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"role",
+								"roles"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/user/role/roles",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"role",
+										"roles"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "d15bd5ea-7e6e-4f33-9167-2fc4c107629e"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:11:14 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"role_name\": \"admin\",\n            \"role_desc\": \"admin\",\n            \"role\": 1,\n            \"role_raw\": \"\\n[\\n   {\\n      \\\"path\\\":\\\"/permission\\\",\\n      \\\"component\\\":\\\"layout/Layout\\\",\\n      \\\"redirect\\\":\\\"/permission/page\\\",\\n      \\\"alwaysShow\\\":true,\\n      \\\"name\\\":\\\"Permission\\\",\\n      \\\"meta\\\":{\\n         \\\"title\\\":\\\"Permission\\\",\\n         \\\"icon\\\":\\\"lock\\\",\\n         \\\"roles\\\":[\\n            \\\"admin\\\"\\n         ]\\n      },\\n      \\\"children\\\":[\\n         {\\n            \\\"path\\\":\\\"role\\\",\\n            \\\"component\\\":\\\"views/permission/role\\\",\\n            \\\"name\\\":\\\"RolePermission\\\",\\n            \\\"meta\\\":{\\n               \\\"title\\\":\\\"Role Permission\\\",\\n               \\\"roles\\\":[\\n                  \\\"admin\\\"\\n               ]\\n            }\\n         }\\n      ]\\n   },\\n   {\\n      \\\"path\\\":\\\"/whitelist\\\",\\n      \\\"component\\\":\\\"layout/Layout\\\",\\n      \\\"meta\\\":{\\n         \\\"roles\\\":[\\n            \\\"admin\\\",\\n            \\\"editor\\\"\\n         ]\\n      },\\n      \\\"children\\\":[\\n         {\\n            \\\"path\\\":\\\"index\\\",\\n            \\\"component\\\":\\\"views/whitelist/index\\\",\\n            \\\"name\\\":\\\"WhiteList\\\",\\n            \\\"meta\\\":{\\n               \\\"title\\\":\\\"WhiteList\\\",\\n               \\\"icon\\\":\\\"education\\\",\\n               \\\"roles\\\":[\\n                  \\\"admin\\\",\\n                  \\\"editor\\\"\\n               ],\\n               \\\"noCache\\\":true\\n            }\\n         },\\n         {\\n            \\\"path\\\":\\\"/whitelist/view\\\",\\n            \\\"component\\\":\\\"views/whitelist/components/view\\\",\\n            \\\"name\\\":\\\"WhiteListView\\\",\\n            \\\"hidden\\\":true,\\n            \\\"meta\\\":{\\n               \\\"title\\\":\\\"WhiteList View\\\",\\n               \\\"roles\\\":[\\n                  \\\"admin\\\",\\n                  \\\"editor\\\"\\n               ],\\n               \\\"noCache\\\":true\\n            }\\n         }\\n      ]\\n   },\\n   {\\n      \\\"path\\\":\\\"*\\\",\\n      \\\"redirect\\\":\\\"/404\\\",\\n      \\\"hidden\\\":true\\n   }\\n]\\n\"\n        },\n        {\n            \"id\": 3,\n            \"role_name\": \"editor\",\n            \"role_desc\": \"editor\",\n            \"role\": 2,\n            \"role_raw\": \"\\n[\\n   {\\n      \\\"path\\\":\\\"/permission\\\",\\n      \\\"component\\\":\\\"layout/Layout\\\",\\n      \\\"redirect\\\":\\\"/permission/page\\\",\\n      \\\"alwaysShow\\\":true,\\n      \\\"name\\\":\\\"Permission\\\",\\n      \\\"meta\\\":{\\n         \\\"title\\\":\\\"Permission\\\",\\n         \\\"icon\\\":\\\"lock\\\",\\n         \\\"roles\\\":[\\n            \\\"admin\\\"\\n         ]\\n      },\\n      \\\"children\\\":[\\n         {\\n            \\\"path\\\":\\\"role\\\",\\n            \\\"component\\\":\\\"views/permission/role\\\",\\n            \\\"name\\\":\\\"RolePermission\\\",\\n            \\\"meta\\\":{\\n               \\\"title\\\":\\\"Role Permission\\\",\\n               \\\"roles\\\":[\\n                  \\\"admin\\\"\\n               ]\\n            }\\n         }\\n      ]\\n   },\\n   {\\n      \\\"path\\\":\\\"/whitelist\\\",\\n      \\\"component\\\":\\\"layout/Layout\\\",\\n      \\\"meta\\\":{\\n         \\\"roles\\\":[\\n            \\\"admin\\\",\\n            \\\"editor\\\"\\n         ]\\n      },\\n      \\\"children\\\":[\\n         {\\n            \\\"path\\\":\\\"index\\\",\\n            \\\"component\\\":\\\"views/whitelist/index\\\",\\n            \\\"name\\\":\\\"WhiteList\\\",\\n            \\\"meta\\\":{\\n               \\\"title\\\":\\\"WhiteList\\\",\\n               \\\"icon\\\":\\\"education\\\",\\n               \\\"roles\\\":[\\n                  \\\"admin\\\",\\n                  \\\"editor\\\"\\n               ],\\n               \\\"noCache\\\":true\\n            }\\n         },\\n         {\\n            \\\"path\\\":\\\"/whitelist/view\\\",\\n            \\\"component\\\":\\\"views/whitelist/components/view\\\",\\n            \\\"name\\\":\\\"WhiteListView\\\",\\n            \\\"hidden\\\":true,\\n            \\\"meta\\\":{\\n               \\\"title\\\":\\\"WhiteList View\\\",\\n               \\\"roles\\\":[\\n                  \\\"admin\\\",\\n                  \\\"editor\\\"\\n               ],\\n               \\\"noCache\\\":true\\n            }\\n         }\\n      ]\\n   },\\n   {\\n      \\\"path\\\":\\\"*\\\",\\n      \\\"redirect\\\":\\\"/404\\\",\\n      \\\"hidden\\\":true\\n   }\\n]\\n\"\n        }\n    ]\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "交易",
+			"item": [
+				{
+					"name": "用戶交易清單",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/tx/list?page=1&limit=10&customer_id=da2c90fc10&date_start=2024-12-31T16:00:00.000Z&date_end=2025-02-27T16:00:00.000Z",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"tx",
+								"list"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "customer_id",
+									"value": "da2c90fc10"
+								},
+								{
+									"key": "date_start",
+									"value": "2024-12-31T16:00:00.000Z"
+								},
+								{
+									"key": "date_end",
+									"value": "2025-02-27T16:00:00.000Z"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/tx/list?page=1&limit=10&customer_id=da2c90fc10&date_start=2024-12-31T16:00:00.000Z&date_end=2025-02-27T16:00:00.000Z",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"tx",
+										"list"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "customer_id",
+											"value": "da2c90fc10"
+										},
+										{
+											"key": "date_start",
+											"value": "2024-12-31T16:00:00.000Z"
+										},
+										{
+											"key": "date_end",
+											"value": "2025-02-27T16:00:00.000Z"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "b13ea83a-07f8-4608-a407-025795a14684"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:51:19 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"total\": 2,\n        \"items\": [\n            {\n                \"id\": \"40bbdb60-c078-4568-a009-3069107a87c9\",\n                \"deviceId\": \"7b071697e80da2d5e905e74ed3e5dbd10cfd0330817f7e0e0354afa6ab587c5a\",\n                \"toAddress\": \"14UsyZ9hMih5EJfrm2DegUTRaNNR1pZbDh\",\n                \"cryptoAtoms\": \"2800\",\n                \"cryptoCode\": \"BTC\",\n                \"fiat\": \"100\",\n                \"fiatCode\": \"TWD\",\n                \"fee\": 864,\n                \"txHash\": \"1859ad6b94b63358b4ce89eadd761a30271ca8e82af202fb8999bb393afc7d2d\",\n                \"phone\": \"+886976528832\",\n                \"error\": \"\",\n                \"created\": \"2025-02-26T08:39:00.910999Z\",\n                \"send\": true,\n                \"sendConfirmed\": true,\n                \"timedOut\": false,\n                \"sendTime\": \"2025-02-26T08:39:43.526777Z\",\n                \"errorCode\": \"\",\n                \"operatorCompleted\": false,\n                \"sendPending\": false,\n                \"cashInFee\": \"10\",\n                \"minimumTx\": 100,\n                \"customerId\": \"17a1c2cf-7944-4f0b-899a-e6da2c90fc10\",\n                \"txVersion\": 9,\n                \"termsAccepted\": false,\n                \"commissionPercentage\": \"0.1\",\n                \"rawTickerPrice\": \"2898579.92612\",\n                \"isPaperWallet\": false,\n                \"discount\": 0,\n                \"batchId\": \"00000000-0000-0000-0000-000000000000\",\n                \"batched\": false,\n                \"batchTime\": \"0001-01-01T00:00:00Z\",\n                \"discountSource\": \"\",\n                \"txCustomerPhotoAt\": \"0001-01-01T00:00:00Z\",\n                \"txCustomerPhotoPath\": \"\",\n                \"walletScore\": 0,\n                \"email\": \"\"\n            },\n            {\n                \"id\": \"e484e024-5738-4905-9c02-ec99a3bebe8d\",\n                \"deviceId\": \"7b071697e80da2d5e905e74ed3e5dbd10cfd0330817f7e0e0354afa6ab587c5a\",\n                \"toAddress\": \"bc1quhruqrghgcca950rvhtrg7cpd7u8k6svpzgzmrjy8xyukacl5lkq0r8l2d\",\n                \"cryptoAtoms\": \"2600\",\n                \"cryptoCode\": \"BTC\",\n                \"fiat\": \"100\",\n                \"fiatCode\": \"TWD\",\n                \"fee\": 765,\n                \"txHash\": \"a3d48460431a157c95b79d7e38ebd0b4395c85218d5e1fec2a19c7baa0438af3\",\n                \"phone\": \"+886976528832\",\n                \"error\": \"\",\n                \"created\": \"2025-01-08T10:45:44.218242Z\",\n                \"send\": true,\n                \"sendConfirmed\": true,\n                \"timedOut\": false,\n                \"sendTime\": \"2025-01-08T10:46:02.891766Z\",\n                \"errorCode\": \"\",\n                \"operatorCompleted\": false,\n                \"sendPending\": false,\n                \"cashInFee\": \"10\",\n                \"minimumTx\": 100,\n                \"customerId\": \"17a1c2cf-7944-4f0b-899a-e6da2c90fc10\",\n                \"txVersion\": 9,\n                \"termsAccepted\": false,\n                \"commissionPercentage\": \"0.1\",\n                \"rawTickerPrice\": \"3148453.63537\",\n                \"isPaperWallet\": false,\n                \"discount\": 0,\n                \"batchId\": \"00000000-0000-0000-0000-000000000000\",\n                \"batched\": false,\n                \"batchTime\": \"0001-01-01T00:00:00Z\",\n                \"discountSource\": \"\",\n                \"txCustomerPhotoAt\": \"0001-01-01T00:00:00Z\",\n                \"txCustomerPhotoPath\": \"\",\n                \"walletScore\": 0,\n                \"email\": \"\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "other",
+			"item": [
+				{
+					"name": "BTM 支援幣種",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/config",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"config"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/config",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"config"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "af27f291-4d6e-4d93-a929-b0bd6d77286f"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 27 Feb 2025 06:52:27 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1869"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 20000,\n    \"data\": {\n        \"config\": {\n            \"triggersConfig_expirationTime\": \"Forever\",\n            \"triggersConfig_automation\": \"Automatic\",\n            \"locale_timezone\": \"Asia/Taipei\",\n            \"cashIn_cashboxReset\": \"automatic\",\n            \"notifications_email_security\": true,\n            \"notifications_sms_security\": true,\n            \"notifications_notificationCenter_security\": true,\n            \"wallets_advanced_feeMultiplier\": \"1\",\n            \"wallets_advanced_cryptoUnits\": \"full\",\n            \"wallets_advanced_allowTransactionBatching\": false,\n            \"wallets_advanced_id\": \"858ae513-0041-4520-ad40-b5e5ec51f0e4\",\n            \"triggersConfig_customerAuthentication\": \"SMS\",\n            \"wallets_BTC_zeroConfLimit\": 0,\n            \"wallets_BTC_coin\": \"BTC\",\n            \"wallets_BTC_wallet\": \"bitcoind\",\n            \"wallets_BTC_ticker\": \"kraken\",\n            \"wallets_BTC_exchange\": \"no-exchange\",\n            \"wallets_BTC_zeroConf\": \"none\",\n            \"locale_id\": \"ba5dfc47-8baf-4f1f-bd08-ce3e40c56c00\",\n            \"locale_country\": \"TW\",\n            \"locale_fiatCurrency\": \"TWD\",\n            \"locale_languages\": [\n                \"zh-TW\"\n            ],\n            \"locale_cryptoCurrencies\": [\n                \"BTC\"\n            ],\n            \"commissions_minimumTx\": 100,\n            \"commissions_fixedFee\": 10,\n            \"commissions_cashOut\": 10,\n            \"commissions_cashIn\": 10,\n            \"commissions_id\": \"33ddbd0f-dfba-49f1-bcfe-250c4af7f972\",\n            \"wallets_ETH_active\": true,\n            \"wallets_ETH_ticker\": \"kraken\",\n            \"wallets_ETH_wallet\": \"infura\",\n            \"wallets_ETH_exchange\": \"no-exchange\",\n            \"wallets_ETH_zeroConf\": \"none\",\n            \"triggers\": [\n                {\n                    \"requirement\": \"custom\",\n                    \"suspensionDays\": null,\n                    \"threshold\": 50,\n                    \"thresholdDays\": null,\n                    \"customInfoRequestId\": \"5e36db2a-178c-446e-ab16-7f4a78ec5f38\",\n                    \"externalService\": \"\",\n                    \"id\": \"b10e8723-c235-4a3a-8e3b-8c678c878f4f\",\n                    \"direction\": \"both\",\n                    \"triggerType\": \"txAmount\"\n                },\n                {\n                    \"requirement\": \"external\",\n                    \"suspensionDays\": null,\n                    \"threshold\": 50,\n                    \"thresholdDays\": null,\n                    \"customInfoRequestId\": \"\",\n                    \"externalService\": \"sumsub\",\n                    \"id\": \"54f1b680-5c5a-499a-a9cd-61ea067c0180\",\n                    \"direction\": \"both\",\n                    \"triggerType\": \"txAmount\"\n                }\n            ],\n            \"wallets_USDT_TRON_active\": true,\n            \"wallets_USDT_TRON_ticker\": \"kraken\",\n            \"wallets_USDT_TRON_wallet\": \"trongrid\",\n            \"wallets_USDT_TRON_exchange\": \"no-exchange\",\n            \"wallets_USDT_TRON_zeroConf\": \"none\"\n        }\n    }\n}"
+						}
+					]
+				}
+			]
+		}
+	]
+}

@@ -57,19 +57,19 @@ func (repo *repository) GetWhiteListByCustomerId(db *gorm.DB, customerID uuid.UU
 	return whitelists, total, nil
 }
 
-func (repo *repository) CheckExistWhitelist(db *gorm.DB, customerID uuid.UUID, cryptoCode string, address string, isUnscoped bool) (bool, error) {
+func (repo *repository) CheckExistWhitelist(db *gorm.DB, customerID uuid.UUID, cryptoCode string, address string, isUnscoped bool) (bool, bool, error) {
 	if db == nil {
-		return false, errors.InternalServer(error_code.ErrDBError, "db is nil")
+		return false, false, errors.InternalServer(error_code.ErrDBError, "db is nil")
 	}
 
-	var modelWhitelist model.BTMWhitelist
+	var fetched model.BTMWhitelist
 	sql := db.Where("customer_id = ? AND crypto_code = ? AND address = ?", customerID, cryptoCode, address)
 
 	var err error
 	if isUnscoped {
-		err = sql.Unscoped().First(&modelWhitelist).Error
+		err = sql.Unscoped().First(&fetched).Error
 	} else {
-		err = sql.First(&modelWhitelist).Error
+		err = sql.First(&fetched).Error
 	}
 
 	exist := !errors.Is(err, gorm.ErrRecordNotFound)
@@ -77,7 +77,7 @@ func (repo *repository) CheckExistWhitelist(db *gorm.DB, customerID uuid.UUID, c
 		err = nil
 	}
 
-	return exist, err
+	return exist, fetched.DeletedAt.Valid, err
 }
 
 func (repo *repository) UpdateWhitelist(db *gorm.DB, whitelist *domain.BTMWhitelist) error {

@@ -24,6 +24,7 @@ func ErrHandler(c *gin.Context) {
 		_ = log.Sync()
 	}()
 
+	c.Header("Content-Type", "application/json")
 	defer func() {
 		if err := recover(); err != nil {
 			log.Error("gin ErrHandler panic recover:", zap.Error(err.(*errors.Error)))

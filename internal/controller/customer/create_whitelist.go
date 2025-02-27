@@ -8,7 +8,6 @@ import (
 	"BTM-backend/pkg/logger"
 	"BTM-backend/pkg/tools"
 	"encoding/json"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
@@ -73,15 +72,14 @@ func CreateWhitelist(c *gin.Context) {
 	defer repo.TransactionCommit(tx)
 
 	// check whitelist is exist
-	isExist, err := repo.CheckExistWhitelist(tx, req.CustomerID, req.CryptoCode, req.Address, true)
+	isExist, isSoftDelete, err := repo.CheckExistWhitelist(tx, req.CustomerID, req.CryptoCode, req.Address, true)
 	if err != nil {
 		log.Error("repo.CheckExistWhitelist()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.CheckExistWhitelist()", errors.InternalServer(error_code.ErrDiError, "repo.CheckExistWhitelist()").WithCause(err))
 		return
 	}
-	fmt.Println("isExist", isExist)
 
-	if isExist {
+	if isExist && isSoftDelete {
 		// update soft delete
 		err = repo.UpdateWhitelistSoftDelete(tx, whitelist)
 		if err != nil {

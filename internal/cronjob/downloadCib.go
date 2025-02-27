@@ -7,7 +7,6 @@ import (
 	"BTM-backend/pkg/tools"
 	"BTM-backend/third_party/cib"
 	"context"
-	"fmt"
 	"os"
 
 	"go.uber.org/zap"
@@ -36,7 +35,6 @@ func DownlaodCIBAndUpsert() (err error) {
 		return
 	}
 
-	fmt.Println("token", token)
 	zipFile := "cib.zip"
 	err = cib.GetWarningZip(token, zipFile)
 	if err != nil {
