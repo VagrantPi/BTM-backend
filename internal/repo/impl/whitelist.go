@@ -4,6 +4,7 @@ import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
 	"BTM-backend/pkg/error_code"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/google/uuid"
@@ -17,6 +18,18 @@ func (repo *repository) CreateWhitelist(db *gorm.DB, whitelist *domain.BTMWhitel
 
 	modelWhitelist := WhitelistDomainToModel(*whitelist)
 	return db.Create(&modelWhitelist).Error
+}
+
+func (repo *repository) UpdateWhitelistSoftDelete(db *gorm.DB, whitelist *domain.BTMWhitelist) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	modelWhitelist := WhitelistDomainToModel(*whitelist)
+	return db.Model(&model.BTMWhitelist{}).
+		Where("customer_id = ? AND crypto_code = ? AND address =?", modelWhitelist.CustomerID, modelWhitelist.CryptoCode, modelWhitelist.Address).
+		Unscoped().
+		Updates(map[string]interface{}{"deleted_at": nil, "created_at": time.Now()}).Error
 }
 
 func (repo *repository) GetWhiteListByCustomerId(db *gorm.DB, customerID uuid.UUID, limit int, page int) ([]domain.BTMWhitelist, int64, error) {
@@ -42,6 +55,29 @@ func (repo *repository) GetWhiteListByCustomerId(db *gorm.DB, customerID uuid.UU
 		whitelists[i] = WhitelistModelToDomain(modelWhitelist)
 	}
 	return whitelists, total, nil
+}
+
+func (repo *repository) CheckExistWhitelist(db *gorm.DB, customerID uuid.UUID, cryptoCode string, address string, isUnscoped bool) (bool, error) {
+	if db == nil {
+		return false, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	var modelWhitelist model.BTMWhitelist
+	sql := db.Where("customer_id = ? AND crypto_code = ? AND address = ?", customerID, cryptoCode, address)
+
+	var err error
+	if isUnscoped {
+		err = sql.Unscoped().First(&modelWhitelist).Error
+	} else {
+		err = sql.First(&modelWhitelist).Error
+	}
+
+	exist := !errors.Is(err, gorm.ErrRecordNotFound)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = nil
+	}
+
+	return exist, err
 }
 
 func (repo *repository) UpdateWhitelist(db *gorm.DB, whitelist *domain.BTMWhitelist) error {

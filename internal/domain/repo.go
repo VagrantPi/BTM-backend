@@ -26,8 +26,10 @@ type Repository interface {
 
 	// BTMWhitelist
 	CreateWhitelist(db *gorm.DB, whitelist *BTMWhitelist) error
+	UpdateWhitelistSoftDelete(db *gorm.DB, whitelist *BTMWhitelist) error
 	GetWhiteListById(db *gorm.DB, id int64) (data BTMWhitelist, err error)
 	GetWhiteListByCustomerId(db *gorm.DB, customerID uuid.UUID, limit int, page int) (list []BTMWhitelist, total int64, err error)
+	CheckExistWhitelist(db *gorm.DB, customerID uuid.UUID, cryptoCode string, address string, isUnscoped bool) (bool, error)
 	UpdateWhitelist(db *gorm.DB, whitelist *BTMWhitelist) error
 	DeleteWhitelist(db *gorm.DB, id int64) error
 	SearchWhitelistByAddress(db *gorm.DB, customerID uuid.UUID, address string, limit int, page int) (list []BTMWhitelist, total int64, err error)
