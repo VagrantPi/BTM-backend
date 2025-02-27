@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -25,7 +26,10 @@ type Repository interface {
 
 	// BTMWhitelist
 	CreateWhitelist(db *gorm.DB, whitelist *BTMWhitelist) error
+	UpdateWhitelistSoftDelete(db *gorm.DB, whitelist *BTMWhitelist) error
+	GetWhiteListById(db *gorm.DB, id int64) (data BTMWhitelist, err error)
 	GetWhiteListByCustomerId(db *gorm.DB, customerID uuid.UUID, limit int, page int) (list []BTMWhitelist, total int64, err error)
+	CheckExistWhitelist(db *gorm.DB, customerID uuid.UUID, cryptoCode string, address string, isUnscoped bool) (bool, error)
 	UpdateWhitelist(db *gorm.DB, whitelist *BTMWhitelist) error
 	DeleteWhitelist(db *gorm.DB, id int64) error
 	SearchWhitelistByAddress(db *gorm.DB, customerID uuid.UUID, address string, limit int, page int) (list []BTMWhitelist, total int64, err error)
@@ -47,6 +51,10 @@ type Repository interface {
 	CreateBTMSumsub(db *gorm.DB, btmsumsub BTMSumsub) error
 	GetBTMSumsub(db *gorm.DB, customerId string) (*BTMSumsub, error)
 
+	// BTMChangeLog
+	CreateBTMChangeLog(db *gorm.DB, c BTMChangeLog) error
+	GetBTMChangeLogs(db *gorm.DB, limit int, page int) (list []BTMChangeLog, total int64, err error)
+
 	/**
 	 * lamassu original
 	 **/
@@ -55,8 +63,14 @@ type Repository interface {
 	GetCustomers(db *gorm.DB, limit int, page int) ([]Customer, int, error)
 	GetCustomerById(db *gorm.DB, id uuid.UUID) (*Customer, error)
 	SearchCustomersByPhone(db *gorm.DB, phone string, limit int, page int) ([]Customer, int, error)
-	GetSumsubExternalId(db *gorm.DB, customerId string) (string, error)
+	SearchCustomersByCustomerId(db *gorm.DB, customerId string, limit int, page int) ([]Customer, int, error)
+	SearchCustomersByAddress(db *gorm.DB, address string, limit int, page int) ([]Customer, int, error)
+	SearchCustomersByWhitelistCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]Customer, int, error)
+	SearchCustomersByTxCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]Customer, int, error)
 
 	// userConfig
 	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)
+
+	// cashInTx
+	GetCashInTxByCustomerID(db *gorm.DB, customerID string, limit int, page int) ([]CashInTx, int, error)
 }

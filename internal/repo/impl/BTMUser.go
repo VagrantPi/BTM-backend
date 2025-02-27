@@ -3,12 +3,18 @@ package impl
 import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
+	"BTM-backend/pkg/error_code"
 
+	"github.com/go-kratos/kratos/v2/errors"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 func (repo *repository) GetBTMUserByAccount(db *gorm.DB, account string) (*domain.BTMUser, error) {
+	if db == nil {
+		return nil, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
 	info := model.BTMUser{}
 	if err := db.Model(&model.BTMUser{}).Where("account = ?", account).Find(&info).Error; err != nil {
 		return nil, err
@@ -18,6 +24,10 @@ func (repo *repository) GetBTMUserByAccount(db *gorm.DB, account string) (*domai
 }
 
 func (repo *repository) InitAdmin(db *gorm.DB) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
 	user := domain.BTMUser{
 		Account:  "admin",
 		Password: "$2a$12$qzSY/1.YLuZ1FnYv4q8rlehgBA6nX/CQ9MDDwjoQeJJvDoUzkfVVO",

@@ -3,6 +3,8 @@ package controller
 import (
 	"BTM-backend/internal/controller/config"
 	"BTM-backend/internal/controller/customer"
+	"BTM-backend/internal/controller/debug"
+	"BTM-backend/internal/controller/tx"
 	"BTM-backend/internal/controller/user"
 	"BTM-backend/internal/middleware"
 
@@ -24,6 +26,9 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/customer", middleware.Auth())
 	group.GET("/list", customer.GetCustomersList)
 	group.GET("/search", customer.SearchCustomers)
+	group.GET("/search/whitelist_created_at", customer.SearchCustomersByWhitelistCreatedAt)
+	group.GET("/search/tx_created_at", customer.SearchCustomersByTxCreatedAt)
+	group.GET("/search/address/:address", customer.SearchCustomersByAddress)
 	group.GET("/whitelist", customer.GetWhitelist)
 	group.GET("/whitelist/search", customer.SearchWhitelist)
 	group.POST("/whitelist", customer.CreateWhitelist)
@@ -37,4 +42,15 @@ func CustomerInternalRouter(apiGroup *gin.RouterGroup) {
 
 func UserConfigRouter(apiGroup *gin.RouterGroup) {
 	apiGroup.GET("/config", middleware.Auth(), config.GetConfig)
+}
+
+func TxRouter(apiGroup *gin.RouterGroup) {
+	group := apiGroup.Group("/tx", middleware.Auth())
+	group.GET("/:customer_id/list", tx.GetTxsList)
+}
+
+// TODO: 未來增加安全性 middleware
+func DebugRouter(apiGroup *gin.RouterGroup) {
+	group := apiGroup.Group("/debug", middleware.Auth())
+	group.GET("/logs", debug.GetBTMChangeLogs)
 }

@@ -13,6 +13,6 @@ func GeneratePasswordHash(password string) (string, error) {
 
 // CheckPassword 這裡慢是正常的，https://stackoverflow.com/a/49437553
 func CheckPassword(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(hash))
 	return err == nil
 }

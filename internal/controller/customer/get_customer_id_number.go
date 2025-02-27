@@ -33,6 +33,7 @@ func GetCustomerIdNumber(c *gin.Context) {
 	}()
 	c.Set("log", log)
 
+	// externalUserId(customers.id)
 	customerIDStr := c.Query("customer_id")
 	customerID, err := uuid.Parse(customerIDStr)
 	if err != nil {
@@ -59,16 +60,8 @@ func GetCustomerIdNumber(c *gin.Context) {
 		fetchSumsubLock.Lock()
 		defer fetchSumsubLock.Unlock()
 
-		// get externalUserId
-		externalUserId, err := repo.GetSumsubExternalId(repo.GetDb(c), customerID.String())
-		if err != nil {
-			log.Error("repo.GetSumsubExternalId", zap.Any("err", err))
-			api.ErrResponse(c, "repo.GetSumsubExternalId", errors.InternalServer(error_code.ErrBTMSumsubGetItem, "repo.GetSumsubExternalId").WithCause(err))
-			return
-		}
-
 		// fetch sumsub
-		data, err := sumsub.GetApplicantInfo(externalUserId)
+		data, err := sumsub.GetApplicantInfo(customerID.String())
 		if err != nil {
 			log.Error("sumsub.GetApplicantInfo", zap.Any("err", err))
 			api.ErrResponse(c, "sumsub.GetApplicantInfo", errors.InternalServer(error_code.ErrBTMSumsubGetItem, "sumsub.GetApplicantInfo").WithCause(err))

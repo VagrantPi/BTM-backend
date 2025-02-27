@@ -32,6 +32,7 @@ func OKResponse(c *gin.Context, msg string, data map[string]string) {
 }
 
 func ErrResponse(c *gin.Context, logInfo string, err error) {
+	c.Set("custom_error", err)
 	errUnwrap := errors.FromError(err)
 	log.Errorf("%v, err: %v", logInfo, err)
 	c.JSON(int(errUnwrap.Code), ResponseOK{

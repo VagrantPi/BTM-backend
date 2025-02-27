@@ -37,9 +37,8 @@ func ErrHandler(c *gin.Context) {
 		}
 	}()
 
-	c.Next()
-
-	if c.Errors == nil || c.Errors.Last() == nil {
+	_, hasCustomError := c.Get("custom_error")
+	if (c.Errors == nil || c.Errors.Last() == nil) && !hasCustomError {
 		return
 	}
 

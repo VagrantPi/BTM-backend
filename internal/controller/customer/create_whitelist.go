@@ -6,6 +6,9 @@ import (
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
+	"BTM-backend/pkg/tools"
+	"encoding/json"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
@@ -61,17 +64,73 @@ func CreateWhitelist(c *gin.Context) {
 		Address:    req.Address,
 	}
 
-	err = repo.CreateWhitelist(repo.GetDb(c), whitelist)
+	tx, err := repo.NewTransactionBegin(c)
 	if err != nil {
-		log.Error("repo.CreateWhitelist(whitelist)", zap.Any("err", err))
-		var postgresErr *pgconn.PgError
-		if errors.As(err, &postgresErr) && postgresErr.Code == "23505" {
-			api.ErrResponse(c, "repo.CreateWhitelist(whitelist)", errors.BadRequest(error_code.ErrWhitelistDuplicate, "duplicated whitelist").WithCause(err))
+		log.Error("repo.NewTransactionBegin()", zap.Any("err", err))
+		api.ErrResponse(c, "repo.NewTransactionBegin()", errors.InternalServer(error_code.ErrDiError, "repo.NewTransactionBegin()").WithCause(err))
+		return
+	}
+	defer repo.TransactionCommit(tx)
+
+	// check whitelist is exist
+	isExist, err := repo.CheckExistWhitelist(tx, req.CustomerID, req.CryptoCode, req.Address, true)
+	if err != nil {
+		log.Error("repo.CheckExistWhitelist()", zap.Any("err", err))
+		api.ErrResponse(c, "repo.CheckExistWhitelist()", errors.InternalServer(error_code.ErrDiError, "repo.CheckExistWhitelist()").WithCause(err))
+		return
+	}
+	fmt.Println("isExist", isExist)
+
+	if isExist {
+		// update soft delete
+		err = repo.UpdateWhitelistSoftDelete(tx, whitelist)
+		if err != nil {
+			log.Error("repo.UpdateWhitelistSoftDelete(whitelist)", zap.Any("err", err))
+			api.ErrResponse(c, "repo.UpdateWhitelistSoftDelete(whitelist)", errors.InternalServer(error_code.ErrDiError, "repo.UpdateWhitelistSoftDelete(whitelist)").WithCause(err))
 			return
 		}
+	} else {
+		// create whitelist
+		err = repo.CreateWhitelist(tx, whitelist)
+		if err != nil {
+			log.Error("repo.CreateWhitelist(whitelist)", zap.Any("err", err))
+			var postgresErr *pgconn.PgError
+			if errors.As(err, &postgresErr) && postgresErr.Code == "23505" {
+				api.ErrResponse(c, "repo.CreateWhitelist(whitelist)", errors.BadRequest(error_code.ErrWhitelistDuplicate, "duplicated whitelist").WithCause(err))
+				return
+			}
 
+			log.Error("repo.CreateWhitelist(whitelist)", zap.Any("err", err))
+			api.ErrResponse(c, "repo.CreateWhitelist(whitelist)", errors.InternalServer(error_code.ErrDBError, "repo.CreateWhitelist(whitelist)").WithCause(err))
+			return
+		}
+	}
+
+	// add change log
+	operationUserInfo, err := tools.FetchTokenInfo(c)
+	if err != nil {
 		log.Error("repo.CreateWhitelist(whitelist)", zap.Any("err", err))
 		api.ErrResponse(c, "repo.CreateWhitelist(whitelist)", errors.InternalServer(error_code.ErrDBError, "repo.CreateWhitelist(whitelist)").WithCause(err))
+		return
+	}
+
+	createJsonData, err := json.Marshal(whitelist)
+	if err != nil {
+		log.Error("json.Marshal(whitelist)", zap.Any("err", err))
+		api.ErrResponse(c, "json.Marshal(whitelist)", errors.InternalServer(error_code.ErrDBError, "json.Marshal(whitelist)").WithCause(err))
+		return
+	}
+
+	err = repo.CreateBTMChangeLog(tx, domain.BTMChangeLog{
+		OperationUserId: operationUserInfo.Id,
+		TableName:       domain.BTMChangeLogTableNameBTMWhitelist,
+		OperationType:   domain.BTMChangeLogOperationTypeCreate,
+		BeforeValue:     nil,
+		AfterValue:      createJsonData,
+	})
+	if err != nil {
+		log.Error("CreateBTMChangeLog err", zap.Any("err", err))
+		api.ErrResponse(c, "CreateBTMChangeLog", errors.InternalServer(error_code.ErrDBError, "CreateBTMChangeLog").WithCause(err))
 		return
 	}
 

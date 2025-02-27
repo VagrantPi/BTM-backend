@@ -1,4 +1,4 @@
-package customer
+package tx
 
 import (
 	"BTM-backend/internal/di"
@@ -12,25 +12,33 @@ import (
 	"go.uber.org/zap"
 )
 
-type GetCustomersListReq struct {
-	Limit int `form:"limit"`
-	Page  int `form:"page"`
+type GetTxsListReq struct {
+	CustomerId string `uri:"customer_id" binding:"required"`
+	Limit      int    `form:"limit"`
+	Page       int    `form:"page"`
 }
 
-type GetCustomersListRepItem struct {
+type GetTxsListRepItem struct {
 	Total int               `json:"total"`
-	Items []domain.Customer `json:"items"`
+	Items []domain.CashInTx `json:"items"`
 }
 
-func GetCustomersList(c *gin.Context) {
-	log := logger.Zap().WithClassFunction("api", "GetCustomersList")
+func GetTxsList(c *gin.Context) {
+	log := logger.Zap().WithClassFunction("api", "GetTxsList")
 	defer func() {
 		_ = log.Sync()
 	}()
 	c.Set("log", log)
 
-	req := GetCustomersListReq{}
-	err := c.BindQuery(&req)
+	req := GetTxsListReq{}
+	err := c.ShouldBindUri(&req)
+	if err != nil {
+		log.Error("c.ShouldBindUri(req)", zap.Any("err", err))
+		api.ErrResponse(c, "c.ShouldBindUri(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.ShouldBindUri(&req)").WithCause(err))
+		return
+	}
+
+	err = c.BindQuery(&req)
 	if err != nil {
 		log.Error("c.BindQuery(req)", zap.Any("err", err))
 		api.ErrResponse(c, "c.BindQuery(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.BindQuery(&req)").WithCause(err))
@@ -44,7 +52,7 @@ func GetCustomersList(c *gin.Context) {
 		return
 	}
 
-	customers, total, err := repo.GetCustomers(repo.GetDb(c), req.Limit, req.Page)
+	txs, total, err := repo.GetCashInTxByCustomerID(repo.GetDb(c), req.CustomerId, req.Limit, req.Page)
 	if err != nil {
 		log.Error("repo.GetCustomers()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.GetCustomers()", errors.NotFound(error_code.ErrDBError, "repo.GetCustomers()").WithCause(err))
@@ -53,9 +61,9 @@ func GetCustomersList(c *gin.Context) {
 
 	c.JSON(200, api.DefaultRep{
 		Code: 20000,
-		Data: GetCustomersListRepItem{
+		Data: GetTxsListRepItem{
 			Total: total,
-			Items: customers,
+			Items: txs,
 		},
 	})
 	c.Done()

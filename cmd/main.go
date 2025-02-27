@@ -44,8 +44,6 @@ func setupGin() http.Handler {
 
 	r := gin.New()
 
-	// 以下為一個請求流
-
 	r.Use(middleware.CORS)
 	r.Use(middleware.RequestId)
 	r.Use(middleware.ErrHandler)
@@ -62,6 +60,8 @@ func setupGin() http.Handler {
 	controller.CustomerRouter(apiGroup)
 	controller.CustomerInternalRouter(apiGroup)
 	controller.UserConfigRouter(apiGroup)
+	controller.TxRouter(apiGroup)
+	controller.DebugRouter(apiGroup)
 
 	return r
 }

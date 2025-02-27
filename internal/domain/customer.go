@@ -1,8 +1,13 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Customer struct {
-	ID    uuid.UUID
-	Phone string
+	ID      uuid.UUID
+	Phone   string
+	Created time.Time
 }

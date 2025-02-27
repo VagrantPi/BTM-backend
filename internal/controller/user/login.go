@@ -15,8 +15,8 @@ import (
 )
 
 type LoginBTMAdminReq struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type LoginBTMAdminRespItem struct {
@@ -57,7 +57,7 @@ func LoginBTMAdmin(c *gin.Context) {
 		return
 	}
 
-	if tools.CheckPassword(user.Password, req.Password) {
+	if !tools.CheckPassword(user.Password, req.Password) {
 		log.Error("password not match")
 		api.ErrResponse(c, "password not match", errors.Forbidden(error_code.ErrForbidden, "login failed"))
 		return
