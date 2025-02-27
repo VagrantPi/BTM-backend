@@ -6,6 +6,7 @@ import (
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
@@ -13,9 +14,11 @@ import (
 )
 
 type GetTxsListReq struct {
-	CustomerId string `uri:"customer_id" binding:"required"`
-	Limit      int    `form:"limit"`
-	Page       int    `form:"page"`
+	CustomerId string    `form:"customer_id"`
+	DateStart  time.Time `form:"date_start"`
+	DateEnd    time.Time `form:"date_end"`
+	Limit      int       `form:"limit"`
+	Page       int       `form:"page"`
 }
 
 type GetTxsListRepItem struct {
@@ -52,7 +55,7 @@ func GetTxsList(c *gin.Context) {
 		return
 	}
 
-	txs, total, err := repo.GetCashInTxByCustomerID(repo.GetDb(c), req.CustomerId, req.Limit, req.Page)
+	txs, total, err := repo.GetCashIns(repo.GetDb(c), req.CustomerId, req.DateStart, req.DateEnd, req.Limit, req.Page)
 	if err != nil {
 		log.Error("repo.GetCustomers()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.GetCustomers()", errors.NotFound(error_code.ErrDBError, "repo.GetCustomers()").WithCause(err))

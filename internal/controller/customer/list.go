@@ -17,9 +17,9 @@ type GetCustomersListReq struct {
 	Page  int `form:"page"`
 }
 
-type GetCustomersListRepItem struct {
-	Total int               `json:"total"`
-	Items []domain.Customer `json:"items"`
+type GetCustomersListRep struct {
+	Total int                                   `json:"total"`
+	Items []domain.CustomerWithWhiteListCreated `json:"items"`
 }
 
 func GetCustomersList(c *gin.Context) {
@@ -53,7 +53,7 @@ func GetCustomersList(c *gin.Context) {
 
 	c.JSON(200, api.DefaultRep{
 		Code: 20000,
-		Data: GetCustomersListRepItem{
+		Data: GetCustomersListRep{
 			Total: total,
 			Items: customers,
 		},

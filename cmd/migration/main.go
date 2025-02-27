@@ -43,7 +43,32 @@ func main() {
 	if err := db.Exec("DROP INDEX IF EXISTS idx_btm_whitelist_address;").Error; err != nil {
 		panic(err)
 	}
-	if err := db.Exec("CREATE UNIQUE INDEX unique_address_idx ON btm_whitelists (address) WHERE deleted_at IS NULL;").Error; err != nil {
+	if err := db.Exec(`
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE tablename = 'btm_whitelists' AND indexname = 'unique_address_idx'
+    ) THEN
+        CREATE UNIQUE INDEX unique_address_idx ON btm_whitelists (address) WHERE deleted_at IS NULL;
+    END IF;
+END $$;
+`).Error; err != nil {
+		panic(err)
+	}
+
+	// 2025_02_27_新增 idx 到 cash_in_txs
+	if err := db.Exec(`
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes 
+        WHERE tablename = 'cash_in_txs' 
+        AND indexname = 'idx_cash_in_txs_fiat_nonzero'
+    ) THEN
+        CREATE INDEX idx_cash_in_txs_fiat_nonzero ON cash_in_txs (fiat) WHERE fiat != 0;
+    END IF;
+END $$;
+`).Error; err != nil {
 		panic(err)
 	}
 }

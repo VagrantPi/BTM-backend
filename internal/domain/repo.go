@@ -60,17 +60,16 @@ type Repository interface {
 	 **/
 
 	// customers
-	GetCustomers(db *gorm.DB, limit int, page int) ([]Customer, int, error)
+	GetCustomers(db *gorm.DB, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
 	GetCustomerById(db *gorm.DB, id uuid.UUID) (*Customer, error)
-	SearchCustomersByPhone(db *gorm.DB, phone string, limit int, page int) ([]Customer, int, error)
-	SearchCustomersByCustomerId(db *gorm.DB, customerId string, limit int, page int) ([]Customer, int, error)
-	SearchCustomersByAddress(db *gorm.DB, address string, limit int, page int) ([]Customer, int, error)
-	SearchCustomersByWhitelistCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]Customer, int, error)
-	SearchCustomersByTxCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]Customer, int, error)
+	SearchCustomersByPhone(db *gorm.DB, phone string, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
+	SearchCustomersByCustomerId(db *gorm.DB, customerId string, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
+	SearchCustomersByAddress(db *gorm.DB, address string, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
+	SearchCustomersByWhitelistCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
 
 	// userConfig
 	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)
 
 	// cashInTx
-	GetCashInTxByCustomerID(db *gorm.DB, customerID string, limit int, page int) ([]CashInTx, int, error)
+	GetCashIns(db *gorm.DB, customerID string, startAt, endAt time.Time, limit int, page int) ([]CashInTx, int, error)
 }

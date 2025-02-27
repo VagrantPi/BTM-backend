@@ -27,7 +27,6 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/list", customer.GetCustomersList)
 	group.GET("/search", customer.SearchCustomers)
 	group.GET("/search/whitelist_created_at", customer.SearchCustomersByWhitelistCreatedAt)
-	group.GET("/search/tx_created_at", customer.SearchCustomersByTxCreatedAt)
 	group.GET("/search/address/:address", customer.SearchCustomersByAddress)
 	group.GET("/whitelist", customer.GetWhitelist)
 	group.GET("/whitelist/search", customer.SearchWhitelist)
@@ -46,7 +45,7 @@ func UserConfigRouter(apiGroup *gin.RouterGroup) {
 
 func TxRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/tx", middleware.Auth())
-	group.GET("/:customer_id/list", tx.GetTxsList)
+	group.GET("/list", tx.GetTxsList)
 }
 
 // TODO: 未來增加安全性 middleware

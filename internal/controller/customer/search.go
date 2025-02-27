@@ -22,8 +22,8 @@ type SearchCustomersReq struct {
 }
 
 type SearchCustomersRepItem struct {
-	Total int               `json:"total"`
-	Items []domain.Customer `json:"items"`
+	Total int                                   `json:"total"`
+	Items []domain.CustomerWithWhiteListCreated `json:"items"`
 }
 
 func SearchCustomers(c *gin.Context) {
@@ -62,7 +62,7 @@ func SearchCustomers(c *gin.Context) {
 		// 現在搜尋條件是customer_id
 		_uuid = req.Query
 	}
-	var customers []domain.Customer
+	var customers []domain.CustomerWithWhiteListCreated
 	var total int
 	if _uuid != "" {
 		customers, total, err = repo.SearchCustomersByCustomerId(repo.GetDb(c), _uuid, req.Limit, req.Page)
@@ -97,8 +97,8 @@ type SearchCustomersByAddressReq struct {
 }
 
 type SearchCustomersByAddressRepItem struct {
-	Total int               `json:"total"`
-	Items []domain.Customer `json:"items"`
+	Total int                                   `json:"total"`
+	Items []domain.CustomerWithWhiteListCreated `json:"items"`
 }
 
 func SearchCustomersByAddress(c *gin.Context) {
@@ -162,8 +162,8 @@ type SearchCustomersByWhitelistCreatedAtReq struct {
 }
 
 type SearchCustomersByWhitelistCreatedAtRepItem struct {
-	Total int               `json:"total"`
-	Items []domain.Customer `json:"items"`
+	Total int                                   `json:"total"`
+	Items []domain.CustomerWithWhiteListCreated `json:"items"`
 }
 
 func SearchCustomersByWhitelistCreatedAt(c *gin.Context) {
@@ -195,7 +195,7 @@ func SearchCustomersByWhitelistCreatedAt(c *gin.Context) {
 		return
 	}
 
-	var customers []domain.Customer
+	var customers []domain.CustomerWithWhiteListCreated
 	var total int
 
 	customers, total, err = repo.SearchCustomersByWhitelistCreatedAt(repo.GetDb(c), req.DateStart, req.DateEnd, req.Limit, req.Page)
@@ -208,67 +208,6 @@ func SearchCustomersByWhitelistCreatedAt(c *gin.Context) {
 	c.JSON(200, api.DefaultRep{
 		Code: 20000,
 		Data: SearchCustomersByWhitelistCreatedAtRepItem{
-			Total: total,
-			Items: customers,
-		},
-	})
-	c.Done()
-}
-
-type SearchCustomersByTxCreatedAtReq struct {
-	DateStart time.Time `form:"date_start" binding:"required"`
-	DateEnd   time.Time `form:"date_end" binding:"required"`
-	Limit     int       `form:"limit"`
-	Page      int       `form:"page"`
-}
-
-type SearchCustomersByTxCreatedAtRepItem struct {
-	Total int               `json:"total"`
-	Items []domain.Customer `json:"items"`
-}
-
-func SearchCustomersByTxCreatedAt(c *gin.Context) {
-	log := logger.Zap().WithClassFunction("api", "SearchCustomersByTxCreatedAt")
-	defer func() {
-		_ = log.Sync()
-	}()
-	c.Set("log", log)
-
-	req := SearchCustomersByTxCreatedAtReq{}
-	err := c.BindQuery(&req)
-	if err != nil {
-		log.Error("c.BindQuery(req)", zap.Any("err", err))
-		api.ErrResponse(c, "c.BindQuery(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.BindQuery(&req)").WithCause(err))
-		return
-	}
-
-	if req.Limit <= 0 {
-		req.Limit = 10
-	}
-	if req.Page <= 0 {
-		req.Page = 1
-	}
-
-	repo, err := di.NewRepo()
-	if err != nil {
-		log.Error("di.NewRepo()", zap.Any("err", err))
-		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
-		return
-	}
-
-	var customers []domain.Customer
-	var total int
-
-	customers, total, err = repo.SearchCustomersByTxCreatedAt(repo.GetDb(c), req.DateStart, req.DateEnd, req.Limit, req.Page)
-	if err != nil {
-		log.Error("repo.SearchCustomersByTxCreatedAt", zap.Any("err", err))
-		api.ErrResponse(c, "repo.SearchCustomersByTxCreatedAt", errors.NotFound(error_code.ErrDBError, "repo.SearchCustomersByTxCreatedAtByCustomerId()").WithCause(err))
-		return
-	}
-
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: SearchCustomersByTxCreatedAtRepItem{
 			Total: total,
 			Items: customers,
 		},

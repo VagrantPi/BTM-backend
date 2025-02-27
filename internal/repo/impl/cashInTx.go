@@ -4,12 +4,13 @@ import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
 	"BTM-backend/pkg/error_code"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"gorm.io/gorm"
 )
 
-func (repo *repository) GetCashInTxByCustomerID(db *gorm.DB, customerID string, limit int, page int) ([]domain.CashInTx, int, error) {
+func (repo *repository) GetCashIns(db *gorm.DB, customerID string, startAt, endAt time.Time, limit int, page int) ([]domain.CashInTx, int, error) {
 	if db == nil {
 		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
 	}
@@ -17,7 +18,15 @@ func (repo *repository) GetCashInTxByCustomerID(db *gorm.DB, customerID string, 
 	offset := (page - 1) * limit
 	list := []model.CashInTx{}
 
-	sql := db.Model(&model.CashInTx{}).Where("customer_id = ? AND fiat != 0", customerID)
+	sql := db.Model(&model.CashInTx{}).Where("fiat != 0")
+
+	if customerID != "" {
+		sql = sql.Where("customer_id::TEXT LIKE ?", "%"+customerID+"%")
+	}
+	if !startAt.IsZero() && !endAt.IsZero() {
+		sql = sql.Where("created BETWEEN ? AND ?", startAt, endAt)
+	}
+
 	var total int64 = 0
 	if err := sql.Count(&total).Error; err != nil {
 		return nil, 0, err
