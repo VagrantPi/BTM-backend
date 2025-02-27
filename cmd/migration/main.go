@@ -15,6 +15,7 @@ func main() {
 		&model.BTMWhitelist{},
 		&model.BTMLoginToken{},
 		&model.BTM_CIB{},
+		&model.BTMSumsub{},
 		&model.BTMChangeLog{},
 	); err != nil {
 		panic(err)

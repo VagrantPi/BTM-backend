@@ -47,6 +47,10 @@ type Repository interface {
 	// BTMCIB
 	UpsertBTMCIB(db *gorm.DB, cib BTMCIB) error
 
+	// BTMSumsub
+	CreateBTMSumsub(db *gorm.DB, btmsumsub BTMSumsub) error
+	GetBTMSumsub(db *gorm.DB, customerId string) (*BTMSumsub, error)
+
 	// BTMChangeLog
 	CreateBTMChangeLog(db *gorm.DB, c BTMChangeLog) error
 	GetBTMChangeLogs(db *gorm.DB, limit int, page int) (list []BTMChangeLog, total int64, err error)

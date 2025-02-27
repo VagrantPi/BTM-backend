@@ -34,12 +34,12 @@ func CreateFile(filename string, data []byte) error {
 func UnzipFile(zipPath, destFile, pwd string) error {
 	r, err := zip.OpenReader(zipPath)
 	if err != nil {
-		return errors.InternalServer(error_code.ErrUnzipFile, "open zip file err").WithCause(err)
+		return errors.InternalServer(error_code.ErrToolsUnzipFile, "open zip file err").WithCause(err)
 	}
 	defer r.Close()
 
 	if len(r.File) == 0 {
-		return errors.InternalServer(error_code.ErrUnzipFile, "zip file is empty")
+		return errors.InternalServer(error_code.ErrToolsUnzipFile, "zip file is empty")
 	}
 
 	f := r.File[0]
@@ -60,7 +60,7 @@ func UnzipFile(zipPath, destFile, pwd string) error {
 
 	err = CreateFile(destFile, buf)
 	if err != nil {
-		return errors.InternalServer(error_code.ErrUnzipFile, "create file err").WithCause(err)
+		return errors.InternalServer(error_code.ErrToolsUnzipFile, "create file err").WithCause(err)
 	}
 
 	return nil

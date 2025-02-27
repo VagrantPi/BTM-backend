@@ -1,14 +1,19 @@
 package error_code
 
 const (
-	// user
+	// btm user
 	ErrInvalidJWTParse = "ErrInvalidJWTParse"
 	ErrInvalidJWT      = "ErrInvalidJWT"
 	ErrJWT             = "ErrJWT"
 	ErrTokenExpired    = "ErrTokenExpired"
 
-	// whitelist
+	// btm whitelist
 	ErrWhitelistDuplicate = "ErrWhitelistDuplicate"
+
+	// btm sumsub
+	ErrBTMSumsubGetItem          = "ErrBTMSumsubGetItem"
+	ErrBTMSumsubCreateItem       = "ErrBTMSumsubCreateItem"
+	ErrBTMSumsubIdNumberNotFound = "ErrBTMSumsubIdNumberNotFound"
 
 	// system error
 	ErrInvalidRequest     = "ErrInvalidRequest"
@@ -28,8 +33,17 @@ const (
 	ErrRemoveFile = "ErrRemoveFile"
 	ErrCreateFile = "ErrCreateFile"
 
+	// sumsub
+	ErrSumsubRequest      = "ErrSumsubRequest"
+	ErrSumsubBadRequest   = "ErrSumsubBadRequest"
+	ErrSumsubApiUnmarshal = "ErrSumsubApiUnmarshal"
+
 	// tools
-	ErrUnzipFile = "ErrUnzipFile"
-	ErrCsvOpen   = "ErrCsvOpen"
-	ErrCsvRead   = "ErrCsvRead"
+	ErrToolsUnzipFile         = "ErrToolsUnzipFile"
+	ErrToolsCsvOpen           = "ErrToolsCsvOpen"
+	ErrToolsCsvRead           = "ErrToolsCsvRead"
+	ErrToolsHttpRequest       = "ErrToolsHttpRequest"
+	ErrToolsHttpRequestDo     = "ErrToolsHttpRequestDo"
+	ErrToolsHttpRequestIoRead = "ErrToolsHttpRequestIoRead"
+	ErrToolsHttpMarshal       = "ErrToolsHttpMarshal"
 )
