@@ -65,10 +65,18 @@ func DownlaodCIBAndUpsert() (err error) {
 	}
 
 	for _, cib := range cibs {
-		err = repo.UpsertBTMCIB(repo.GetDb(ctx), cib)
-		if err != nil {
-			log.Error("repo.UpsertBTMCIB()", zap.Any("err", err))
-			continue
+		if cib.DataType == "D" {
+			err = repo.DeleteBTMCIB(repo.GetDb(ctx), cib.Pid)
+			if err != nil {
+				log.Error("repo.DeleteBTMCIB()", zap.Any("err", err))
+				continue
+			}
+		} else {
+			err = repo.UpsertBTMCIB(repo.GetDb(ctx), cib)
+			if err != nil {
+				log.Error("repo.UpsertBTMCIB()", zap.Any("err", err))
+				continue
+			}
 		}
 	}
 
