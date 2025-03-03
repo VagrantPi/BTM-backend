@@ -31,6 +31,36 @@ func (repo *repository) DeleteBTMCIB(db *gorm.DB, pid string) error {
 	return db.Delete(&model.BTM_CIB{}, "pid = ?", pid).Error
 }
 
+func (repo *repository) GetBTMCIBs(db *gorm.DB, id string, limit int, page int) ([]domain.BTMCIB, int64, error) {
+	if db == nil {
+		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	offset := (page - 1) * limit
+	list := []model.BTM_CIB{}
+
+	sql := db.Model(&model.BTM_CIB{})
+	if id != "" {
+		sql = sql.Where("UPPER(TRIM(pid)) = UPPER(TRIM(?))", id)
+	}
+
+	var total int64 = 0
+	if err := sql.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := sql.Limit(limit).Offset(offset).Find(&list).Error; err != nil {
+		return nil, 0, err
+	}
+
+	resp := make([]domain.BTMCIB, 0, len(list))
+	for _, item := range list {
+		resp = append(resp, BTMCIBModelToDomain(item))
+	}
+	return resp, int64(total), nil
+
+}
+
 func BTMCIBDomainToModel(item domain.BTMCIB) model.BTM_CIB {
 	return model.BTM_CIB{
 		DataType:    item.DataType,

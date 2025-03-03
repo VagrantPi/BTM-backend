@@ -13,6 +13,7 @@ import (
 	_ "time/tzdata"
 
 	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron/v3"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
@@ -61,6 +62,7 @@ func setupGin() http.Handler {
 	controller.UserConfigRouter(apiGroup)
 	controller.TxRouter(apiGroup)
 	controller.DebugRouter(apiGroup)
+	controller.CibRouter(apiGroup)
 
 	return r
 }
@@ -72,17 +74,17 @@ func BackgroundWorker() {
 func CronJob() {
 	fmt.Println("開始定時任務")
 	// 使用的時區
-	// nyc, err := time.LoadLocation("Asia/Taipei")
-	// if err != nil {
-	// 	log.Fatalf("Failed to load location: %v", err)
-	// }
-	// // 宣告可以使用秒
-	// cron := cron.New(cron.WithSeconds(), cron.WithLocation(nyc))
+	nyc, err := time.LoadLocation("Asia/Taipei")
+	if err != nil {
+		log.Fatalf("Failed to load location: %v", err)
+	}
+	// 宣告可以使用秒
+	cron := cron.New(cron.WithSeconds(), cron.WithLocation(nyc))
 
-	// // 每天處理告誡名單 - 每日 1:00
-	// cron.AddFunc("0 1 * * *", func() {
-	cronjob.DownlaodCIBAndUpsert()
-	// })
+	// 每天處理告誡名單 - 每日 1:00
+	cron.AddFunc("0 1 * * *", func() {
+		cronjob.DownlaodCIBAndUpsert()
+	})
 
-	// cron.Start()
+	cron.Start()
 }

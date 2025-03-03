@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"BTM-backend/internal/controller/cib"
 	"BTM-backend/internal/controller/config"
 	"BTM-backend/internal/controller/customer"
 	"BTM-backend/internal/controller/debug"
@@ -52,4 +53,9 @@ func TxRouter(apiGroup *gin.RouterGroup) {
 func DebugRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/debug", middleware.Auth())
 	group.GET("/logs", debug.GetBTMChangeLogs)
+}
+
+func CibRouter(apiGroup *gin.RouterGroup) {
+	group := apiGroup.Group("/cib", middleware.Auth())
+	group.GET("/list", cib.GetCibsList)
 }
