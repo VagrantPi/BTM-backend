@@ -15,6 +15,7 @@ import (
 
 type GetTxsListReq struct {
 	CustomerId string    `form:"customer_id"`
+	Phone      string    `form:"phone"`
 	DateStart  time.Time `form:"date_start"`
 	DateEnd    time.Time `form:"date_end"`
 	Limit      int       `form:"limit"`
@@ -55,7 +56,7 @@ func GetTxsList(c *gin.Context) {
 		return
 	}
 
-	txs, total, err := repo.GetCashIns(repo.GetDb(c), req.CustomerId, req.DateStart, req.DateEnd, req.Limit, req.Page)
+	txs, total, err := repo.GetCashIns(repo.GetDb(c), req.CustomerId, req.Phone, req.DateStart, req.DateEnd, req.Limit, req.Page)
 	if err != nil {
 		log.Error("repo.GetCustomers()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.GetCustomers()", errors.NotFound(error_code.ErrDBError, "repo.GetCustomers()").WithCause(err))

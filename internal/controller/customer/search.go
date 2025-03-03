@@ -214,3 +214,64 @@ func SearchCustomersByWhitelistCreatedAt(c *gin.Context) {
 	})
 	c.Done()
 }
+
+type SearchCustomersByCustomerCreatedAtReq struct {
+	DateStart time.Time `form:"customer_date_start" binding:"required"`
+	DateEnd   time.Time `form:"customer_date_end" binding:"required"`
+	Limit     int       `form:"limit"`
+	Page      int       `form:"page"`
+}
+
+type SearchCustomersByCustomerCreatedAtRepItem struct {
+	Total int                                   `json:"total"`
+	Items []domain.CustomerWithWhiteListCreated `json:"items"`
+}
+
+func SearchCustomersByCustomerCreatedAt(c *gin.Context) {
+	log := logger.Zap().WithClassFunction("api", "SearchCustomersByCustomerCreatedAt")
+	defer func() {
+		_ = log.Sync()
+	}()
+	c.Set("log", log)
+
+	req := SearchCustomersByCustomerCreatedAtReq{}
+	err := c.BindQuery(&req)
+	if err != nil {
+		log.Error("c.BindQuery(req)", zap.Any("err", err))
+		api.ErrResponse(c, "c.BindQuery(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.BindQuery(&req)").WithCause(err))
+		return
+	}
+
+	if req.Limit <= 0 {
+		req.Limit = 10
+	}
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+
+	repo, err := di.NewRepo()
+	if err != nil {
+		log.Error("di.NewRepo()", zap.Any("err", err))
+		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
+		return
+	}
+
+	var customers []domain.CustomerWithWhiteListCreated
+	var total int
+
+	customers, total, err = repo.SearchCustomersByCustomerCreatedAt(repo.GetDb(c), req.DateStart, req.DateEnd, req.Limit, req.Page)
+	if err != nil {
+		log.Error("repo.SearchCustomersByCustomerCreatedAt", zap.Any("err", err))
+		api.ErrResponse(c, "repo.SearchCustomersByCustomerCreatedAt", errors.NotFound(error_code.ErrDBError, "repo.SearchCustomersByCustomerCreatedAtByCustomerId()").WithCause(err))
+		return
+	}
+
+	c.JSON(200, api.DefaultRep{
+		Code: 20000,
+		Data: SearchCustomersByCustomerCreatedAtRepItem{
+			Total: total,
+			Items: customers,
+		},
+	})
+	c.Done()
+}
