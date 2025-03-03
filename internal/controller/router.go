@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"BTM-backend/internal/controller/cib"
 	"BTM-backend/internal/controller/config"
 	"BTM-backend/internal/controller/customer"
 	"BTM-backend/internal/controller/debug"
@@ -41,6 +42,11 @@ func UserConfigRouter(apiGroup *gin.RouterGroup) {
 func TxRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/tx", middleware.Auth())
 	group.GET("/list", tx.GetTxsList)
+}
+
+func CibRouter(apiGroup *gin.RouterGroup) {
+	group := apiGroup.Group("/cib", middleware.Auth())
+	group.GET("/list", cib.GetCibsList)
 }
 
 func InternalRouter(apiGroup *gin.RouterGroup) {
