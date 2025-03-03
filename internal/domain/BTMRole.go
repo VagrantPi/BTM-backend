@@ -12,13 +12,10 @@ const DefaultRoleRaw = `
 [
    {
       "path":"/permission",
-      "component":"layout/Layout",
-      "redirect":"/permission/page",
       "alwaysShow":true,
       "name":"Permission",
       "meta":{
          "title":"Permission",
-         "icon":"lock",
          "roles":[
             "admin"
          ]
@@ -26,7 +23,6 @@ const DefaultRoleRaw = `
       "children":[
          {
             "path":"role",
-            "component":"views/permission/role",
             "name":"RolePermission",
             "meta":{
                "title":"Role Permission",
@@ -39,40 +35,28 @@ const DefaultRoleRaw = `
    },
    {
       "path":"/whitelist",
-      "component":"layout/Layout",
+      "redirect":"/whitelist",
+      "alwaysShow":true,
+      "name":"Whitelist",
       "meta":{
-         "roles":[
-            "admin",
-            "editor"
-         ]
+         "title":"Whitelist"
       },
       "children":[
          {
             "path":"index",
-            "component":"views/whitelist/index",
-            "name":"WhiteList",
+            "name":"Whitelist List",
             "meta":{
-               "title":"WhiteList",
-               "icon":"education",
+               "title":"Whitelist List",
                "roles":[
-                  "admin",
-                  "editor"
-               ],
-               "noCache":true
+                  "admin"
+               ]
             }
          },
          {
-            "path":"/whitelist/view",
-            "component":"views/whitelist/components/view",
-            "name":"WhiteListView",
-            "hidden":true,
+            "path":"view",
+            "name":"Whitelist View",
             "meta":{
-               "title":"WhiteList View",
-               "roles":[
-                  "admin",
-                  "editor"
-               ],
-               "noCache":true
+               "title":"Whitelist View"
             }
          }
       ]
