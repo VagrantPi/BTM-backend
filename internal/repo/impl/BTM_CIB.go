@@ -4,6 +4,8 @@ import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
 	"BTM-backend/pkg/error_code"
+	"fmt"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"gorm.io/gorm"
@@ -39,7 +41,12 @@ func (repo *repository) GetBTMCIBs(db *gorm.DB, id string, limit int, page int) 
 	offset := (page - 1) * limit
 	list := []model.BTM_CIB{}
 
-	sql := db.Model(&model.BTM_CIB{})
+	// 取得現在的中華民國年日期
+	now := time.Now()
+	twYear := now.Year() - 1911
+	today := fmt.Sprintf("%03d%02d%02d", twYear, int(now.Month()), now.Day())
+
+	sql := db.Model(&model.BTM_CIB{}).Where("data_type != 'D' and expire_date >= ?", today)
 	if id != "" {
 		sql = sql.Where("UPPER(TRIM(pid)) = UPPER(TRIM(?))", id)
 	}

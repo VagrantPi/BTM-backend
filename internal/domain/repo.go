@@ -68,10 +68,11 @@ type Repository interface {
 	SearchCustomersByCustomerId(db *gorm.DB, customerId string, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
 	SearchCustomersByAddress(db *gorm.DB, address string, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
 	SearchCustomersByWhitelistCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
+	SearchCustomersByCustomerCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
 
 	// userConfig
 	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)
 
 	// cashInTx
-	GetCashIns(db *gorm.DB, customerID string, startAt, endAt time.Time, limit int, page int) ([]CashInTx, int, error)
+	GetCashIns(db *gorm.DB, customerID, phone string, startAt, endAt time.Time, limit int, page int) ([]CashInTx, int, error)
 }

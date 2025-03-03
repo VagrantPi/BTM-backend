@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (repo *repository) GetCashIns(db *gorm.DB, customerID string, startAt, endAt time.Time, limit int, page int) ([]domain.CashInTx, int, error) {
+func (repo *repository) GetCashIns(db *gorm.DB, customerID, phone string, startAt, endAt time.Time, limit int, page int) ([]domain.CashInTx, int, error) {
 	if db == nil {
 		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
 	}
@@ -22,6 +22,9 @@ func (repo *repository) GetCashIns(db *gorm.DB, customerID string, startAt, endA
 
 	if customerID != "" {
 		sql = sql.Where("customer_id::TEXT LIKE ?", "%"+customerID+"%")
+	}
+	if phone != "" {
+		sql = sql.Where("phone LIKE ?", "%"+phone+"%")
 	}
 	if !startAt.IsZero() && !endAt.IsZero() {
 		sql = sql.Where("created BETWEEN ? AND ?", startAt, endAt)
