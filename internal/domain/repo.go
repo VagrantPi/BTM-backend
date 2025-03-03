@@ -46,6 +46,7 @@ type Repository interface {
 
 	// BTMCIB
 	UpsertBTMCIB(db *gorm.DB, cib BTMCIB) error
+	DeleteBTMCIB(db *gorm.DB, pid string) error
 
 	// BTMSumsub
 	CreateBTMSumsub(db *gorm.DB, btmsumsub BTMSumsub) error

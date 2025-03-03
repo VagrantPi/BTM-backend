@@ -23,6 +23,14 @@ func (repo *repository) UpsertBTMCIB(db *gorm.DB, cib domain.BTMCIB) error {
 	}).Create(&item).Error
 }
 
+func (repo *repository) DeleteBTMCIB(db *gorm.DB, pid string) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	return db.Delete(&model.BTM_CIB{}, "pid = ?", pid).Error
+}
+
 func BTMCIBDomainToModel(item domain.BTMCIB) model.BTM_CIB {
 	return model.BTM_CIB{
 		DataType:    item.DataType,
