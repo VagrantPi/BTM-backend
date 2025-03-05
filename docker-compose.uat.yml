@@ -1,0 +1,23 @@
+version: '3.3'
+
+services:
+  btm-backend:
+    image: btm-backend:latest
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    env_file:
+      - configs/dev.env
+    network_mode: "host"
+    restart: unless-stopped
+  btm-frontend:
+    image: btm-frontend:latest
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    volumes:
+      - ./dist:/usr/share/nginx/html
+    ports:
+      - "8081:80"
+    depends_on:
+      - btm-backend
