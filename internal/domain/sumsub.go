@@ -311,5 +311,5 @@ type SumsubTag string
 func (e SumsubTag) String() string { return string(e) }
 
 const (
-	SumsubTagCib SumsubTag = "CIB_MATCH"
+	SumsubTagCib SumsubTag = "告誡名單"
 )
