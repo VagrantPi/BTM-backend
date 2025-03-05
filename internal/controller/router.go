@@ -54,5 +54,7 @@ func InternalRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/btm", middleware.ServerKeyAuth())
 	group.GET("/id_number", customer.GetCustomerIdNumber)
 	group.GET("/debug/logs", debug.GetBTMChangeLogs)
+	group.POST("/cib", debug.DownlaodCIB)
 	group.POST("/add_sumsub_tag", customer.AddSumsubTag)
+
 }
