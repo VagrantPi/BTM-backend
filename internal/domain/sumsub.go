@@ -122,6 +122,164 @@ type SumsubData struct {
 	RiskLabels        SumsubDataRiskLabels     `json:"riskLabels"`
 }
 
+type SumsubDataResApplicantIdDoc struct {
+	IdDocType    string `json:"idDocType,omitempty"`
+	Country      string `json:"country,omitempty"`
+	FirstName    string `json:"firstName,omitempty"`
+	FirstNameEn  string `json:"firstNameEn,omitempty"`
+	MiddleName   string `json:"middleName,omitempty"`
+	MiddleNameEn string `json:"middleNameEn,omitempty"`
+	LastName     string `json:"lastName,omitempty"`
+	LastNameEn   string `json:"lastNameEn,omitempty"`
+	DateOfBirth  string `json:"dob,omitempty"` // yyyy-mm-dd format
+	Number       string `json:"number,omitempty"`
+	IssuedDate   string `json:"issuedDate,omitempty"` // yyyy-mm-dd format
+}
+
+type SumsubDataResApplicantInfo struct {
+	FirstName    string                        `json:"firstName,omitempty"`
+	FirstNameEn  string                        `json:"firstNameEn,omitempty"`
+	MiddleName   string                        `json:"middleName,omitempty"`
+	MiddleNameEn string                        `json:"middleNameEn,omitempty"`
+	LastName     string                        `json:"lastName,omitempty"`
+	LastNameEn   string                        `json:"lastNameEn,omitempty"`
+	Dob          string                        `json:"dob,omitempty"` // yyyy-mm-dd format
+	Gender       string                        `json:"gender,omitempty"`
+	Country      string                        `json:"country,omitempty"`
+	IdDocs       []SumsubDataResApplicantIdDoc `json:"idDocs,omitempty"`
+}
+
+type SumsubDataResApplicant struct {
+	ID             string                     `json:"id,omitempty"`
+	CreatedAt      string                     `json:"createdAt,omitempty"`
+	Key            string                     `json:"key,omitempty"`
+	ClientID       string                     `json:"clientId,omitempty"`
+	InspectionID   string                     `json:"inspectionId,omitempty"`
+	ExternalUserID string                     `json:"externalUserId,omitempty"`
+	Info           SumsubDataResApplicantInfo `json:"info,omitempty"`
+	FixedInfo      SumsubDataResApplicantInfo `json:"fixedInfo,omitempty"`
+	Phone          string                     `json:"phone,omitempty"`
+	Review         struct {
+		ElapsedSincePendingMs int    `json:"elapsedSincePendingMs,omitempty"`
+		ElapsedSinceQueuedMs  int    `json:"elapsedSinceQueuedMs,omitempty"`
+		Reprocessing          bool   `json:"reprocessing,omitempty"`
+		CreateDate            string `json:"createDate,omitempty"`
+		ReviewDate            string `json:"reviewDate,omitempty"`
+		StartDate             string `json:"startDate,omitempty"`
+		ReviewResult          struct {
+			ReviewAnswer      string   `json:"reviewAnswer,omitempty"`
+			RejectLabels      []string `json:"rejectLabels,omitempty"`
+			ModerationComment string   `json:"moderationComment,omitempty"`
+			ClientComment     string   `json:"clientComment,omitempty"`
+		} `json:"reviewResult,omitempty"`
+		ReviewStatus           string `json:"reviewStatus,omitempty"`
+		NotificationFailureCnt int    `json:"notificationFailureCnt,omitempty"`
+		Priority               int    `json:"priority,omitempty"`
+		LevelName              string `json:"levelName,omitempty"`
+	} `json:"review,omitempty"`
+	Lang       string   `json:"lang,omitempty"`
+	Type       string   `json:"type,omitempty"`
+	Tags       []string `json:"tags,omitempty"`
+	RiskLabels struct {
+		Email      []string `json:"email,omitempty"`
+		Phone      []string `json:"phone,omitempty"`
+		Device     []string `json:"device,omitempty"`
+		CrossCheck []string `json:"crossCheck,omitempty"`
+		Selfie     []string `json:"selfie,omitempty"`
+		Aml        []string `json:"aml,omitempty"`
+		Person     []string `json:"person,omitempty"`
+	} `json:"riskLabels,omitempty"`
+	Questionnaires []struct {
+		Id       string  `json:"id,omitempty"`
+		Score    float64 `json:"score,omitempty"`
+		Sections struct {
+			BasicInfo struct {
+				Score float64 `json:"score,omitempty"`
+				Items struct {
+					LastName struct {
+						Value string `json:"value,omitempty"`
+					} `json:"lastName,omitempty"`
+					FirstName struct {
+						Value string `json:"value,omitempty"`
+					} `json:"firstName,omitempty"`
+					IDCategory struct {
+						Value string  `json:"value,omitempty"`
+						Score float64 `json:"score,omitempty"`
+					} `json:"ID_category,omitempty"`
+					IDLocation struct {
+						Value string  `json:"value,omitempty"`
+						Score float64 `json:"score,omitempty"`
+					} `json:"ID_location,omitempty"`
+					Adress struct {
+						Value string `json:"value,omitempty"`
+					} `json:"adress,omitempty"`
+				}
+			} `json:"Basic_info,omitempty"`
+			JiBenZiLiao struct {
+				Score float64 `json:"score,omitempty"`
+				Items struct {
+					KaiHuMuDe struct {
+						Value string  `json:"value,omitempty"`
+						Score float64 `json:"score,omitempty"`
+					} `json:"kaiHuMuDe,omitempty"`
+					NianShouRuJiJu struct {
+						Value string  `json:"value,omitempty"`
+						Score float64 `json:"score,omitempty"`
+					} `json:"nianShouRuJiJu,omitempty"`
+					ZhiCheng struct {
+						Value string  `json:"value,omitempty"`
+						Score float64 `json:"score,omitempty"`
+					} `json:"zhiCheng,omitempty"`
+					ZhiYe struct {
+						Value string  `json:"value,omitempty"`
+						Score float64 `json:"score,omitempty"`
+					} `json:"zhiYe,omitempty"`
+					XianRenZhiGongSiHuoJ struct {
+						Value string `json:"value,omitempty"`
+					} `json:"xianRenZhiGongSiHuoJ,omitempty"`
+					RenZhiNianShu struct {
+						Value string  `json:"value,omitempty"`
+						Score float64 `json:"score,omitempty"`
+					} `json:"renZhiNianShu,omitempty"`
+					ZhangHaoYongTu struct {
+						Value string  `json:"value,omitempty"`
+						Score float64 `json:"score,omitempty"`
+					} `json:"zhangHaoYongTu,omitempty"`
+					RenZhiGongSiLeiXing struct {
+						Value string  `json:"value,omitempty"`
+						Score float64 `json:"score,omitempty"`
+					} `json:"renZhiGongSiLeiXing,omitempty"`
+				}
+			} `json:"jiBenZiLiao,omitempty"`
+			GaoZhiShiXiang struct {
+				Score float64 `json:"score,omitempty"`
+				Items struct {
+					ShuoMingNeiRong struct {
+						Value string  `json:"value,omitempty"`
+						Score float64 `json:"score,omitempty"`
+					} `json:"shuoMingNeiRong,omitempty"`
+				}
+			} `json:"gaoZhiShiXiang,omitempty"`
+			ZiChanPingGu struct {
+				Score float64 `json:"score,omitempty"`
+				Items struct {
+					GeRenZongZiChan struct {
+						Value string  `json:"value,omitempty"`
+						Score float64 `json:"score,omitempty"`
+					} `json:"geRenZongZiChan,omitempty"`
+					ZiJinLaiYuan struct {
+						Values []string `json:"values,omitempty"`
+						Score  float64  `json:"score,omitempty"`
+					} `json:"ziJinLaiYuan,omitempty"`
+					ZiChanZhengMingWenJi struct {
+						Values []string `json:"values,omitempty"`
+					} `json:"ziChanZhengMingWenJi,omitempty"`
+				}
+			} `json:"ziChanPingGu,omitempty"`
+		}
+	} `json:"questionnaires,omitempty"`
+}
+
 // Scan scan value into Jsonb, implements sql.Scanner interface
 func (s *SumsubData) Scan(value interface{}) error {
 	if value == nil {
@@ -147,3 +305,11 @@ func (s *SumsubData) Scan(value interface{}) error {
 func (s SumsubData) Value() (driver.Value, error) {
 	return json.Marshal(s)
 }
+
+type SumsubTag string
+
+func (e SumsubTag) String() string { return string(e) }
+
+const (
+	SumsubTagCib SumsubTag = "CIB_MATCH"
+)

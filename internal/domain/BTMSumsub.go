@@ -3,7 +3,8 @@ package domain
 import "github.com/google/uuid"
 
 type BTMSumsub struct {
-	CustomerId uuid.UUID
-	Info       SumsubData
-	IdNumber   string
+	CustomerId  uuid.UUID
+	ApplicantId string
+	Info        SumsubData
+	IdNumber    string
 }

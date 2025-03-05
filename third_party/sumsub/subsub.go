@@ -99,3 +99,14 @@ func GetApplicantInfo(externalUserId string) (applicant domain.SumsubData, err e
 
 	return
 }
+
+func AddAndOverwriteApplicantTags(applicantId string, tags []string) (err error) {
+	path := fmt.Sprintf("/resources/applicants/%s/tags", applicantId)
+
+	_, err = sumsubSend[domain.SumsubDataResApplicant](http.MethodPost, path, tags)
+	if err != nil {
+		return
+	}
+
+	return nil
+}

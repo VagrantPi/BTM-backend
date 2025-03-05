@@ -36,7 +36,7 @@ func GetCustomerIdNumber(c *gin.Context) {
 	customerIDStr := c.Query("customer_id")
 	customerID, err := uuid.Parse(customerIDStr)
 	if err != nil {
-		log.Error("uuid.Parse(customerIDStr)", zap.Any("err", err))
+		log.Error("uuid.Parse(customerIDStr)", zap.Any("customerID", customerID), zap.Any("err", err))
 		api.ErrResponse(c, "uuid.Parse(customerIDStr)", errors.BadRequest(error_code.ErrInvalidRequest, "Invalid UUID format").WithCause(err))
 		return
 	}
@@ -50,7 +50,7 @@ func GetCustomerIdNumber(c *gin.Context) {
 
 	sumsubInfo, err := repo.GetBTMSumsub(repo.GetDb(c), customerID.String())
 	if err != nil {
-		log.Error("repo.GetBTMSumsub", zap.Any("err", err))
+		log.Error("repo.GetBTMSumsub", zap.Any("customerID", customerID), zap.Any("err", err))
 		api.ErrResponse(c, "repo.GetBTMSumsub", errors.InternalServer(error_code.ErrBTMSumsubGetItem, "repo.GetBTMSumsub").WithCause(err))
 		return
 	}
@@ -62,7 +62,7 @@ func GetCustomerIdNumber(c *gin.Context) {
 		// fetch sumsub
 		data, err := sumsub.GetApplicantInfo(customerID.String())
 		if err != nil {
-			log.Error("sumsub.GetApplicantInfo", zap.Any("err", err))
+			log.Error("sumsub.GetApplicantInfo", zap.Any("customerID", customerID), zap.Any("err", err))
 			api.ErrResponse(c, "sumsub.GetApplicantInfo", errors.InternalServer(error_code.ErrBTMSumsubGetItem, "sumsub.GetApplicantInfo").WithCause(err))
 			return
 		}
@@ -79,19 +79,20 @@ func GetCustomerIdNumber(c *gin.Context) {
 		}
 
 		if idNumber == "" {
-			log.Error("idNumber is empty")
+			log.Error("idNumber is empty", zap.Any("customerID", customerID), zap.Any("idNumber", idNumber))
 			api.ErrResponse(c, "idNumber is empty", errors.InternalServer(error_code.ErrBTMSumsubIdNumberNotFound, "idNumber is empty"))
 			return
 		}
 
 		// store db
 		err = repo.CreateBTMSumsub(repo.GetDb(c), domain.BTMSumsub{
-			CustomerId: customerID,
-			Info:       data,
-			IdNumber:   idNumber,
+			ApplicantId: data.Id,
+			CustomerId:  customerID,
+			Info:        data,
+			IdNumber:    idNumber,
 		})
 		if err != nil {
-			log.Error("repo.CreateBTMSumsub", zap.Any("err", err))
+			log.Error("repo.CreateBTMSumsub", zap.Any("customerID", customerID), zap.Any("err", err))
 			api.ErrResponse(c, "repo.StoreBTMSumsub", errors.InternalServer(error_code.ErrBTMSumsubCreateItem, "repo.StoreBTMSumsub").WithCause(err))
 			return
 		}

@@ -35,16 +35,18 @@ func (repo *repository) GetBTMSumsub(db *gorm.DB, customerId string) (*domain.BT
 
 func BTMSumsubDomainToModel(itme domain.BTMSumsub) model.BTMSumsub {
 	return model.BTMSumsub{
-		CustomerId: itme.CustomerId,
-		Info:       itme.Info,
-		IdNumber:   itme.IdNumber,
+		CustomerId:  itme.CustomerId,
+		ApplicantId: itme.ApplicantId,
+		Info:        itme.Info,
+		IdNumber:    itme.IdNumber,
 	}
 }
 
 func BTMSumsubModelToDomain(itme model.BTMSumsub) domain.BTMSumsub {
 	return domain.BTMSumsub{
-		CustomerId: itme.CustomerId,
-		Info:       itme.Info,
-		IdNumber:   itme.IdNumber,
+		CustomerId:  itme.CustomerId,
+		ApplicantId: itme.ApplicantId,
+		Info:        itme.Info,
+		IdNumber:    itme.IdNumber,
 	}
 }
