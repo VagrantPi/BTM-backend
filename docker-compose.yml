@@ -15,8 +15,6 @@ services:
     build:
       context: .
       dockerfile: docker/frontend.Dockerfile
-    volumes:
-      - ./dist:/usr/share/nginx/html
     ports:
       - "8081:80"
     depends_on:
