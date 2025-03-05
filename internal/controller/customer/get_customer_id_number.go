@@ -67,6 +67,12 @@ func GetCustomerIdNumber(c *gin.Context) {
 			return
 		}
 
+		if data.Review.ReviewStatus != "completed" {
+			log.Error("sumsub.GetApplicantInfo ReviewStatus not completed", zap.Any("customerID", customerID), zap.Any("data", data))
+			api.ErrResponse(c, "sumsub.GetApplicantInfo", errors.InternalServer(error_code.ErrBTMSumsubIdNumberNotFound, "review status not completed"))
+			return
+		}
+
 		// 抓取 sumsub id number
 		idNumber := ""
 		if len(data.Info.IdDocs) > 0 {
