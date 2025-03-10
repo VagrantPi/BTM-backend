@@ -6,7 +6,6 @@ import (
 	"BTM-backend/pkg/error_code"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
@@ -75,9 +74,17 @@ func (repo *repository) UpdateCustomerLimit(db *gorm.DB, operationUserId uint, c
 		return err
 	}
 
-	fmt.Println("customerLimit.Role", customerLimit.Role)
+	// 如果為黑名單則不能調整限額
 	if customerLimit.Role == domain.RiskControlRoleBlack.Uint8() {
 		return errors.BadRequest(error_code.ErrRiskControlRoleIsBlack, "customer is black, cannot update limit")
+	}
+	if customerLimit.DailyLimit.Equal(newDailyLimit) && customerLimit.MonthlyLimit.Equal(newMonthlyLimit) {
+		return errors.BadRequest(error_code.ErrInvalidRequest, "no limit update")
+	}
+	isUpdateToGray := false
+	// 當為白名單，調整限額時，角色會切換成灰名單
+	if customerLimit.Role == domain.RiskControlRoleWhite.Uint8() {
+		isUpdateToGray = true
 	}
 
 	tx := db.Begin()
@@ -103,6 +110,10 @@ func (repo *repository) UpdateCustomerLimit(db *gorm.DB, operationUserId uint, c
 		DailyLimit:   newDailyLimit,
 		MonthlyLimit: newMonthlyLimit,
 	}
+	// 當為白名單，調整限額時，角色會切換成灰名單
+	if isUpdateToGray {
+		afterCustomerLimit.Role = domain.RiskControlRoleGray
+	}
 	afterCustomerLimitJsonData, err := json.Marshal(afterCustomerLimit)
 	if err != nil {
 		return errors.InternalServer(error_code.ErrDBError, "json.Marshal(afterCustomerLimit)").WithCause(err)
@@ -119,6 +130,10 @@ func (repo *repository) UpdateCustomerLimit(db *gorm.DB, operationUserId uint, c
 		return errors.InternalServer(error_code.ErrDBError, "CreateBTMChangeLog").WithCause(err)
 	}
 
+	// 更新用戶限額
+	if isUpdateToGray {
+		customerLimit.Role = domain.RiskControlRoleGray.Uint8()
+	}
 	customerLimit.DailyLimit = newDailyLimit
 	customerLimit.MonthlyLimit = newMonthlyLimit
 	customerLimit.IsCustomized = true
