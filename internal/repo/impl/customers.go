@@ -27,7 +27,9 @@ func (repo *repository) SearchCustomers(db *gorm.DB,
 
 	sql := db.Model(&model.Customer{}).
 		Select(
-			"DISTINCT ON (customers.id) customers.*",
+			"DISTINCT ON (customers.id) customers.id",
+			"customers.phone",
+			"customers.created",
 			"btm_whitelists.created_at AS first_white_list_created",
 		)
 
@@ -59,10 +61,28 @@ func (repo *repository) SearchCustomers(db *gorm.DB,
 	switch customerType {
 	case domain.CustomerTypeWhiteList:
 		sql = sql.Joins("LEFT JOIN btm_sumsubs ON customers.id::TEXT = btm_sumsubs.customer_id").
-			Where("btm_sumsubs.ban_expire_date IS NULL OR btm_sumsubs.ban_expire_date > ?", today)
+			Joins("LEFT JOIN btm_risk_control_customer_limit_settings ON customers.id::TEXT = btm_risk_control_customer_limit_settings.customer_id").
+			Where("btm_sumsubs.ban_expire_date IS NULL OR btm_sumsubs.ban_expire_date > ?", today).
+			Where("btm_risk_control_customer_limit_settings.role IS NULL OR btm_risk_control_customer_limit_settings.role = ?", domain.RiskControlRoleWhite)
 	case domain.CustomerTypeGrayList:
 		sql = sql.Joins("LEFT JOIN btm_sumsubs ON customers.id::TEXT = btm_sumsubs.customer_id").
-			Where("btm_sumsubs.ban_expire_date IS NOT NULL AND btm_sumsubs.ban_expire_date < ?", today)
+			Joins("LEFT JOIN btm_risk_control_customer_limit_settings ON customers.id::TEXT = btm_risk_control_customer_limit_settings.customer_id").
+			Where("btm_sumsubs.ban_expire_date IS NULL OR btm_sumsubs.ban_expire_date > ?", today).
+			Where("btm_risk_control_customer_limit_settings.role = ?", domain.RiskControlRoleGray)
+	case domain.CustomerTypeBlackList:
+		sql = sql.Select(
+			"DISTINCT ON (customers.id) customers.id",
+			"customers.phone",
+			"customers.created",
+			"btm_whitelists.created_at AS first_white_list_created",
+			"customers.authorized_override = 'blocked' AS is_lamassu_block",
+			"btm_risk_control_customer_limit_settings.role = 3 AS is_admin_block",
+			"UPPER(TRIM(btm_sumsubs.id_number)) = UPPER(TRIM(btm_cibs.pid)) AS is_cib_block",
+		).
+			Joins("LEFT JOIN btm_sumsubs ON customers.id::TEXT = btm_sumsubs.customer_id").
+			Joins("LEFT JOIN btm_risk_control_customer_limit_settings ON customers.id::TEXT = btm_risk_control_customer_limit_settings.customer_id").
+			Joins("LEFT JOIN btm_cibs ON btm_sumsubs.id_number = btm_cibs.pid").
+			Where("(btm_sumsubs.ban_expire_date IS NOT NULL AND btm_sumsubs.ban_expire_date < ?) OR btm_risk_control_customer_limit_settings.role = ? OR customers.authorized_override = 'blocked' OR UPPER(TRIM(btm_sumsubs.id_number)) = UPPER(TRIM(btm_cibs.pid))", today, domain.RiskControlRoleBlack)
 	}
 
 	var total int64 = 0

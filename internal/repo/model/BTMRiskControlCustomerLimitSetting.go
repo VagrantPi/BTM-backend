@@ -10,7 +10,7 @@ import (
 
 type BTMRiskControlCustomerLimitSetting struct {
 	ID                  uint            `gorm:"primarykey"`
-	CustomerId          uuid.UUID       `gorm:"not null"`
+	CustomerId          uuid.UUID       `gorm:"index; not null"`
 	Role                uint8           `gorm:"not null"`
 	DailyLimit          decimal.Decimal `gorm:"not null"`
 	MonthlyLimit        decimal.Decimal `gorm:"not null"`

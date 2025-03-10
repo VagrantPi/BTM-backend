@@ -71,7 +71,7 @@ func UpdateCustomerRiskControlLimit(c *gin.Context) {
 	err = repo.UpdateCustomerLimit(repo.GetDb(c), operationUserInfo.Id, customerID, reqBody.DailyLimit, reqBody.MonthlyLimit)
 	if err != nil {
 		log.Error("repo.UpdateCustomerLimit()", zap.Any("err", err))
-		api.ErrResponse(c, "repo.UpdateCustomerLimit()", errors.InternalServer(error_code.ErrDBError, "repo.UpdateCustomerLimit()").WithCause(err))
+		api.ErrResponse(c, "repo.UpdateCustomerLimit()", err)
 		return
 	}
 

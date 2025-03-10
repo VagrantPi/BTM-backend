@@ -6,6 +6,7 @@ import (
 	"BTM-backend/pkg/error_code"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
@@ -74,6 +75,7 @@ func (repo *repository) UpdateCustomerLimit(db *gorm.DB, operationUserId uint, c
 		return err
 	}
 
+	fmt.Println("customerLimit.Role", customerLimit.Role)
 	if customerLimit.Role == domain.RiskControlRoleBlack.Uint8() {
 		return errors.BadRequest(error_code.ErrRiskControlRoleIsBlack, "customer is black, cannot update limit")
 	}
