@@ -10,6 +10,10 @@ import (
 )
 
 func (repo *repository) CreateBTMSumsub(db *gorm.DB, btmsumsub domain.BTMSumsub) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
 	item := BTMSumsubDomainToModel(btmsumsub)
 	if err := db.Create(&item).Error; err != nil {
 		return err
@@ -18,6 +22,10 @@ func (repo *repository) CreateBTMSumsub(db *gorm.DB, btmsumsub domain.BTMSumsub)
 }
 
 func (repo *repository) GetBTMSumsub(db *gorm.DB, customerId string) (*domain.BTMSumsub, error) {
+	if db == nil {
+		return nil, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
 	var btmsumsub model.BTMSumsub
 	err := db.Where("customer_id = ?", customerId).First(&btmsumsub).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -33,20 +41,30 @@ func (repo *repository) GetBTMSumsub(db *gorm.DB, customerId string) (*domain.BT
 	return &res, nil
 }
 
+func (repo *repository) UpdateBTMSumsubBanExpireDate(db *gorm.DB, customerId string, banExpireDate int64) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	return db.Model(&model.BTMSumsub{}).Where("customer_id = ?", customerId).Update("ban_expire_date", banExpireDate).Error
+}
+
 func BTMSumsubDomainToModel(itme domain.BTMSumsub) model.BTMSumsub {
 	return model.BTMSumsub{
-		CustomerId:  itme.CustomerId,
-		ApplicantId: itme.ApplicantId,
-		Info:        itme.Info,
-		IdNumber:    itme.IdNumber,
+		CustomerId:    itme.CustomerId,
+		ApplicantId:   itme.ApplicantId,
+		Info:          itme.Info,
+		IdNumber:      itme.IdNumber,
+		BanExpireDate: itme.BanExpireDate,
 	}
 }
 
 func BTMSumsubModelToDomain(itme model.BTMSumsub) domain.BTMSumsub {
 	return domain.BTMSumsub{
-		CustomerId:  itme.CustomerId,
-		ApplicantId: itme.ApplicantId,
-		Info:        itme.Info,
-		IdNumber:    itme.IdNumber,
+		CustomerId:    itme.CustomerId,
+		ApplicantId:   itme.ApplicantId,
+		Info:          itme.Info,
+		IdNumber:      itme.IdNumber,
+		BanExpireDate: itme.BanExpireDate,
 	}
 }

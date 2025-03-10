@@ -68,6 +68,30 @@ func (repo *repository) GetBTMCIBs(db *gorm.DB, id string, limit int, page int) 
 
 }
 
+func (repo *repository) IsBTMCIBExist(db *gorm.DB, pid string) (bool, int64, error) {
+	if db == nil {
+		return false, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	// 取得現在的中華民國年日期
+	now := time.Now()
+	twYear := now.Year() - 1911
+	today := fmt.Sprintf("%03d%02d%02d", twYear, int(now.Month()), now.Day())
+
+	var cibMatch model.BTM_CIB
+	err := db.Model(&model.BTM_CIB{}).
+		Where("data_type != 'D' and expire_date >= ? and UPPER(TRIM(pid)) = UPPER(TRIM(?))", today, pid).
+		First(&cibMatch).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, 0, nil
+	} else if err != nil {
+		err = errors.InternalServer(error_code.ErrBTMSumsubGetItem, "IsBTMCIBExist err").WithCause(err)
+		return false, 0, err
+	}
+
+	return true, cibMatch.ExpireDate, nil
+}
+
 func BTMCIBDomainToModel(item domain.BTMCIB) model.BTM_CIB {
 	return model.BTM_CIB{
 		DataType:    item.DataType,

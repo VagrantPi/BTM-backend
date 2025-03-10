@@ -6,6 +6,14 @@ import (
 	"github.com/google/uuid"
 )
 
+type CustomerType int64
+
+const (
+	CustomerTypeNone      CustomerType = 1
+	CustomerTypeWhiteList CustomerType = 2
+	CustomerTypeGrayList  CustomerType = 3
+)
+
 type Customer struct {
 	ID      uuid.UUID
 	Phone   string

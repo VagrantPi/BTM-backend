@@ -4,6 +4,8 @@ import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
 	"BTM-backend/pkg/error_code"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
@@ -11,7 +13,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func (repo *repository) GetCustomers(db *gorm.DB, limit int, page int) ([]domain.CustomerWithWhiteListCreated, int, error) {
+func (repo *repository) SearchCustomers(db *gorm.DB,
+	phone, customerId, address string,
+	whitelistCreatedStartAt, whitelistCreatedEndAt, customerCreatedStartAt, customerCreatedEndAt time.Time,
+	customerType domain.CustomerType,
+	limit, page int) ([]domain.CustomerWithWhiteListCreated, int, error) {
 	if db == nil {
 		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
 	}
@@ -23,16 +29,51 @@ func (repo *repository) GetCustomers(db *gorm.DB, limit int, page int) ([]domain
 		Select(
 			"DISTINCT ON (customers.id) customers.*",
 			"btm_whitelists.created_at AS first_white_list_created",
-		).
-		Joins("LEFT JOIN btm_whitelists ON btm_whitelists.customer_id = customers.id").
-		Where("customers.phone != '' AND btm_whitelists.deleted_at ISNULL").
-		Order("customers.id ASC")
+		)
+
+	switch {
+	case !whitelistCreatedStartAt.IsZero() && !whitelistCreatedEndAt.IsZero():
+		sql = sql.Joins("INNER JOIN btm_whitelists ON customers.id = btm_whitelists.customer_id").
+			Where("btm_whitelists.created_at BETWEEN ? AND ? AND btm_whitelists.deleted_at ISNULL", whitelistCreatedStartAt, whitelistCreatedEndAt)
+	case !customerCreatedStartAt.IsZero() && !customerCreatedEndAt.IsZero():
+		sql = sql.Joins("INNER JOIN btm_whitelists ON customers.id = btm_whitelists.customer_id").
+			Where("customers.created BETWEEN ? AND ?", customerCreatedStartAt, customerCreatedEndAt)
+	case strings.TrimSpace(address) != "":
+		sql = sql.Joins("INNER JOIN btm_whitelists ON customers.id = btm_whitelists.customer_id").
+			Where("btm_whitelists.address = ? AND btm_whitelists.deleted_at ISNULL", address)
+	case strings.TrimSpace(phone) != "":
+		sql = sql.Joins("LEFT JOIN btm_whitelists ON btm_whitelists.customer_id = customers.id").
+			Where("customers.phone LIKE ? AND btm_whitelists.deleted_at ISNULL", "%"+phone+"%")
+	case strings.TrimSpace(customerId) != "":
+		sql = sql.Joins("LEFT JOIN btm_whitelists ON btm_whitelists.customer_id = customers.id").
+			Where("customers.id::TEXT LIKE ? AND btm_whitelists.deleted_at ISNULL", "%"+customerId+"%")
+	default:
+		sql = sql.Joins("LEFT JOIN btm_whitelists ON btm_whitelists.customer_id = customers.id").
+			Where("customers.phone != '' AND btm_whitelists.deleted_at ISNULL")
+	}
+
+	// 取得現在的中華民國年日期
+	now := time.Now()
+	twYear := now.Year() - 1911
+	today := fmt.Sprintf("%03d%02d%02d", twYear, int(now.Month()), now.Day())
+	switch customerType {
+	case domain.CustomerTypeWhiteList:
+		sql = sql.Joins("LEFT JOIN btm_sumsubs ON customers.id::TEXT = btm_sumsubs.customer_id").
+			Where("btm_sumsubs.ban_expire_date IS NULL OR btm_sumsubs.ban_expire_date > ?", today)
+	case domain.CustomerTypeGrayList:
+		sql = sql.Joins("LEFT JOIN btm_sumsubs ON customers.id::TEXT = btm_sumsubs.customer_id").
+			Where("btm_sumsubs.ban_expire_date IS NOT NULL AND btm_sumsubs.ban_expire_date < ?", today)
+	}
+
 	var total int64 = 0
 	if err := sql.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
-	if err := sql.Limit(limit).Offset(offset).Find(&list).Error; err != nil {
+	if err := sql.Limit(limit).
+		Offset(offset).
+		Order("customers.id ASC").
+		Find(&list).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -50,146 +91,6 @@ func (repo *repository) GetCustomerById(db *gorm.DB, id uuid.UUID) (*domain.Cust
 	}
 	customer := CustomerModelToDomain(modelCustomer)
 	return &customer, nil
-}
-
-func (repo *repository) SearchCustomersByCustomerId(db *gorm.DB, customerId string, limit int, page int) ([]domain.CustomerWithWhiteListCreated, int, error) {
-	if db == nil {
-		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
-	}
-
-	offset := (page - 1) * limit
-	list := []domain.CustomerWithWhiteListCreated{}
-
-	sql := db.Model(&model.Customer{}).
-		Select(
-			"DISTINCT ON (customers.id) customers.*",
-			"btm_whitelists.created_at AS first_white_list_created",
-		).
-		Joins("LEFT JOIN btm_whitelists ON btm_whitelists.customer_id = customers.id").
-		Where("customers.id::TEXT LIKE ? AND btm_whitelists.deleted_at ISNULL", "%"+customerId+"%").
-		Order("customers.id ASC")
-	var total int64 = 0
-	if err := sql.Count(&total).Error; err != nil {
-		return nil, 0, err
-	}
-
-	if err := sql.Limit(limit).Offset(offset).Find(&list).Error; err != nil {
-		return nil, 0, err
-	}
-
-	return list, int(total), nil
-}
-
-func (repo *repository) SearchCustomersByPhone(db *gorm.DB, phone string, limit int, page int) ([]domain.CustomerWithWhiteListCreated, int, error) {
-	if db == nil {
-		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
-	}
-
-	offset := (page - 1) * limit
-	list := []domain.CustomerWithWhiteListCreated{}
-
-	sql := db.Model(&model.Customer{}).
-		Select(
-			"DISTINCT ON (customers.id) customers.*",
-			"btm_whitelists.created_at AS first_white_list_created",
-		).
-		Joins("LEFT JOIN btm_whitelists ON btm_whitelists.customer_id = customers.id").
-		Where("customers.phone LIKE ? AND btm_whitelists.deleted_at ISNULL", "%"+phone+"%").
-		Order("customers.id ASC")
-	var total int64 = 0
-	if err := sql.Count(&total).Error; err != nil {
-		return nil, 0, err
-	}
-
-	if err := sql.Limit(limit).Offset(offset).Find(&list).Error; err != nil {
-		return nil, 0, err
-	}
-
-	return list, int(total), nil
-}
-
-func (repo *repository) SearchCustomersByAddress(db *gorm.DB, address string, limit int, page int) ([]domain.CustomerWithWhiteListCreated, int, error) {
-	if db == nil {
-		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
-	}
-
-	offset := (page - 1) * limit
-	list := []domain.CustomerWithWhiteListCreated{}
-
-	sql := db.Model(&model.Customer{}).
-		Select(
-			"DISTINCT ON (customers.id) customers.*",
-			"btm_whitelists.created_at AS first_white_list_created",
-		).
-		Joins("INNER JOIN btm_whitelists ON customers.id = btm_whitelists.customer_id").
-		Where("btm_whitelists.address = ? AND btm_whitelists.deleted_at ISNULL", address).
-		Order("customers.id ASC")
-	var total int64 = 0
-	if err := sql.Count(&total).Error; err != nil {
-		return nil, 0, err
-	}
-
-	if err := sql.Limit(limit).Offset(offset).Find(&list).Error; err != nil {
-		return nil, 0, err
-	}
-
-	return list, int(total), nil
-}
-
-func (repo *repository) SearchCustomersByCustomerCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]domain.CustomerWithWhiteListCreated, int, error) {
-	if db == nil {
-		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
-	}
-
-	offset := (page - 1) * limit
-	list := []domain.CustomerWithWhiteListCreated{}
-
-	sql := db.Model(&model.Customer{}).
-		Select(
-			"DISTINCT ON (customers.id) customers.*",
-			"btm_whitelists.created_at AS first_white_list_created",
-		).
-		Joins("INNER JOIN btm_whitelists ON customers.id = btm_whitelists.customer_id").
-		Where("customers.created BETWEEN ? AND ?", startAt, endAt).
-		Order("customers.id ASC")
-	var total int64 = 0
-	if err := sql.Count(&total).Error; err != nil {
-		return nil, 0, err
-	}
-
-	if err := sql.Limit(limit).Offset(offset).Find(&list).Error; err != nil {
-		return nil, 0, err
-	}
-
-	return list, int(total), nil
-}
-
-func (repo *repository) SearchCustomersByWhitelistCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]domain.CustomerWithWhiteListCreated, int, error) {
-	if db == nil {
-		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
-	}
-
-	offset := (page - 1) * limit
-	list := []domain.CustomerWithWhiteListCreated{}
-
-	sql := db.Model(&model.Customer{}).
-		Select(
-			"DISTINCT ON (customers.id) customers.*",
-			"btm_whitelists.created_at AS first_white_list_created",
-		).
-		Joins("INNER JOIN btm_whitelists ON customers.id = btm_whitelists.customer_id").
-		Where("btm_whitelists.created_at BETWEEN ? AND ? AND btm_whitelists.deleted_at ISNULL", startAt, endAt).
-		Order("customers.id ASC")
-	var total int64 = 0
-	if err := sql.Count(&total).Error; err != nil {
-		return nil, 0, err
-	}
-
-	if err := sql.Limit(limit).Offset(offset).Find(&list).Error; err != nil {
-		return nil, 0, err
-	}
-
-	return list, int(total), nil
 }
 
 func CustomerModelToDomain(customer model.Customer) domain.Customer {

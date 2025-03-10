@@ -10,7 +10,7 @@ import (
 var CORS = cors.New(
 	cors.Config{
 		AllowAllOrigins:  true,
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" /*, "PATCH",*/},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH"},
 		AllowHeaders:     []string{"*"},
 		ExposeHeaders:    []string{"*"},
 		AllowCredentials: true,

@@ -123,6 +123,7 @@ func CreateWhitelist(c *gin.Context) {
 		OperationUserId: operationUserInfo.Id,
 		TableName:       domain.BTMChangeLogTableNameBTMWhitelist,
 		OperationType:   domain.BTMChangeLogOperationTypeCreate,
+		CustomerId:      req.CustomerID,
 		BeforeValue:     nil,
 		AfterValue:      createJsonData,
 	})

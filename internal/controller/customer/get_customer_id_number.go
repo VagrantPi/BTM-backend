@@ -7,6 +7,7 @@ import (
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/third_party/sumsub"
+	"database/sql"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -90,16 +91,31 @@ func GetCustomerIdNumber(c *gin.Context) {
 			return
 		}
 
+		insertData := domain.BTMSumsub{
+			ApplicantId:   data.Id,
+			CustomerId:    customerID,
+			Info:          data,
+			IdNumber:      idNumber,
+			BanExpireDate: sql.NullInt64{},
+		}
+		exist, fetchExpireDate, err := repo.IsBTMCIBExist(repo.GetDb(c), idNumber)
+		if err != nil {
+			log.Error("repo.IsBTMCIBExist", zap.Any("customerID", customerID), zap.Any("err", err))
+			api.ErrResponse(c, "repo.IsBTMCIBExist", errors.InternalServer(error_code.ErrBTMSumsubCreateItem, "repo.IsBTMCIBExist").WithCause(err))
+			return
+		}
+		if exist {
+			insertData.BanExpireDate = sql.NullInt64{
+				Int64: fetchExpireDate,
+				Valid: true,
+			}
+		}
+
 		// store db
-		err = repo.CreateBTMSumsub(repo.GetDb(c), domain.BTMSumsub{
-			ApplicantId: data.Id,
-			CustomerId:  customerID,
-			Info:        data,
-			IdNumber:    idNumber,
-		})
+		err = repo.CreateBTMSumsub(repo.GetDb(c), insertData)
 		if err != nil {
 			log.Error("repo.CreateBTMSumsub", zap.Any("customerID", customerID), zap.Any("err", err))
-			api.ErrResponse(c, "repo.StoreBTMSumsub", errors.InternalServer(error_code.ErrBTMSumsubCreateItem, "repo.StoreBTMSumsub").WithCause(err))
+			api.ErrResponse(c, "repo.CreateBTMSumsub", errors.InternalServer(error_code.ErrBTMSumsubCreateItem, "repo.CreateBTMSumsub").WithCause(err))
 			return
 		}
 
@@ -110,6 +126,22 @@ func GetCustomerIdNumber(c *gin.Context) {
 			},
 		})
 		return
+	}
+
+	exist, fetchExpireDate, err := repo.IsBTMCIBExist(repo.GetDb(c), sumsubInfo.IdNumber)
+	if err != nil {
+		log.Error("repo.IsBTMCIBExist", zap.Any("customerID", customerID), zap.Any("err", err))
+		api.ErrResponse(c, "repo.IsBTMCIBExist", errors.InternalServer(error_code.ErrBTMSumsubCreateItem, "repo.IsBTMCIBExist").WithCause(err))
+		return
+	}
+	if exist && !sumsubInfo.BanExpireDate.Valid {
+		// 前幾次沒命中，現在命中
+		err := repo.UpdateBTMSumsubBanExpireDate(repo.GetDb(c), customerID.String(), fetchExpireDate)
+		if err != nil {
+			log.Error("repo.UpdateBTMSumsubBanExpireDate", zap.Any("customerID", customerID), zap.Any("err", err))
+			api.ErrResponse(c, "repo.UpdateBTMSumsubBanExpireDate", errors.InternalServer(error_code.ErrBTMSumsubCreateItem, "repo.UpdateBTMSumsubBanExpireDate").WithCause(err))
+			return
+		}
 	}
 
 	c.JSON(200, api.DefaultRep{

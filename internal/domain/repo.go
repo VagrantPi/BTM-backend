@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -48,27 +49,37 @@ type Repository interface {
 	UpsertBTMCIB(db *gorm.DB, cib BTMCIB) error
 	DeleteBTMCIB(db *gorm.DB, pid string) error
 	GetBTMCIBs(db *gorm.DB, id string, limit int, page int) (list []BTMCIB, total int64, err error)
+	IsBTMCIBExist(db *gorm.DB, pid string) (bool, int64, error)
 
 	// BTMSumsub
 	CreateBTMSumsub(db *gorm.DB, btmsumsub BTMSumsub) error
 	GetBTMSumsub(db *gorm.DB, customerId string) (*BTMSumsub, error)
+	UpdateBTMSumsubBanExpireDate(db *gorm.DB, customerId string, banExpireDate int64) error
 
 	// BTMChangeLog
 	CreateBTMChangeLog(db *gorm.DB, c BTMChangeLog) error
-	GetBTMChangeLogs(db *gorm.DB, limit int, page int) (list []BTMChangeLog, total int64, err error)
+	GetBTMChangeLogs(db *gorm.DB, tableName, customerId string, startAt, endAt time.Time, limit int, page int) (list []BTMChangeLog, total int64, err error)
+
+	// BTMRiskControlLimitSetting
+	GetRiskControlCustomerLimitSetting(db *gorm.DB, customerID uuid.UUID) (BTMRiskControlCustomerLimitSetting, error)
+	CreateCustomerLimit(db *gorm.DB, customerID uuid.UUID) error
+	UpdateCustomerLimit(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newDailyLimit, newMonthlyLimit decimal.Decimal) error
+	ChangeCustomerRole(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newRole RiskControlRole) error
+	GetRiskControlRoles() ([]RiskControlRoleKeyValue, error)
+
+	// BTMRiskControlCustomerLimitSettingChange
+	GetCustomerLimitChangeLogs(db *gorm.DB, customerID uuid.UUID, start, end time.Time, page, limit int) ([]BTMRiskControlCustomerLimitSettingChange, int64, error)
 
 	/**
 	 * lamassu original
 	 **/
 
 	// customers
-	GetCustomers(db *gorm.DB, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
 	GetCustomerById(db *gorm.DB, id uuid.UUID) (*Customer, error)
-	SearchCustomersByPhone(db *gorm.DB, phone string, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
-	SearchCustomersByCustomerId(db *gorm.DB, customerId string, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
-	SearchCustomersByAddress(db *gorm.DB, address string, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
-	SearchCustomersByWhitelistCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
-	SearchCustomersByCustomerCreatedAt(db *gorm.DB, startAt, endAt time.Time, limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
+	SearchCustomers(db *gorm.DB, phone, customerId, address string,
+		whitelistCreatedStartAt, whitelistCreatedEndAt, customerCreatedStartAt, customerCreatedEndAt time.Time,
+		customerType CustomerType,
+		limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
 
 	// userConfig
 	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)

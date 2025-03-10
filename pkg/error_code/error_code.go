@@ -15,6 +15,9 @@ const (
 	ErrBTMSumsubCreateItem       = "ErrBTMSumsubCreateItem"
 	ErrBTMSumsubIdNumberNotFound = "ErrBTMSumsubIdNumberNotFound"
 
+	// btm risk control customer limit settings
+	ErrRiskControlRoleIsBlack = "ErrRiskControlRoleIsBlack"
+
 	// system error
 	ErrInvalidRequest     = "ErrInvalidRequest"
 	ErrDBError            = "ErrDBError"

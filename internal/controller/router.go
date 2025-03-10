@@ -5,6 +5,7 @@ import (
 	"BTM-backend/internal/controller/config"
 	"BTM-backend/internal/controller/customer"
 	"BTM-backend/internal/controller/debug"
+	"BTM-backend/internal/controller/riskControl"
 	"BTM-backend/internal/controller/tx"
 	"BTM-backend/internal/controller/user"
 	"BTM-backend/internal/middleware"
@@ -25,11 +26,7 @@ func UserRouter(apiGroup *gin.RouterGroup) {
 
 func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/customer", middleware.Auth())
-	group.GET("/list", customer.GetCustomersList)
-	group.GET("/search", customer.SearchCustomers)
-	group.GET("/search/whitelist_created_at", customer.SearchCustomersByWhitelistCreatedAt)
-	group.GET("/search/customer_created_at", customer.SearchCustomersByCustomerCreatedAt)
-	group.GET("/search/address/:address", customer.SearchCustomersByAddress)
+	group.GET("/list", customer.SearchCustomers)
 	group.GET("/whitelist", customer.GetWhitelist)
 	group.GET("/whitelist/search", customer.SearchWhitelist)
 	group.POST("/whitelist", customer.CreateWhitelist)
@@ -50,11 +47,19 @@ func CibRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/list", cib.GetCibsList)
 }
 
+func RiskControlRouter(apiGroup *gin.RouterGroup) {
+	group := apiGroup.Group("/risk_control", middleware.Auth())
+	group.GET("/roles", riskControl.GetRiskControlRoles)
+	group.GET("/:customer_id/role", riskControl.GetCustomerRiskControlRole)
+	group.PATCH("/:customer_id/role", riskControl.UpdateCustomerRiskControlRole)
+	group.PATCH("/:customer_id/limit", riskControl.UpdateCustomerRiskControlLimit)
+}
+
 func InternalRouter(apiGroup *gin.RouterGroup) {
+	apiGroup.GET("/btm/logs", middleware.Auth(), debug.GetBTMChangeLogs)
+
 	group := apiGroup.Group("/btm", middleware.ServerKeyAuth())
 	group.GET("/id_number", customer.GetCustomerIdNumber)
-	group.GET("/debug/logs", debug.GetBTMChangeLogs)
 	group.POST("/cib", debug.DownlaodCIB)
 	group.POST("/add_sumsub_tag", customer.AddSumsubTag)
-
 }

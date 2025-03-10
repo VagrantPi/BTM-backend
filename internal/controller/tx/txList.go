@@ -22,7 +22,7 @@ type GetTxsListReq struct {
 	Page       int       `form:"page"`
 }
 
-type GetTxsListRepItem struct {
+type GetTxsListRep struct {
 	Total int               `json:"total"`
 	Items []domain.CashInTx `json:"items"`
 }
@@ -65,7 +65,7 @@ func GetTxsList(c *gin.Context) {
 
 	c.JSON(200, api.DefaultRep{
 		Code: 20000,
-		Data: GetTxsListRepItem{
+		Data: GetTxsListRep{
 			Total: total,
 			Items: txs,
 		},

@@ -17,6 +17,8 @@ func main() {
 		&model.BTM_CIB{},
 		&model.BTMSumsub{},
 		&model.BTMChangeLog{},
+		&model.BTMRiskControlCustomerLimitSetting{},
+		&model.BTMRiskControlLimitSetting{},
 	); err != nil {
 		panic(err)
 	}
@@ -68,6 +70,18 @@ BEGIN
         CREATE INDEX idx_cash_in_txs_fiat_nonzero ON cash_in_txs (fiat) WHERE fiat != 0;
     END IF;
 END $$;
+`).Error; err != nil {
+		panic(err)
+	}
+
+	// 2025_03_07_新增初始限額
+	if err := db.Exec(`
+INSERT INTO "public"."btm_risk_control_limit_settings" ("role", "daily_limit", "monthly_limit", "created_at", "updated_at")
+VALUES 
+    (1, '300000', '1000000', NOW(), NOW()),
+    (2, '250000', '700000', NOW(), NOW()),
+    (3, '0', '0', NOW(), NOW())
+ON CONFLICT ("role") DO NOTHING;
 `).Error; err != nil {
 		panic(err)
 	}

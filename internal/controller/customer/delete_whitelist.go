@@ -18,11 +18,6 @@ type DeleteWhitelistReq struct {
 	ID int64 `json:"id" binding:"required"`
 }
 
-type DeleteWhitelistRep struct {
-	Code int         `json:"code"`
-	Data interface{} `json:"data"`
-}
-
 func DeleteWhitelist(c *gin.Context) {
 	log := logger.Zap().WithClassFunction("api", "DeleteWhitelist")
 	defer func() {
@@ -87,6 +82,7 @@ func DeleteWhitelist(c *gin.Context) {
 		OperationUserId: operationUserInfo.Id,
 		TableName:       domain.BTMChangeLogTableNameBTMWhitelist,
 		OperationType:   domain.BTMChangeLogOperationTypeDelete,
+		CustomerId:      beforeDeleteWhitelist.CustomerID,
 		BeforeValue:     beforeDeleteWhitelistJsonData,
 		AfterValue:      nil,
 	})

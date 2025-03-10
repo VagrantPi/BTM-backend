@@ -19,11 +19,6 @@ type GetWhitelistReq struct {
 	Page       int    `form:"page"`
 }
 
-type GetWhitelistRep struct {
-	Code int              `json:"code"`
-	Data GetWhitelistData `json:"data"`
-}
-
 type GetWhitelistData struct {
 	Total int64                 `json:"total"`
 	Items []domain.BTMWhitelist `json:"items"`
