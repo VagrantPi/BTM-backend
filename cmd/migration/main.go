@@ -19,6 +19,7 @@ func main() {
 		&model.BTMChangeLog{},
 		&model.BTMRiskControlCustomerLimitSetting{},
 		&model.BTMRiskControlLimitSetting{},
+		&model.BTMInvoice{},
 	); err != nil {
 		panic(err)
 	}

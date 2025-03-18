@@ -17,4 +17,5 @@ type BTMSumsub struct {
 	Info          domain.SumsubData `gorm:"type:json; not null"`
 	IdNumber      string            `gorm:"uniqueIndex; not null"`
 	BanExpireDate sql.NullInt64     `gorm:"index"`
+	Email         string
 }

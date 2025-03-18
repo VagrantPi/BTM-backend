@@ -12,4 +12,5 @@ type BTMSumsub struct {
 	Info          SumsubData
 	IdNumber      string
 	BanExpireDate sql.NullInt64
+	Email         string
 }
