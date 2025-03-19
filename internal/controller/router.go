@@ -45,6 +45,7 @@ func TxRouter(apiGroup *gin.RouterGroup) {
 func CibRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/cib", middleware.Auth())
 	group.GET("/list", cib.GetCibsList)
+	group.POST("/upload", cib.UploadCib)
 }
 
 func RiskControlRouter(apiGroup *gin.RouterGroup) {
