@@ -18,4 +18,5 @@ type BTMSumsub struct {
 	IdNumber      string            `gorm:"uniqueIndex; not null"`
 	BanExpireDate sql.NullInt64     `gorm:"index"`
 	Email         string
+	Phone         string
 }

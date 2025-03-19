@@ -120,6 +120,8 @@ type SumsubData struct {
 	Lang              string                   `json:"lang"`
 	Type              string                   `json:"type"`
 	RiskLabels        SumsubDataRiskLabels     `json:"riskLabels"`
+	Email             string                   `json:"email"`
+	Phone             string                   `json:"phone"`
 }
 
 type SumsubDataResApplicantIdDoc struct {

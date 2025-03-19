@@ -55,6 +55,18 @@ func GetCustomerIdNumber(c *gin.Context) {
 		api.ErrResponse(c, "repo.GetBTMSumsub", errors.InternalServer(error_code.ErrBTMSumsubGetItem, "repo.GetBTMSumsub").WithCause(err))
 		return
 	}
+
+	// 如果沒有存 email 則清除 DB 快取
+	if sumsubInfo != nil && sumsubInfo.Email == "" {
+		err := repo.DeleteBTMSumsub(repo.GetDb(c), customerID.String())
+		if err != nil {
+			log.Error("repo.DeleteBTMSumsub", zap.Any("customerID", customerID), zap.Any("err", err))
+			api.ErrResponse(c, "repo.DeleteBTMSumsub", errors.InternalServer(error_code.ErrDBError, "repo.DeleteBTMSumsub").WithCause(err))
+			return
+		}
+		sumsubInfo = nil
+	}
+
 	if sumsubInfo == nil {
 		// cache lock
 		fetchSumsubLock.Lock()
@@ -97,6 +109,8 @@ func GetCustomerIdNumber(c *gin.Context) {
 			Info:          data,
 			IdNumber:      idNumber,
 			BanExpireDate: sql.NullInt64{},
+			Email:         data.Email,
+			Phone:         data.Phone,
 		}
 		exist, fetchExpireDate, err := repo.IsBTMCIBExist(repo.GetDb(c), idNumber)
 		if err != nil {

@@ -49,6 +49,14 @@ func (repo *repository) UpdateBTMSumsubBanExpireDate(db *gorm.DB, customerId str
 	return db.Model(&model.BTMSumsub{}).Where("customer_id = ?", customerId).Update("ban_expire_date", banExpireDate).Error
 }
 
+func (repo *repository) DeleteBTMSumsub(db *gorm.DB, customerId string) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	return db.Unscoped().Delete(&model.BTMSumsub{}, "customer_id = ?", customerId).Error
+}
+
 func BTMSumsubDomainToModel(itme domain.BTMSumsub) model.BTMSumsub {
 	return model.BTMSumsub{
 		CustomerId:    itme.CustomerId,
@@ -56,6 +64,8 @@ func BTMSumsubDomainToModel(itme domain.BTMSumsub) model.BTMSumsub {
 		Info:          itme.Info,
 		IdNumber:      itme.IdNumber,
 		BanExpireDate: itme.BanExpireDate,
+		Email:         itme.Email,
+		Phone:         itme.Phone,
 	}
 }
 
@@ -66,5 +76,7 @@ func BTMSumsubModelToDomain(itme model.BTMSumsub) domain.BTMSumsub {
 		Info:          itme.Info,
 		IdNumber:      itme.IdNumber,
 		BanExpireDate: itme.BanExpireDate,
+		Email:         itme.Email,
+		Phone:         itme.Phone,
 	}
 }

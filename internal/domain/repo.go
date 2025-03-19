@@ -55,6 +55,7 @@ type Repository interface {
 	CreateBTMSumsub(db *gorm.DB, btmsumsub BTMSumsub) error
 	GetBTMSumsub(db *gorm.DB, customerId string) (*BTMSumsub, error)
 	UpdateBTMSumsubBanExpireDate(db *gorm.DB, customerId string, banExpireDate int64) error
+	DeleteBTMSumsub(db *gorm.DB, customerId string) error
 
 	// BTMChangeLog
 	CreateBTMChangeLog(db *gorm.DB, c BTMChangeLog) error
