@@ -63,6 +63,18 @@ func LoginBTMAdmin(c *gin.Context) {
 		return
 	}
 
+	err = repo.CreateLoginLog(repo.GetDb(c), domain.BTMLoginLog{
+		UserID:   user.Id,
+		UserName: req.Username,
+		IP:       c.ClientIP(),
+		Browser:  c.Request.UserAgent(),
+	})
+	if err != nil {
+		log.Error("CreateLoginLog error", zap.Any("err", err))
+		api.ErrResponse(c, "CreateLoginLog error", errors.InternalServer(error_code.ErrDiError, "CreateLoginLog").WithCause(err))
+		return
+	}
+
 	token, err := tools.GenerateJWT(domain.UserJwt{
 		Account: req.Username,
 		Role:    user.Roles,

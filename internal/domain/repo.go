@@ -40,6 +40,10 @@ type Repository interface {
 	CreateOrUpdateLastLoginToken(db *gorm.DB, userID uint, loginToken string) error
 	DeleteLastLoginToken(db *gorm.DB, userID uint) error
 
+	// BTMLoginLog
+	CreateLoginLog(db *gorm.DB, log BTMLoginLog) error
+	GetLoginLogs(db *gorm.DB, limit int, page int) ([]BTMLoginLog, int64, error)
+
 	// BTMRole
 	InitRawRole(db *gorm.DB) error
 	GetRawRoleByRoleName(db *gorm.DB, roleName string) (role BTMRole, err error)

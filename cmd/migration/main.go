@@ -24,8 +24,11 @@ func main() {
 		// 2025_03_21_新增限額功能
 		&model.BTMRiskControlCustomerLimitSetting{},
 		&model.BTMRiskControlLimitSetting{},
+		&model.BTMRiskControlThreshold{},
 		// &model.BTMRiskControlMachineRequestLimitLog{},
-		// &model.BTMRiskControlThreshold{},
+
+		// 2025_03_24_新增後台登入日誌
+		&model.BTMLoginLog{},
 	); err != nil {
 		panic(err)
 	}

@@ -48,3 +48,24 @@ func GetBTMUserRoles(c *gin.Context) {
 	c.Done()
 
 }
+
+type CreateUserAndRoleReq struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
+func CreateUserAndRole(c *gin.Context) {
+	log := logger.Zap().WithClassFunction("api", "CreateUserAndRole")
+	defer func() {
+		_ = log.Sync()
+	}()
+	c.Set("log", log)
+
+	// repo, err := di.NewRepo()
+	// if err != nil {
+	// 	log.Error("di.NewRepo()", zap.Any("err", err))
+	// 	api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
+	// 	return
+	// }
+
+}
