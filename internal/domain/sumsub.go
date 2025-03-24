@@ -291,12 +291,12 @@ func (s *SumsubData) Scan(value interface{}) error {
 
 	bytesValue, ok := value.([]byte)
 	if !ok {
-		return errors.New("Invalid scan SumsubData")
+		return errors.New("invalid scan SumsubData")
 	}
 
 	data := SumsubData{}
 	if err := json.Unmarshal(bytesValue, &data); err != nil {
-		return errors.New("Invalid scan SumsubData unmarshal")
+		return errors.New("invalid scan SumsubData unmarshal")
 	}
 
 	*s = data

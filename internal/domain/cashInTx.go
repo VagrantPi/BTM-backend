@@ -44,4 +44,10 @@ type CashInTx struct {
 	TxCustomerPhotoPath  string          `json:"txCustomerPhotoPath"`
 	WalletScore          int16           `json:"walletScore"`
 	Email                string          `json:"email"`
+
+	// device
+	DeviceName string `json:"deviceName"`
+
+	// invoice
+	InvoiceNo string `json:"invoiceNo"`
 }

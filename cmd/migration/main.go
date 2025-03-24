@@ -17,9 +17,15 @@ func main() {
 		&model.BTM_CIB{},
 		&model.BTMSumsub{},
 		&model.BTMChangeLog{},
+
+		// 2025_03_21_發票紀錄
+		&model.BTMInvoice{},
+
+		// 2025_03_21_新增限額功能
 		&model.BTMRiskControlCustomerLimitSetting{},
 		&model.BTMRiskControlLimitSetting{},
-		&model.BTMInvoice{},
+		// &model.BTMRiskControlMachineRequestLimitLog{},
+		// &model.BTMRiskControlThreshold{},
 	); err != nil {
 		panic(err)
 	}
@@ -84,6 +90,16 @@ VALUES
     (3, '0', '0', NOW(), NOW())
 ON CONFLICT ("role") DO NOTHING;
 `).Error; err != nil {
+		panic(err)
+	}
+
+	// 2025_03_21_新增初始白名單與灰名單門檻
+	if err := db.Exec(`
+		INSERT INTO "public"."btm_risk_control_thresholds" ("role", "threshold", "threshold_days", "created_at") VALUES (1, '500000', 7, NOW()) ON CONFLICT ("role", "threshold") DO NOTHING;
+		INSERT INTO "public"."btm_risk_control_thresholds" ("role", "threshold", "threshold_days", "created_at") VALUES (1, '2000000', 60, NOW()) ON CONFLICT ("role", "threshold") DO NOTHING;
+		INSERT INTO "public"."btm_risk_control_thresholds" ("role", "threshold", "threshold_days", "created_at") VALUES (2, '400000', 7, NOW()) ON CONFLICT ("role", "threshold") DO NOTHING;
+		INSERT INTO "public"."btm_risk_control_thresholds" ("role", "threshold", "threshold_days", "created_at") VALUES (2, '1500000', 60, NOW()) ON CONFLICT ("role", "threshold") DO NOTHING;
+	`).Error; err != nil {
 		panic(err)
 	}
 }

@@ -16,18 +16,26 @@ func (repo *repository) GetCashIns(db *gorm.DB, customerID, phone string, startA
 	}
 
 	offset := (page - 1) * limit
-	list := []model.CashInTx{}
+	list := []domain.CashInTx{}
 
-	sql := db.Model(&model.CashInTx{}).Where("fiat != 0")
+	sql := db.Model(&model.CashInTx{}).
+		Select(
+			"cash_in_txs.*",
+			"devices.name AS device_name",
+			"btm_invoices.invoice_no",
+		).
+		Joins("LEFT JOIN devices ON cash_in_txs.device_id = devices.device_id").
+		Joins("LEFT JOIN btm_invoices ON cash_in_txs.id::TEXT = btm_invoices.tx_id").
+		Where("cash_in_txs.fiat != 0")
 
 	if customerID != "" {
-		sql = sql.Where("customer_id::TEXT LIKE ?", "%"+customerID+"%")
+		sql = sql.Where("cash_in_txs.customer_id::TEXT LIKE ?", "%"+customerID+"%")
 	}
 	if phone != "" {
-		sql = sql.Where("phone LIKE ?", "%"+phone+"%")
+		sql = sql.Where("cash_in_txs.phone LIKE ?", "%"+phone+"%")
 	}
 	if !startAt.IsZero() && !endAt.IsZero() {
-		sql = sql.Where("created BETWEEN ? AND ?", startAt, endAt)
+		sql = sql.Where("cash_in_txs.created BETWEEN ? AND ?", startAt, endAt)
 	}
 
 	var total int64 = 0
@@ -35,95 +43,9 @@ func (repo *repository) GetCashIns(db *gorm.DB, customerID, phone string, startA
 		return nil, 0, err
 	}
 
-	if err := sql.Order("created DESC").Limit(limit).Offset(offset).Find(&list).Error; err != nil {
+	if err := sql.Order("cash_in_txs.created DESC").Limit(limit).Offset(offset).Find(&list).Error; err != nil {
 		return nil, 0, err
 	}
 
-	resp := make([]domain.CashInTx, 0, len(list))
-	for _, tx := range list {
-		resp = append(resp, CashInTxModelToDomain(tx))
-	}
-	return resp, int(total), nil
-}
-
-func CashInTxModelToDomain(model model.CashInTx) domain.CashInTx {
-	return domain.CashInTx{
-		ID:                   model.ID,
-		DeviceID:             model.DeviceID,
-		ToAddress:            model.ToAddress,
-		CryptoAtoms:          model.CryptoAtoms,
-		CryptoCode:           model.CryptoCode,
-		Fiat:                 model.Fiat,
-		FiatCode:             model.FiatCode,
-		Fee:                  model.Fee,
-		TxHash:               model.TxHash,
-		Phone:                model.Phone,
-		Error:                model.Error,
-		Created:              model.Created,
-		Send:                 model.Send,
-		SendConfirmed:        model.SendConfirmed,
-		TimedOut:             model.TimedOut,
-		SendTime:             model.SendTime,
-		ErrorCode:            model.ErrorCode,
-		OperatorCompleted:    model.OperatorCompleted,
-		SendPending:          model.SendPending,
-		CashInFee:            model.CashInFee,
-		MinimumTx:            model.MinimumTx,
-		CustomerID:           model.CustomerID,
-		TxVersion:            model.TxVersion,
-		TermsAccepted:        model.TermsAccepted,
-		CommissionPercentage: model.CommissionPercentage,
-		RawTickerPrice:       model.RawTickerPrice,
-		IsPaperWallet:        model.IsPaperWallet,
-		Discount:             model.Discount,
-		BatchID:              model.BatchID,
-		Batched:              model.Batched,
-		BatchTime:            model.BatchTime,
-		DiscountSource:       model.DiscountSource,
-		TxCustomerPhotoAt:    model.TxCustomerPhotoAt,
-		TxCustomerPhotoPath:  model.TxCustomerPhotoPath,
-		WalletScore:          model.WalletScore,
-		Email:                model.Email,
-	}
-}
-
-func CashInTxDomainToModel(tx domain.CashInTx) model.CashInTx {
-	return model.CashInTx{
-		ID:                   tx.ID,
-		DeviceID:             tx.DeviceID,
-		ToAddress:            tx.ToAddress,
-		CryptoAtoms:          tx.CryptoAtoms,
-		CryptoCode:           tx.CryptoCode,
-		Fiat:                 tx.Fiat,
-		FiatCode:             tx.FiatCode,
-		Fee:                  tx.Fee,
-		TxHash:               tx.TxHash,
-		Phone:                tx.Phone,
-		Error:                tx.Error,
-		Created:              tx.Created,
-		Send:                 tx.Send,
-		SendConfirmed:        tx.SendConfirmed,
-		TimedOut:             tx.TimedOut,
-		SendTime:             tx.SendTime,
-		ErrorCode:            tx.ErrorCode,
-		OperatorCompleted:    tx.OperatorCompleted,
-		SendPending:          tx.SendPending,
-		CashInFee:            tx.CashInFee,
-		MinimumTx:            tx.MinimumTx,
-		CustomerID:           tx.CustomerID,
-		TxVersion:            tx.TxVersion,
-		TermsAccepted:        tx.TermsAccepted,
-		CommissionPercentage: tx.CommissionPercentage,
-		RawTickerPrice:       tx.RawTickerPrice,
-		IsPaperWallet:        tx.IsPaperWallet,
-		Discount:             tx.Discount,
-		BatchID:              tx.BatchID,
-		Batched:              tx.Batched,
-		BatchTime:            tx.BatchTime,
-		DiscountSource:       tx.DiscountSource,
-		TxCustomerPhotoAt:    tx.TxCustomerPhotoAt,
-		TxCustomerPhotoPath:  tx.TxCustomerPhotoPath,
-		WalletScore:          tx.WalletScore,
-		Email:                tx.Email,
-	}
+	return list, int(total), nil
 }

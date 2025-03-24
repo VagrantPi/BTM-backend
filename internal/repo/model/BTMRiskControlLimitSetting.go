@@ -8,9 +8,9 @@ import (
 
 type BTMRiskControlLimitSetting struct {
 	ID           uint            `gorm:"primarykey"`
-	Role         uint8           `gorm:"uniqueIndex; not null"`
-	DailyLimit   decimal.Decimal `gorm:"not null"`
-	MonthlyLimit decimal.Decimal `gorm:"not null"`
+	Role         uint8           `gorm:"uniqueIndex; not null; comment:'角色權限'"`
+	DailyLimit   decimal.Decimal `gorm:"not null; comment:'日交易限額'"`
+	MonthlyLimit decimal.Decimal `gorm:"not null; comment:'月交易限額'"`
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }

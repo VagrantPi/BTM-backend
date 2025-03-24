@@ -1,6 +1,9 @@
 package domain
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -45,6 +48,32 @@ type BTMRiskControlLimitSetting struct {
 	Role         RiskControlRole `json:"role"`
 	DailyLimit   decimal.Decimal `json:"daily_limit"`
 	MonthlyLimit decimal.Decimal `json:"monthly_limit"`
+}
+
+// Scan scan value into Jsonb, implements sql.Scanner interface
+func (s *BTMRiskControlLimitSetting) Scan(value interface{}) error {
+	if value == nil {
+		*s = BTMRiskControlLimitSetting{}
+		return nil
+	}
+
+	bytesValue, ok := value.([]byte)
+	if !ok {
+		return errors.New("invalid scan BTMRiskControlLimitSetting")
+	}
+
+	data := BTMRiskControlLimitSetting{}
+	if err := json.Unmarshal(bytesValue, &data); err != nil {
+		return errors.New("invalid scan BTMRiskControlLimitSetting unmarshal")
+	}
+
+	*s = data
+	return nil
+}
+
+// Value return json value, implement driver.Valuer interface
+func (s BTMRiskControlLimitSetting) Value() (driver.Value, error) {
+	return json.Marshal(s)
 }
 
 type BTMRiskControlLimitSettingChange struct {
