@@ -23,8 +23,11 @@ type Repository interface {
 
 	// BTMUser
 	GetBTMUserByAccount(db *gorm.DB, account string) (*BTMUser, error)
+	GetBTMUserById(db *gorm.DB, id uint) (*BTMUser, error)
 	InitAdmin(db *gorm.DB) error
-	// CreateBTMUser(db *gorm.DB, user BTMUser) error
+	CreateBTMUser(db *gorm.DB, user BTMUser) error
+	GetUsers(db *gorm.DB, limit int, page int) (list []BTMUserWithRoles, total int64, err error)
+	UpdateUserNameRoles(db *gorm.DB, id uint, account string, roles uint) error
 
 	// BTMWhitelist
 	CreateWhitelist(db *gorm.DB, whitelist *BTMWhitelist) error

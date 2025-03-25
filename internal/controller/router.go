@@ -21,6 +21,8 @@ func UserRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/info", user.GetBTMUserInfo)
 	group.POST("/logout", user.LogoutBTMAdmin)
 	group.POST("/one", user.CreateOne)
+	group.PUT("/one", user.UpdateOne)
+	group.GET("/list", user.GetUsers)
 
 	// user role
 	group.GET("/role/routes", user.GetBTMUserRoleRoutes)

@@ -14,20 +14,20 @@ import (
 	"go.uber.org/zap"
 )
 
-type CreateOneReq struct {
-	Account  string `json:"account" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Role     int64  `json:"role" binding:"required"`
+type UpdateOneReq struct {
+	Id      uint   `json:"id" binding:"required"`
+	Account string `json:"account" binding:"required"`
+	Role    int64  `json:"role" binding:"required"`
 }
 
-func CreateOne(c *gin.Context) {
-	log := logger.Zap().WithClassFunction("api", "CreateOne")
+func UpdateOne(c *gin.Context) {
+	log := logger.Zap().WithClassFunction("api", "UpdateOne")
 	defer func() {
 		_ = log.Sync()
 	}()
 	c.Set("log", log)
 
-	var req CreateOneReq
+	var req UpdateOneReq
 	err := c.BindJSON(&req)
 	if err != nil {
 		log.Error("BindJSON error", zap.Any("err", err))
@@ -35,9 +35,9 @@ func CreateOne(c *gin.Context) {
 		return
 	}
 
-	if !tools.CheckPasswordRule(req.Password) {
-		log.Error("password not match regex", zap.Any("password", req.Password))
-		api.ErrResponse(c, "password not match regex", errors.BadRequest(error_code.ErrInvalidRequest, "密碼需要包含大小寫字母、數字和特殊字符"))
+	if req.Account == "admin" {
+		log.Error("user not allowed")
+		api.ErrResponse(c, "user not allowed", errors.BadRequest(error_code.ErrInvalidRequest, "不能修改 admin Account"))
 		return
 	}
 
@@ -74,22 +74,35 @@ func CreateOne(c *gin.Context) {
 		return
 	}
 
-	// create user data
-	hash, err := tools.GeneratePasswordHash(req.Password)
+	// check user exist
+	beforeAccount, err := repo.GetBTMUserById(tx, uint(req.Id))
 	if err != nil {
-		log.Error("GeneratePasswordHash error", zap.Any("err", err))
-		api.ErrResponse(c, "GeneratePasswordHash error", errors.InternalServer(error_code.ErrInternalError, "GeneratePasswordHash error").WithCause(err))
+		log.Error("GetBTMUserById error", zap.Any("err", err))
+		api.ErrResponse(c, "GetBTMUserById error", errors.InternalServer(error_code.ErrInternalError, "GetBTMUserById error").WithCause(err))
 		return
 	}
-	user := domain.BTMUser{
-		Account:  req.Account,
-		Password: hash,
-		Roles:    req.Role,
+	if beforeAccount.Account == "admin" {
+		log.Error("user not allowed")
+		api.ErrResponse(c, "user not allowed", errors.BadRequest(error_code.ErrInvalidRequest, "不能修改 admin 權限"))
+		return
 	}
-	err = repo.CreateBTMUser(tx, user)
+	beforeAccount.Password = ""
+	beforeJsonData, err := json.Marshal(beforeAccount)
 	if err != nil {
-		log.Error("CreateUser error", zap.Any("err", err))
-		api.ErrResponse(c, "CreateUser error", errors.InternalServer(error_code.ErrInternalError, "CreateUser error").WithCause(err))
+		log.Error("json.Marshal(user)", zap.Any("err", err))
+		api.ErrResponse(c, "json.Marshal(user)", errors.InternalServer(error_code.ErrDBError, "json.Marshal(user)").WithCause(err))
+		return
+	}
+
+	// update user
+	user := domain.BTMUser{
+		Account: req.Account,
+		Roles:   req.Role,
+	}
+	err = repo.UpdateUserNameRoles(tx, uint(req.Id), req.Account, uint(req.Role))
+	if err != nil {
+		log.Error("UpdateOne error", zap.Any("err", err))
+		api.ErrResponse(c, "UpdateOne error", errors.InternalServer(error_code.ErrInternalError, "UpdateOne error").WithCause(err))
 		return
 	}
 
@@ -101,9 +114,8 @@ func CreateOne(c *gin.Context) {
 		return
 	}
 
-	// 資安防呆
 	user.Password = ""
-	createJsonData, err := json.Marshal(user)
+	afterJsonData, err := json.Marshal(user)
 	if err != nil {
 		log.Error("json.Marshal(user)", zap.Any("err", err))
 		api.ErrResponse(c, "json.Marshal(user)", errors.InternalServer(error_code.ErrDBError, "json.Marshal(user)").WithCause(err))
@@ -113,14 +125,22 @@ func CreateOne(c *gin.Context) {
 	err = repo.CreateBTMChangeLog(tx, domain.BTMChangeLog{
 		OperationUserId: operationUserInfo.Id,
 		TableName:       domain.BTMChangeLogTableNameBTMUsers,
-		OperationType:   domain.BTMChangeLogOperationTypeCreate,
+		OperationType:   domain.BTMChangeLogOperationTypeUpdate,
 		CustomerId:      nil,
-		BeforeValue:     nil,
-		AfterValue:      createJsonData,
+		BeforeValue:     beforeJsonData,
+		AfterValue:      afterJsonData,
 	})
 	if err != nil {
 		log.Error("CreateBTMChangeLog err", zap.Any("err", err))
 		api.ErrResponse(c, "CreateBTMChangeLog", errors.InternalServer(error_code.ErrDBError, "CreateBTMChangeLog").WithCause(err))
+		return
+	}
+
+	// 更新權限登出用戶
+	err = repo.DeleteLastLoginToken(tx, uint(req.Id))
+	if err != nil {
+		log.Error("DeleteLastLoginToken error", zap.Any("err", err))
+		api.ErrResponse(c, "DeleteLastLoginToken error", errors.InternalServer(error_code.ErrInternalError, "DeleteLastLoginToken error").WithCause(err))
 		return
 	}
 

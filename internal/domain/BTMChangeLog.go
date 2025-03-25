@@ -30,6 +30,7 @@ const (
 type BTMChangeLogTableName string
 
 const (
+	BTMChangeLogTableNameBTMUsers                           BTMChangeLogTableName = "btm_users"
 	BTMChangeLogTableNameBTMWhitelist                       BTMChangeLogTableName = "btm_whitelists"
 	BTMChangeLogTableNameBTMRoles                           BTMChangeLogTableName = "btm_roles"
 	BTMChangeLogTableNameBTMRiskControlCustomerLimitSetting BTMChangeLogTableName = "btm_risk_control_customer_limit_settings"

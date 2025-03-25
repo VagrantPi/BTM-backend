@@ -212,6 +212,12 @@ func UpdateRole(c *gin.Context) {
 		api.ErrResponse(c, "GetRawRoleByRoleName", errors.BadRequest(error_code.ErrDBError, "Not found").WithCause(err))
 		return
 	}
+	if beforeRoleValue.RoleName == "admin" || beforeRoleValue.RoleName == "no_role" {
+		log.Error("GetRawRoleByRoleName", zap.Any("err", err))
+		api.ErrResponse(c, "GetRawRoleByRoleName", errors.Forbidden(error_code.ErrForbidden, "不能修改 admin 和 no_role 權限"))
+		return
+	}
+
 	beforeDataJson, err := json.Marshal(beforeRoleValue)
 	if err != nil {
 		log.Error("json.Marshal(beforeRoleValue)", zap.Any("err", err))

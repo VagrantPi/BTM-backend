@@ -1,6 +1,8 @@
 package tools
 
 import (
+	"regexp"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -15,4 +17,17 @@ func GeneratePasswordHash(password string) (string, error) {
 func CheckPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(hash))
 	return err == nil
+}
+
+// CheckPasswordRule 檢查密碼是否符合規定
+func CheckPasswordRule(password string) bool {
+	return len(password) >= 10 &&
+		// 至少包含一個小寫字母
+		regexp.MustCompile(`[a-z]`).MatchString(password) &&
+		// 至少包含一個大寫字母
+		regexp.MustCompile(`[A-Z]`).MatchString(password) &&
+		// 至少包含一個數字
+		regexp.MustCompile(`[0-9]`).MatchString(password) &&
+		// 至少包含一個特殊字符
+		regexp.MustCompile(`[!@#$%^&*]`).MatchString(password)
 }

@@ -71,24 +71,25 @@ func Auth() gin.HandlerFunc {
 		_ = json.Unmarshal([]byte(role.RoleRaw), &roles)
 		c.Set("roles", domain.PageIds(roles))
 
-		// isLastLoginToken, err := repo.IsLastLoginToken(repo.GetDb(c), userInfo.Id, token)
-		// if err != nil {
-		// 	log.Error("IsLastLoginToken error", zap.Any("err", err))
-		// 	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-		// 		"code": http.StatusInternalServerError,
-		// 		"msg":  "IsLastLoginToken error",
-		// 	})
-		// 	return
-		// }
+		// 只允許一個裝置登入
+		isLastLoginToken, err := repo.IsLastLoginToken(repo.GetDb(c), userInfo.Id, token)
+		if err != nil {
+			log.Error("IsLastLoginToken error", zap.Any("err", err))
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"code": http.StatusInternalServerError,
+				"msg":  "IsLastLoginToken error",
+			})
+			return
+		}
 
-		// if !isLastLoginToken {
-		// 	log.Error("login only on device", zap.Any("userId", userInfo.Id))
-		// 	c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-		// 		"code": http.StatusForbidden,
-		// 		"msg":  "login only on device",
-		// 	})
-		// 	return
-		// }
+		if !isLastLoginToken {
+			log.Error("login only on device", zap.Any("userId", userInfo.Id))
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+				"code": http.StatusForbidden,
+				"msg":  "login only on device",
+			})
+			return
+		}
 
 		c.Set("userInfo", userInfo)
 
