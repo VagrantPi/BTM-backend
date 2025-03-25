@@ -82,7 +82,7 @@ func DeleteWhitelist(c *gin.Context) {
 		OperationUserId: operationUserInfo.Id,
 		TableName:       domain.BTMChangeLogTableNameBTMWhitelist,
 		OperationType:   domain.BTMChangeLogOperationTypeDelete,
-		CustomerId:      beforeDeleteWhitelist.CustomerID,
+		CustomerId:      &beforeDeleteWhitelist.CustomerID,
 		BeforeValue:     beforeDeleteWhitelistJsonData,
 		AfterValue:      nil,
 	})

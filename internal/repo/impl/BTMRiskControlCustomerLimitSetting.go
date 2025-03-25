@@ -45,7 +45,7 @@ func (repo *repository) CreateCustomerLimit(db *gorm.DB, customerID uuid.UUID) e
 		OperationUserId: domain.OperationUserIdSystem,
 		TableName:       domain.BTMChangeLogTableNameBTMRiskControlCustomerLimitSetting,
 		OperationType:   domain.BTMChangeLogOperationTypeCreate,
-		CustomerId:      customerID,
+		CustomerId:      &customerID,
 		BeforeValue:     nil,
 		AfterValue:      afterCustomerLimitJsonData,
 	})
@@ -122,7 +122,7 @@ func (repo *repository) UpdateCustomerLimit(db *gorm.DB, operationUserId uint, c
 		OperationUserId: operationUserId,
 		TableName:       domain.BTMChangeLogTableNameBTMRiskControlCustomerLimitSetting,
 		OperationType:   domain.BTMChangeLogOperationTypeUpdate,
-		CustomerId:      customerID,
+		CustomerId:      &customerID,
 		BeforeValue:     beforeCustomerLimitJsonData,
 		AfterValue:      afterCustomerLimitJsonData,
 	})
@@ -194,7 +194,7 @@ func (repo *repository) ChangeCustomerRole(db *gorm.DB, operationUserId uint, cu
 		OperationUserId: operationUserId,
 		TableName:       domain.BTMChangeLogTableNameBTMRiskControlCustomerLimitSetting,
 		OperationType:   domain.BTMChangeLogOperationTypeUpdate,
-		CustomerId:      customerID,
+		CustomerId:      &customerID,
 		BeforeValue:     beforeCustomerLimitJsonData,
 		AfterValue:      afterCustomerLimitJsonData,
 	})

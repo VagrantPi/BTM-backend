@@ -8,8 +8,7 @@ type BTMRole struct {
 	Db *gorm.DB `gorm:"-"`
 	gorm.Model
 
-	RoleName string
+	RoleName string `gorm:"uniqueIndex:role_name"`
 	RoleDesc string
-	Role     int64  `gorm:"uniqueIndex:role"`
 	RoleRaw  string `gorm:"type:json"`
 }

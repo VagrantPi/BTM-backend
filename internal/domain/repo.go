@@ -48,6 +48,8 @@ type Repository interface {
 	InitRawRole(db *gorm.DB) error
 	GetRawRoleByRoleName(db *gorm.DB, roleName string) (role BTMRole, err error)
 	GetRawRoles(db *gorm.DB) (roles []BTMRole, err error)
+	CreateRole(db *gorm.DB, role BTMRole) error
+	UpdateRole(db *gorm.DB, role BTMRole) error
 
 	// BTMCIB
 	UpsertBTMCIB(db *gorm.DB, cib BTMCIB) error

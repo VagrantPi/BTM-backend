@@ -22,7 +22,8 @@ func UserRouter(apiGroup *gin.RouterGroup) {
 	group.POST("/logout", user.LogoutBTMAdmin)
 	group.GET("/role/routes", user.GetBTMUserRoleRoutes)
 	group.GET("/role/roles", user.GetBTMUserRoles)
-	group.POST("/role/:name", user.CreateUserAndRole)
+	group.POST("/role", user.CreateRole)
+	group.PUT("/role", user.UpdateRole)
 }
 
 func CustomerRouter(apiGroup *gin.RouterGroup) {

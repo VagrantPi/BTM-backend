@@ -105,4 +105,18 @@ ON CONFLICT ("role") DO NOTHING;
 	`).Error; err != nil {
 		panic(err)
 	}
+
+	// 2025_03_24_移除 btm_roles.role
+	if err := db.Exec(`ALTER TABLE IF EXISTS "public"."btm_roles" DROP COLUMN IF EXISTS "role";`).Error; err != nil {
+		panic(err)
+	}
+
+	// 2025_03_25_新增 default no_role
+	if err := db.Exec(`
+		INSERT INTO "public"."btm_roles" ("role_name", "role_desc", "role_raw", "created_at")
+		VALUES ('no_role', 'default role', '[]', NOW())
+		ON CONFLICT ("role_name") DO NOTHING;
+	`).Error; err != nil {
+		panic(err)
+	}
 }

@@ -12,9 +12,9 @@ type BTMChangeLog struct {
 	gorm.Model
 
 	OperationUserId uint
-	TableName       string    `gorm:"index:operation_table,priority:1; index:operation_table_customer,priority:1"`
-	OperationType   uint8     `gorm:"index:operation_table,priority:2"`
-	CustomerId      uuid.UUID `gorm:"index:operation_table_customer,priority:2"`
+	TableName       string     `gorm:"index:operation_table,priority:1; index:operation_table_customer,priority:1"`
+	OperationType   uint8      `gorm:"index:operation_table,priority:2"`
+	CustomerId      *uuid.UUID `gorm:"index:operation_table_customer,priority:2"`
 	BeforeValue     json.RawMessage
 	AfterValue      json.RawMessage
 }
