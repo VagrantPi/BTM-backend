@@ -17,9 +17,12 @@ func UserRouter(apiGroup *gin.RouterGroup) {
 	openGroup := apiGroup.Group("/user")
 	openGroup.POST("/login", user.LoginBTMAdmin)
 
-	group := apiGroup.Group("/user", middleware.Auth())
+	group := apiGroup.Group("/user", middleware.Auth(), middleware.CheckRole())
 	group.GET("/info", user.GetBTMUserInfo)
 	group.POST("/logout", user.LogoutBTMAdmin)
+	group.POST("/one", user.CreateOne)
+
+	// user role
 	group.GET("/role/routes", user.GetBTMUserRoleRoutes)
 	group.GET("/role/roles", user.GetBTMUserRoles)
 	group.POST("/role", user.CreateRole)
@@ -27,7 +30,7 @@ func UserRouter(apiGroup *gin.RouterGroup) {
 }
 
 func CustomerRouter(apiGroup *gin.RouterGroup) {
-	group := apiGroup.Group("/customer", middleware.Auth())
+	group := apiGroup.Group("/customer", middleware.Auth(), middleware.CheckRole())
 	group.GET("/list", customer.SearchCustomers)
 	group.GET("/whitelist", customer.GetWhitelist)
 	group.GET("/whitelist/search", customer.SearchWhitelist)
@@ -36,22 +39,22 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 }
 
 func UserConfigRouter(apiGroup *gin.RouterGroup) {
-	apiGroup.GET("/config", middleware.Auth(), config.GetConfig)
+	apiGroup.GET("/config", middleware.Auth(), middleware.CheckRole(), config.GetConfig)
 }
 
 func TxRouter(apiGroup *gin.RouterGroup) {
-	group := apiGroup.Group("/tx", middleware.Auth())
+	group := apiGroup.Group("/tx", middleware.Auth(), middleware.CheckRole())
 	group.GET("/list", tx.GetTxsList)
 }
 
 func CibRouter(apiGroup *gin.RouterGroup) {
-	group := apiGroup.Group("/cib", middleware.Auth())
+	group := apiGroup.Group("/cib", middleware.Auth(), middleware.CheckRole())
 	group.GET("/list", cib.GetCibsList)
 	group.POST("/upload", cib.UploadCib)
 }
 
 func RiskControlRouter(apiGroup *gin.RouterGroup) {
-	group := apiGroup.Group("/risk_control", middleware.Auth())
+	group := apiGroup.Group("/risk_control", middleware.Auth(), middleware.CheckRole())
 	group.GET("/roles", riskControl.GetRiskControlRoles)
 	group.GET("/:customer_id/role", riskControl.GetCustomerRiskControlRole)
 	group.PATCH("/:customer_id/role", riskControl.UpdateCustomerRiskControlRole)
@@ -59,7 +62,7 @@ func RiskControlRouter(apiGroup *gin.RouterGroup) {
 }
 
 func InternalRouter(apiGroup *gin.RouterGroup) {
-	apiGroup.GET("/btm/logs", middleware.Auth(), debug.GetBTMChangeLogs)
+	apiGroup.GET("/btm/logs", middleware.Auth(), middleware.CheckRole(), debug.GetBTMChangeLogs)
 
 	group := apiGroup.Group("/btm", middleware.ServerKeyAuth())
 	group.GET("/id_number", customer.GetCustomerIdNumber)

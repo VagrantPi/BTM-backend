@@ -4,7 +4,6 @@ import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
 	"BTM-backend/pkg/error_code"
-	"BTM-backend/pkg/tools"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
@@ -16,20 +15,30 @@ func (repo *repository) InitRawRole(db *gorm.DB) error {
 		return errors.InternalServer(error_code.ErrDBError, "db is nil")
 	}
 
-	for _, role := range tools.AllRoles {
-		roleName := tools.RoleToString[role]
-		item, err := repo.GetRawRoleByRoleName(db, roleName)
-		if item.ID == 0 || err != nil {
-			err := db.Create(&domain.BTMRole{
-				RoleName: roleName,
-				RoleDesc: roleName,
-				RoleRaw:  domain.DefaultRoleRaw,
+	roleName := domain.RoleAdminName
+	item, err := repo.GetRawRoleByRoleName(db, roleName)
+	if item.ID == 0 || err != nil {
+		// 不存在則建立
+		err := db.Create(&model.BTMRole{
+			RoleName: domain.RoleAdminName,
+			RoleDesc: domain.RoleAdminName,
+			RoleRaw:  domain.DefaultRoleRaw,
+		}).Error
+		if err != nil {
+			return err
+		}
+	} else {
+		// 更新最新 DefaultRoleRaw
+		err := db.Model(&model.BTMRole{}).Where("role_name = ?", roleName).
+			Updates(map[string]interface{}{
+				"role_raw":   domain.DefaultRoleRaw,
+				"updated_at": time.Now(),
 			}).Error
-			if err != nil {
-				return err
-			}
+		if err != nil {
+			return err
 		}
 	}
+
 	return nil
 }
 
@@ -48,6 +57,15 @@ func (repo *repository) GetRawRoleByRoleName(db *gorm.DB, roleName string) (role
 	}
 
 	err = db.Where("role_name = ?", roleName).First(&role).Error
+	return
+}
+
+func (repo *repository) GetRawRoleById(db *gorm.DB, id int64) (role domain.BTMRole, err error) {
+	if db == nil {
+		return domain.BTMRole{}, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	err = db.Where("id = ?", id).First(&role).Error
 	return
 }
 

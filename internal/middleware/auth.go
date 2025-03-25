@@ -1,9 +1,13 @@
 package middleware
 
 import (
+	"BTM-backend/internal/di"
+	"BTM-backend/internal/domain"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/pkg/tools"
+	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -36,15 +40,36 @@ func Auth() gin.HandlerFunc {
 			return
 		}
 
-		// repo, err := di.NewRepo()
-		// if err != nil {
-		// 	log.Error("di repo error", zap.Any("err", err))
-		// 	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-		// 		"code": http.StatusInternalServerError,
-		// 		"msg":  "di repo error",
-		// 	})
-		// 	return
-		// }
+		repo, err := di.NewRepo()
+		if err != nil {
+			log.Error("di repo error", zap.Any("err", err))
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"code": http.StatusInternalServerError,
+				"msg":  "di repo error",
+			})
+			return
+		}
+
+		// 取得剛用戶權限路由表
+		role, ok := domain.GetTTLRoleMap(uint(userInfo.Role))
+		if !ok {
+			fetchRole, err := repo.GetRawRoleById(repo.GetDb(c), userInfo.Role)
+			if err != nil {
+				log.Error("GetRawRoleById", zap.Any("err", err))
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+					"code": http.StatusInternalServerError,
+					"msg":  "GetRawRoleById error",
+				})
+				return
+			}
+			// TTL 不宜太長，因為前端可以動態更動
+			domain.SetTTLRoleMap(uint(userInfo.Role), fetchRole, time.Now().Add(1*time.Minute).UnixNano())
+			role = &fetchRole
+		}
+
+		var roles []domain.RoleItem
+		_ = json.Unmarshal([]byte(role.RoleRaw), &roles)
+		c.Set("roles", domain.PageIds(roles))
 
 		// isLastLoginToken, err := repo.IsLastLoginToken(repo.GetDb(c), userInfo.Id, token)
 		// if err != nil {

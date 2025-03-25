@@ -22,12 +22,19 @@ func GetBTMUserRoleRoutes(c *gin.Context) {
 	c.Done()
 }
 
+type BTMRoleOnlyNameResp struct {
+	ID       uint   `json:"id"`
+	RoleName string `json:"role_name"`
+}
+
 func GetBTMUserRoles(c *gin.Context) {
 	log := logger.Zap().WithClassFunction("api", "GetBTMUserRoleRoutes")
 	defer func() {
 		_ = log.Sync()
 	}()
 	c.Set("log", log)
+
+	onlyResponseName := c.Query("only_name") == "true"
 
 	repo, err := di.NewRepo()
 	if err != nil {
@@ -43,12 +50,27 @@ func GetBTMUserRoles(c *gin.Context) {
 		return
 	}
 
+	if onlyResponseName {
+		var onlyNameList []BTMRoleOnlyNameResp
+		for _, v := range list {
+			onlyNameList = append(onlyNameList, BTMRoleOnlyNameResp{
+				ID:       v.ID,
+				RoleName: v.RoleName,
+			})
+		}
+		c.JSON(200, api.DefaultRep{
+			Code: 20000,
+			Data: onlyNameList,
+		})
+		c.Done()
+		return
+	}
+
 	c.JSON(200, api.DefaultRep{
 		Code: 20000,
 		Data: list,
 	})
 	c.Done()
-
 }
 
 type CreateRoleReq struct {
@@ -209,6 +231,9 @@ func UpdateRole(c *gin.Context) {
 		api.ErrResponse(c, "UpdateRole error", errors.InternalServer(error_code.ErrDiError, "UpdateRole").WithCause(err))
 		return
 	}
+
+	// delete cache
+	domain.CleanTTLRoleMap(uint(beforeRoleValue.ID))
 
 	afterDataJson, err := json.Marshal(updateData)
 	if err != nil {
