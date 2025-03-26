@@ -70,7 +70,7 @@ func UpdateOne(c *gin.Context) {
 	}
 	if role.RoleName == "admin" {
 		log.Error("role not allowed")
-		api.ErrResponse(c, "role not allowed", errors.Forbidden(error_code.ErrForbidden, "不能新增 admin 權限"))
+		api.ErrResponse(c, "role not allowed", errors.Forbidden(error_code.ErrForbidden, "不能修改 admin 權限"))
 		return
 	}
 

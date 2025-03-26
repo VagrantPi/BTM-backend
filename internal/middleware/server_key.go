@@ -15,7 +15,8 @@ func ServerKeyAuth() gin.HandlerFunc {
 		// Check if token exists
 		if token == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"msg": "Missing server key token in header",
+				"code": http.StatusUnauthorized,
+				"msg":  "Missing server key token in header",
 			})
 			return
 		}
@@ -25,7 +26,7 @@ func ServerKeyAuth() gin.HandlerFunc {
 
 		// Check if SERVER_KEY is set
 		if serverKey == "" {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"code": http.StatusUnauthorized,
 				"msg":  "SERVER_KEY environment variable is not set",
 			})

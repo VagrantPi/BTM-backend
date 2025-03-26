@@ -18,8 +18,8 @@ func CheckRole() gin.HandlerFunc {
 		rolesRaw, _ := c.Get("roles")
 		roles, ok := rolesRaw.([]string)
 		if !ok {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"code": http.StatusUnauthorized,
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+				"code": http.StatusForbidden,
 				"msg":  "roles not found",
 			})
 			return

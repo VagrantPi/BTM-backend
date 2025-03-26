@@ -84,9 +84,9 @@ func Auth() gin.HandlerFunc {
 
 		if !isLastLoginToken {
 			log.Error("login only on device", zap.Any("userId", userInfo.Id))
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-				"code": http.StatusForbidden,
-				"msg":  "login only on device",
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"code": http.StatusUnauthorized,
+				"msg":  "只能登入單一裝置，請先登出其他裝置在進行登入",
 			})
 			return
 		}
