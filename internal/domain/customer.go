@@ -24,6 +24,9 @@ type Customer struct {
 type CustomerWithWhiteListCreated struct {
 	ID                    uuid.UUID `json:"id"`
 	Phone                 string    `json:"phone"`
+	EmailHash             string    `json:"email_hash"`
+	InfoHash              string    `json:"info_hash"`
+	Name                  string    `json:"name"`
 	Created               time.Time `json:"created_at"`
 	FirstWhiteListCreated time.Time `json:"first_white_list_created"`
 	IsLamassuBlock        bool      `json:"is_lamassu_block"`

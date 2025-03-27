@@ -2,25 +2,16 @@ package customer
 
 import (
 	"BTM-backend/internal/di"
-	"BTM-backend/internal/domain"
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/third_party/sumsub"
-	"database/sql"
-	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
-
-var fetchSumsubLock *sync.Mutex
-
-func init() {
-	fetchSumsubLock = &sync.Mutex{}
-}
 
 type GetCustomerIdNumberRes struct {
 	IdNumber string `json:"id_number"`
@@ -57,7 +48,7 @@ func GetCustomerIdNumber(c *gin.Context) {
 	}
 
 	// 如果沒有存 email 則清除 DB 快取
-	if sumsubInfo != nil && sumsubInfo.Email == "" {
+	if sumsubInfo != nil && (sumsubInfo.EmailHash == "" || sumsubInfo.InspectionId == "") {
 		err := repo.DeleteBTMSumsub(repo.GetDb(c), customerID.String())
 		if err != nil {
 			log.Error("repo.DeleteBTMSumsub", zap.Any("customerID", customerID), zap.Any("err", err))
@@ -68,68 +59,11 @@ func GetCustomerIdNumber(c *gin.Context) {
 	}
 
 	if sumsubInfo == nil {
-		// cache lock
-		fetchSumsubLock.Lock()
-		defer fetchSumsubLock.Unlock()
-
 		// fetch sumsub
-		data, err := sumsub.GetApplicantInfo(customerID.String())
+		idNumber, err := sumsub.FetchDataAdapter(c, log, repo, customerID.String())
 		if err != nil {
-			log.Error("sumsub.GetApplicantInfo", zap.Any("customerID", customerID), zap.Any("err", err))
-			api.ErrResponse(c, "sumsub.GetApplicantInfo", errors.InternalServer(error_code.ErrBTMSumsubGetItem, "sumsub.GetApplicantInfo").WithCause(err))
-			return
-		}
-
-		if data.Review.ReviewStatus != "completed" {
-			log.Error("sumsub.GetApplicantInfo ReviewStatus not completed", zap.Any("customerID", customerID), zap.Any("data", data))
-			api.ErrResponse(c, "sumsub.GetApplicantInfo", errors.InternalServer(error_code.ErrBTMSumsubIdNumberNotFound, "review status not completed"))
-			return
-		}
-
-		// 抓取 sumsub id number
-		idNumber := ""
-		if len(data.Info.IdDocs) > 0 {
-			for _, v := range data.Info.IdDocs {
-				if v.IdDocType == "ID_CARD" {
-					idNumber = v.Number
-					break
-				}
-			}
-		}
-
-		if idNumber == "" {
-			log.Error("idNumber is empty", zap.Any("customerID", customerID), zap.Any("idNumber", idNumber))
-			api.ErrResponse(c, "idNumber is empty", errors.InternalServer(error_code.ErrBTMSumsubIdNumberNotFound, "idNumber is empty"))
-			return
-		}
-
-		insertData := domain.BTMSumsub{
-			ApplicantId:   data.Id,
-			CustomerId:    customerID,
-			Info:          data,
-			IdNumber:      idNumber,
-			BanExpireDate: sql.NullInt64{},
-			Email:         data.Email,
-			Phone:         data.Phone,
-		}
-		exist, fetchExpireDate, err := repo.IsBTMCIBExist(repo.GetDb(c), idNumber)
-		if err != nil {
-			log.Error("repo.IsBTMCIBExist", zap.Any("customerID", customerID), zap.Any("err", err))
-			api.ErrResponse(c, "repo.IsBTMCIBExist", errors.InternalServer(error_code.ErrBTMSumsubCreateItem, "repo.IsBTMCIBExist").WithCause(err))
-			return
-		}
-		if exist {
-			insertData.BanExpireDate = sql.NullInt64{
-				Int64: fetchExpireDate,
-				Valid: true,
-			}
-		}
-
-		// store db
-		err = repo.CreateBTMSumsub(repo.GetDb(c), insertData)
-		if err != nil {
-			log.Error("repo.CreateBTMSumsub", zap.Any("customerID", customerID), zap.Any("err", err))
-			api.ErrResponse(c, "repo.CreateBTMSumsub", errors.InternalServer(error_code.ErrBTMSumsubCreateItem, "repo.CreateBTMSumsub").WithCause(err))
+			log.Error("sumsub.FetchDataAdapter", zap.Any("customerID", customerID), zap.Any("err", err))
+			api.ErrResponse(c, "sumsub.FetchDataAdapter", errors.InternalServer(error_code.ErrBTMSumsubGetItem, "sumsub.FetchDataAdapter").WithCause(err))
 			return
 		}
 

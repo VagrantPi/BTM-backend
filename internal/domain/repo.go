@@ -63,7 +63,7 @@ type Repository interface {
 	IsBTMCIBExist(db *gorm.DB, pid string) (bool, int64, error)
 
 	// BTMSumsub
-	CreateBTMSumsub(db *gorm.DB, btmsumsub BTMSumsub) error
+	UpsertBTMSumsub(db *gorm.DB, btmsumsub BTMSumsub) error
 	GetBTMSumsub(db *gorm.DB, customerId string) (*BTMSumsub, error)
 	UpdateBTMSumsubBanExpireDate(db *gorm.DB, customerId string, banExpireDate int64) error
 	DeleteBTMSumsub(db *gorm.DB, customerId string) error
@@ -88,7 +88,7 @@ type Repository interface {
 
 	// customers
 	GetCustomerById(db *gorm.DB, id uuid.UUID) (*Customer, error)
-	SearchCustomers(db *gorm.DB, phone, customerId, address string,
+	SearchCustomers(db *gorm.DB, phone, customerId, address, emailHash, name string,
 		whitelistCreatedStartAt, whitelistCreatedEndAt, customerCreatedStartAt, customerCreatedEndAt time.Time,
 		customerType CustomerType,
 		limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
@@ -98,4 +98,8 @@ type Repository interface {
 
 	// cashInTx
 	GetCashIns(db *gorm.DB, customerID, phone string, startAt, endAt time.Time, limit int, page int) ([]CashInTx, int, error)
+}
+
+type Count struct {
+	Count int `json:"count"`
 }

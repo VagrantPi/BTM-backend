@@ -119,4 +119,12 @@ ON CONFLICT ("role") DO NOTHING;
 	`).Error; err != nil {
 		panic(err)
 	}
+
+	// 2025_03_26_加密 BTMSumsub
+	if err := db.Exec(`
+		ALTER TABLE IF EXISTS "public"."btm_sumsubs" DROP COLUMN IF EXISTS "email";
+		ALTER TABLE IF EXISTS "public"."btm_sumsubs" DROP COLUMN IF EXISTS "info";
+	`).Error; err != nil {
+		panic(err)
+	}
 }

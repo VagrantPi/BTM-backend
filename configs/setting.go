@@ -9,14 +9,15 @@ import (
 var C Config
 
 type Config struct {
-	Port          string
-	ServerKey     string
-	Gin           GinConfig
-	TimeoutSecond time.Duration
-	Db            DbConfig
-	JWT           JWTConfig
-	Cib           CibConfig
-	Sumsub        SumsubConfig
+	Port                    string
+	ServerKey               string
+	SensitiveDataEncryptKey string
+	Gin                     GinConfig
+	TimeoutSecond           time.Duration
+	Db                      DbConfig
+	JWT                     JWTConfig
+	Cib                     CibConfig
+	Sumsub                  SumsubConfig
 }
 
 type GinConfig struct {
@@ -49,16 +50,18 @@ type CibConfig struct {
 }
 
 type SumsubConfig struct {
-	ApiUrl    string
-	AppSecret string
-	AppToken  string
+	ApiUrl           string
+	AppSecret        string
+	AppToken         string
+	WebhookSecretKey string
 }
 
 func loadConfig() {
 	C = Config{
-		Port:          viper.GetString("port"),
-		ServerKey:     viper.GetString("server_key"),
-		TimeoutSecond: viper.GetDuration("timeout_second"),
+		Port:                    viper.GetString("port"),
+		ServerKey:               viper.GetString("server_key"),
+		SensitiveDataEncryptKey: viper.GetString("sensitive_data_encrypt_key"),
+		TimeoutSecond:           viper.GetDuration("timeout_second"),
 		Gin: GinConfig{
 			Mode: viper.GetString("gin.mode"),
 		},
@@ -85,9 +88,10 @@ func loadConfig() {
 			ZipPwd:  viper.GetString("cib.zip_pwd"),
 		},
 		Sumsub: SumsubConfig{
-			ApiUrl:    viper.GetString("sumsub.api_url"),
-			AppSecret: viper.GetString("sumsub.app_secret"),
-			AppToken:  viper.GetString("sumsub.app_token"),
+			ApiUrl:           viper.GetString("sumsub.api_url"),
+			AppSecret:        viper.GetString("sumsub.app_secret"),
+			AppToken:         viper.GetString("sumsub.app_token"),
+			WebhookSecretKey: viper.GetString("sumsub.webhook_secret_key"),
 		},
 	}
 }

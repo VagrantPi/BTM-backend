@@ -40,6 +40,7 @@ const (
 	ErrSumsubRequest      = "ErrSumsubRequest"
 	ErrSumsubBadRequest   = "ErrSumsubBadRequest"
 	ErrSumsubApiUnmarshal = "ErrSumsubApiUnmarshal"
+	ErrSumsubApiValidate  = "ErrSumsubApiValidate"
 
 	// tools
 	ErrToolsUnzipFile         = "ErrToolsUnzipFile"
@@ -49,4 +50,5 @@ const (
 	ErrToolsHttpRequestDo     = "ErrToolsHttpRequestDo"
 	ErrToolsHttpRequestIoRead = "ErrToolsHttpRequestIoRead"
 	ErrToolsHttpMarshal       = "ErrToolsHttpMarshal"
+	ErrToolsHashSensitiveData = "ErrToolsHashSensitiveData"
 )

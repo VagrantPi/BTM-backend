@@ -92,6 +92,8 @@ func URIToF2ERouterId(method string, uri string) []string {
 			F2EGraylist.String(),
 			F2EBlacklist.String(),
 		}
+	case method == "GET" && uri == "/api/btm/get_sumsub_image":
+		return []string{F2EPermission.String()} // TODO: 實作玩頁面回來改
 	default:
 		return []string{}
 	}

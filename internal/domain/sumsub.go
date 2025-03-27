@@ -282,6 +282,32 @@ type SumsubDataResApplicant struct {
 	} `json:"questionnaires,omitempty"`
 }
 
+type SumsubDataApplicantRequiredIdDocs struct {
+	IDENTITY struct {
+		ReviewResult struct {
+			ModerationComment string `json:"moderationComment"`
+			ReviewAnswer      string `json:"reviewAnswer"`
+		} `json:"reviewResult"`
+		Country   string `json:"country"`
+		IdDocType string `json:"idDocType"`
+		ImageIds  []int  `json:"imageIds"`
+	} `json:"IDENTITY"`
+	SELFIE struct {
+		ReviewResult struct {
+			ReviewAnswer string `json:"reviewAnswer"`
+		} `json:"reviewResult"`
+		Country   string `json:"country"`
+		IdDocType string `json:"idDocType"`
+		ImageIds  []int  `json:"imageIds"`
+	} `json:"SELFIE"`
+}
+
+type SumsubImageDos struct {
+	IdCardFrontImgId string
+	IdCardBackImgId  string
+	SelfieImgId      string
+}
+
 // Scan scan value into Jsonb, implements sql.Scanner interface
 func (s *SumsubData) Scan(value interface{}) error {
 	if value == nil {
@@ -314,4 +340,21 @@ func (e SumsubTag) String() string { return string(e) }
 
 const (
 	SumsubTagCib SumsubTag = "告誡名單"
+)
+
+type SumsubWebhookType string
+
+func (e SumsubWebhookType) String() string { return string(e) }
+
+const (
+	SumsubWebhookTypeApplicantReviewed    SumsubWebhookType = "applicantReviewed"
+	SumsubWebhookTypeApplicantTagsChanged SumsubWebhookType = "applicantTagsChanged"
+)
+
+type SumsubApplicantStatus string
+
+func (e SumsubApplicantStatus) String() string { return string(e) }
+
+const (
+	SumsubApplicantStatusCompleted SumsubApplicantStatus = "completed"
 )

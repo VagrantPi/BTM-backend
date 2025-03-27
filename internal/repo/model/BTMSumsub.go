@@ -1,7 +1,6 @@
 package model
 
 import (
-	"BTM-backend/internal/domain"
 	"database/sql"
 
 	"github.com/google/uuid"
@@ -12,11 +11,16 @@ type BTMSumsub struct {
 	Db *gorm.DB `gorm:"-"`
 	gorm.Model
 
-	CustomerId    uuid.UUID         `gorm:"index; not null"`
-	ApplicantId   string            `gorm:"not null"`
-	Info          domain.SumsubData `gorm:"type:json; not null"`
-	IdNumber      string            `gorm:"uniqueIndex; not null"`
-	BanExpireDate sql.NullInt64     `gorm:"index"`
-	Email         string
-	Phone         string
+	CustomerId       uuid.UUID     `gorm:"index; not null"`
+	ApplicantId      string        `gorm:"not null"`
+	IdNumber         string        `gorm:"uniqueIndex; not null"`
+	BanExpireDate    sql.NullInt64 `gorm:"index"`
+	Phone            string
+	InspectionId     string
+	IdCardFrontImgId string
+	IdCardBackImgId  string
+	SelfieImgId      string
+	Name             string
+	EmailHash        string `gorm:"index"`
+	InfoHash         string
 }

@@ -54,8 +54,8 @@ func AddSumsubTag(c *gin.Context) {
 	// add sumsub tag
 	err = sumsub.AddAndOverwriteApplicantTags(sumsubInfo.ApplicantId, []string{domain.SumsubTagCib.String()})
 	if err != nil {
-		log.Error("sumsub.GetApplicantInfo", zap.Any("customerID", customerID), zap.Any("err", err))
-		api.ErrResponse(c, "sumsub.GetApplicantInfo", errors.InternalServer(error_code.ErrBTMSumsubGetItem, "sumsub.GetApplicantInfo").WithCause(err))
+		log.Error("sumsub.AddAndOverwriteApplicantTags", zap.Any("customerID", customerID), zap.Any("err", err))
+		api.ErrResponse(c, "sumsub.AddAndOverwriteApplicantTags", errors.InternalServer(error_code.ErrBTMSumsubGetItem, "sumsub.AddAndOverwriteApplicantTags").WithCause(err))
 		return
 	}
 

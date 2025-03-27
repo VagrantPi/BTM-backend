@@ -1,11 +1,14 @@
 package customer
 
 import (
+	"BTM-backend/configs"
 	"BTM-backend/internal/di"
 	"BTM-backend/internal/domain"
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
+	"BTM-backend/pkg/tools"
+	"encoding/json"
 	"strconv"
 	"time"
 
@@ -18,6 +21,8 @@ import (
 type SearchCustomersReq struct {
 	Query              string              `form:"query"`
 	Address            string              `form:"address"`
+	Email              string              `form:"email"`
+	Name               string              `form:"name"`
 	WhiteListDateStart time.Time           `form:"white_list_date_start"`
 	WhiteListDateEnd   time.Time           `form:"white_list_date_end"`
 	CustomerDateStart  time.Time           `form:"customer_date_start"`
@@ -27,9 +32,21 @@ type SearchCustomersReq struct {
 	Page               int                 `form:"page"`
 }
 
+type SearchCustomersRep struct {
+	Total int                      `json:"total"`
+	Items []SearchCustomersRepItem `json:"items"`
+}
+
 type SearchCustomersRepItem struct {
-	Total int                                   `json:"total"`
-	Items []domain.CustomerWithWhiteListCreated `json:"items"`
+	ID                    uuid.UUID `json:"id"`
+	Phone                 string    `json:"phone"`
+	Email                 string    `json:"email"`
+	Name                  string    `json:"name"`
+	Created               time.Time `json:"created_at"`
+	FirstWhiteListCreated time.Time `json:"first_white_list_created"`
+	IsLamassuBlock        bool      `json:"is_lamassu_block"`
+	IsAdminBlock          bool      `json:"is_admin_block"`
+	IsCibBlock            bool      `json:"is_cib_block"`
 }
 
 func SearchCustomers(c *gin.Context) {
@@ -69,9 +86,18 @@ func SearchCustomers(c *gin.Context) {
 		_customerId = req.Query
 		req.Query = ""
 	}
-	var customers []domain.CustomerWithWhiteListCreated
-	var total int
-	customers, total, err = repo.SearchCustomers(repo.GetDb(c), req.Query, _customerId, req.Address,
+
+	reqEmailHash := ""
+	if req.Email != "" {
+		reqEmailHash, err = tools.HashSensitiveData(configs.C.SensitiveDataEncryptKey, req.Email)
+		if err != nil {
+			log.Error("tools.HashSensitiveData", zap.Any("err", err))
+			api.ErrResponse(c, "tools.HashSensitiveData", errors.BadRequest(error_code.ErrToolsHashSensitiveData, "tools.HashSensitiveData").WithCause(err))
+			return
+		}
+	}
+
+	customers, total, err := repo.SearchCustomers(repo.GetDb(c), req.Query, _customerId, req.Address, reqEmailHash, req.Name,
 		req.WhiteListDateStart, req.WhiteListDateEnd, req.CustomerDateStart, req.CustomerDateEnd,
 		req.CustomerType,
 		req.Limit, req.Page)
@@ -81,12 +107,46 @@ func SearchCustomers(c *gin.Context) {
 		return
 	}
 
+	resp := SearchCustomersRep{
+		Total: total,
+		Items: make([]SearchCustomersRepItem, len(customers)),
+	}
+
+	for i, v := range customers {
+		var info domain.SumsubData
+		if v.InfoHash != "" {
+			// decrypt
+			decryptedInfo, err := tools.DecryptAES256(configs.C.SensitiveDataEncryptKey, v.InfoHash)
+			if err != nil {
+				log.Error("tools.DecryptAES256", zap.Any("err", err))
+				api.ErrResponse(c, "tools.DecryptAES256", errors.BadRequest(error_code.ErrToolsHashSensitiveData, "tools.DecryptAES256").WithCause(err))
+				return
+			}
+
+			err = json.Unmarshal([]byte(decryptedInfo), &info)
+			if err != nil {
+				log.Error("json.Unmarshal", zap.Any("err", err))
+				api.ErrResponse(c, "json.Unmarshal", errors.BadRequest(error_code.ErrToolsHashSensitiveData, "json.Unmarshal").WithCause(err))
+				return
+			}
+		}
+
+		resp.Items[i] = SearchCustomersRepItem{
+			ID:                    v.ID,
+			Phone:                 v.Phone,
+			Email:                 tools.MaskEmail(info.Email),
+			Name:                  tools.MaskName(v.Name),
+			Created:               v.Created,
+			FirstWhiteListCreated: v.FirstWhiteListCreated,
+			IsLamassuBlock:        v.IsLamassuBlock,
+			IsAdminBlock:          v.IsAdminBlock,
+			IsCibBlock:            v.IsCibBlock,
+		}
+	}
+
 	c.JSON(200, api.DefaultRep{
 		Code: 20000,
-		Data: SearchCustomersRepItem{
-			Total: total,
-			Items: customers,
-		},
+		Data: resp,
 	})
 	c.Done()
 }

@@ -6,6 +6,7 @@ import (
 	"BTM-backend/internal/controller/customer"
 	"BTM-backend/internal/controller/debug"
 	"BTM-backend/internal/controller/riskControl"
+	"BTM-backend/internal/controller/sumsub"
 	"BTM-backend/internal/controller/tx"
 	"BTM-backend/internal/controller/user"
 	"BTM-backend/internal/middleware"
@@ -29,6 +30,13 @@ func UserRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/role/roles", user.GetBTMUserRoles)
 	group.POST("/role", user.CreateRole)
 	group.PUT("/role", user.UpdateRole)
+
+}
+
+func ThirdPartyRouter(apiGroup *gin.RouterGroup) {
+	group := apiGroup.Group("/3rd")
+
+	group.POST("/v1/sumsub/webhook", middleware.SumsubGuardImpl.CheckDigest, sumsub.SumsubWebhook)
 }
 
 func CustomerRouter(apiGroup *gin.RouterGroup) {
@@ -70,4 +78,5 @@ func InternalRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/id_number", customer.GetCustomerIdNumber)
 	group.POST("/cib", debug.DownlaodCIB)
 	group.POST("/add_sumsub_tag", customer.AddSumsubTag)
+	group.GET("/get_sumsub_image", customer.GetSumsubImage)
 }
