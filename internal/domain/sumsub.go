@@ -7,10 +7,15 @@ import (
 )
 
 type SumsubDataInfoAddress struct {
+	SubStreet        string `json:"subStreet"`
+	SubStreetEn      string `json:"subStreetEn"`
 	Street           string `json:"street"`
 	StreetEn         string `json:"streetEn"`
+	State            string `json:"state"`
+	StateEn          string `json:"stateEn"`
 	Town             string `json:"town"`
 	TownEn           string `json:"townEn"`
+	PostCode         string `json:"postCode"`
 	Country          string `json:"country"`
 	FormattedAddress string `json:"formattedAddress"`
 	// LocationPosition interface{} `json:"locationPosition"`
@@ -103,25 +108,47 @@ type SumsubDataRiskLabels struct {
 }
 
 type SumsubData struct {
-	Id                string                   `json:"id"`
-	CreatedAt         string                   `json:"createdAt"`
-	CreatedBy         string                   `json:"createdBy"`
-	Key               string                   `json:"key"`
-	ClientId          string                   `json:"clientId"`
-	InspectionId      string                   `json:"inspectionId"`
-	ExternalUserId    string                   `json:"externalUserId"`
-	Info              SumsubDataInfo           `json:"info"`
-	ApplicantPlatform string                   `json:"applicantPlatform"`
-	IpCountry         string                   `json:"ipCountry"`
-	AuthCode          string                   `json:"authCode"`
-	Agreement         SumsubDataAgreement      `json:"agreement"`
-	RequiredIdDocs    SumsubDataRequiredIdDocs `json:"requiredIdDocs"`
-	Review            SumsubDataReview         `json:"review"`
-	Lang              string                   `json:"lang"`
-	Type              string                   `json:"type"`
-	RiskLabels        SumsubDataRiskLabels     `json:"riskLabels"`
-	Email             string                   `json:"email"`
-	Phone             string                   `json:"phone"`
+	Id                string                     `json:"id"`
+	CreatedAt         string                     `json:"createdAt"`
+	CreatedBy         string                     `json:"createdBy"`
+	Key               string                     `json:"key"`
+	ClientId          string                     `json:"clientId"`
+	InspectionId      string                     `json:"inspectionId"`
+	ExternalUserId    string                     `json:"externalUserId"`
+	Info              SumsubDataInfo             `json:"info"`
+	ApplicantPlatform string                     `json:"applicantPlatform"`
+	IpCountry         string                     `json:"ipCountry"`
+	AuthCode          string                     `json:"authCode"`
+	Agreement         SumsubDataAgreement        `json:"agreement"`
+	RequiredIdDocs    SumsubDataRequiredIdDocs   `json:"requiredIdDocs"`
+	Review            SumsubDataReview           `json:"review"`
+	Lang              string                     `json:"lang"`
+	Type              string                     `json:"type"`
+	RiskLabels        SumsubDataRiskLabels       `json:"riskLabels"`
+	Email             string                     `json:"email"`
+	Phone             string                     `json:"phone"`
+	Questionnaires    []SumsubDataQuestionnaires `json:"questionnaires"`
+}
+
+type SumsubDataQuestionnaires struct {
+	Id       string                           `json:"id"`
+	Sections SumsubDataQuestionnairesSections `json:"sections"`
+}
+
+type SumsubDataQuestionnairesSections struct {
+	JiBenZiXun SumsubDataQuestionnairesSectionsJiBenZiXun `json:"jiBenZiXun"`
+}
+
+type SumsubDataQuestionnairesSectionsJiBenZiXun struct {
+	Items SumsubDataQuestionnairesSectionsJiBenZiXunItem `json:"items"`
+}
+
+type SumsubDataQuestionnairesSectionsJiBenZiXunItem struct {
+	NinDeZhiYe SumsubDataQuestionnairesSectionsJiBenZiXunItemNinDeZhiYe `json:"ninDeZhiYe"`
+}
+
+type SumsubDataQuestionnairesSectionsJiBenZiXunItemNinDeZhiYe struct {
+	Value string `json:"value"`
 }
 
 type SumsubDataResApplicantIdDoc struct {
@@ -358,3 +385,33 @@ func (e SumsubApplicantStatus) String() string { return string(e) }
 const (
 	SumsubApplicantStatusCompleted SumsubApplicantStatus = "completed"
 )
+
+var KYCDocOccupation = map[string]string{
+	"1":  "農牧漁林業",
+	"2":  "礦業採石業",
+	"3":  "交通運輸業",
+	"4":  "餐旅業",
+	"5":  "建築工程業",
+	"6":  "製造業",
+	"7":  "新聞廣告業",
+	"8":  "醫療保健業",
+	"9":  "娛樂業",
+	"10": "文教業",
+	"11": "宗教團體",
+	"12": "公職人員",
+	"13": "金融服務業",
+	"14": "資訊業",
+	"15": "半導體業",
+	"16": "其他服務業",
+	"17": "殯葬業",
+	"18": "進出口貿易業",
+	"19": "航空業",
+	"20": "軍事人員",
+	"21": "法律人士",
+	"22": "家管",
+	"23": "學生",
+	"24": "退休人士",
+	"25": "自由業",
+	"26": "待業中",
+	"27": "其他（未列表）",
+}

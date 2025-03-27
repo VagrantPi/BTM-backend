@@ -40,7 +40,7 @@ func _searchCustomers(db *gorm.DB,
 	case !customerCreatedStartAt.IsZero() && !customerCreatedEndAt.IsZero():
 		sql = sql.Where("customers.created BETWEEN ? AND ?", customerCreatedStartAt, customerCreatedEndAt)
 	case strings.TrimSpace(address) != "":
-		sql = sql.Where("btm_whitelists.address = ? AND btm_whitelists.deleted_at ISNULL", strings.TrimSpace(address))
+		sql = sql.Where("btm_whitelists.address = ?", strings.TrimSpace(address))
 	case strings.TrimSpace(phone) != "":
 		sql = sql.Where("customers.phone LIKE ?", "%"+strings.TrimSpace(phone)+"%")
 	case strings.TrimSpace(customerId) != "":
@@ -50,7 +50,7 @@ func _searchCustomers(db *gorm.DB,
 	case strings.TrimSpace(emailHash) != "":
 		sql = sql.Where("btm_sumsubs.email_hash = ?", strings.TrimSpace(emailHash))
 	default:
-		sql = sql.Where("customers.phone != '' AND btm_whitelists.deleted_at ISNULL")
+		sql = sql.Where("customers.phone != ''")
 	}
 
 	// 取得現在的中華民國年日期

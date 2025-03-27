@@ -18,6 +18,8 @@ const (
 	F2ECIBs F2ERouterId = "cibs"
 	// F2EAddressList - 綁定地址
 	F2EAddressList F2ERouterId = "addresslist"
+	// F2EUserInfo - 個人基本資料
+	F2EUserInfo F2ERouterId = "userInfo"
 )
 
 func (r F2ERouterId) String() string {
@@ -92,8 +94,10 @@ func URIToF2ERouterId(method string, uri string) []string {
 			F2EGraylist.String(),
 			F2EBlacklist.String(),
 		}
-	case method == "GET" && uri == "/api/btm/get_sumsub_image":
-		return []string{F2EPermission.String()} // TODO: 實作玩頁面回來改
+
+	// 用戶基本資料頁面
+	case method == "GET" && uri == "/api/customer/image":
+		return []string{F2EUserInfo.String()}
 	default:
 		return []string{}
 	}

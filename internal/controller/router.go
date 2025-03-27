@@ -42,10 +42,12 @@ func ThirdPartyRouter(apiGroup *gin.RouterGroup) {
 func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/customer", middleware.Auth(), middleware.CheckRole())
 	group.GET("/list", customer.SearchCustomers)
+	group.GET("/:customer_id/detail", customer.GetBTMUserInfoDetail)
 	group.GET("/whitelist", customer.GetWhitelist)
 	group.GET("/whitelist/search", customer.SearchWhitelist)
 	group.POST("/whitelist", customer.CreateWhitelist)
 	group.DELETE("/whitelist", customer.DeleteWhitelist)
+	group.GET("/image", customer.GetSumsubImage)
 }
 
 func UserConfigRouter(apiGroup *gin.RouterGroup) {
@@ -78,5 +80,4 @@ func InternalRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/id_number", customer.GetCustomerIdNumber)
 	group.POST("/cib", debug.DownlaodCIB)
 	group.POST("/add_sumsub_tag", customer.AddSumsubTag)
-	group.GET("/get_sumsub_image", customer.GetSumsubImage)
 }

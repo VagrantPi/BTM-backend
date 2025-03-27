@@ -180,7 +180,6 @@ func FetchDataAdapter(c *gin.Context, log *logger.Logger, repo domain.Repository
 		log.Error("json.Marshal(data)", zap.Any("data", data), zap.Any("err", err))
 		return "", errors.InternalServer(error_code.ErrBTMSumsubCreateItem, "json.Marshal").WithCause(err)
 	}
-	fmt.Println("dataByte", string(dataByte))
 	encryptedInfo, err := tools.EncryptAES256(configs.C.SensitiveDataEncryptKey, string(dataByte))
 	if err != nil {
 		log.Error("tools.EncryptAES256", zap.Any("data", data), zap.Any("err", err))

@@ -55,8 +55,23 @@ func HashSensitiveData(key, data string) (string, error) {
 	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
+func padKey(key string) []byte {
+	keyBytes := []byte(key)
+	if len(keyBytes) > 32 {
+		return keyBytes[:32] // 裁剪為 32 bytes
+	}
+	// 補足 32 bytes
+	paddedKey := make([]byte, 32)
+	copy(paddedKey, keyBytes)
+	return paddedKey
+}
+
 // EncryptAES256 encrypts a string using key
 func EncryptAES256(key, data string) (string, error) {
+	if key == "" {
+		return "", fmt.Errorf("server key is empty")
+	}
+	key = string(padKey(key))
 	if len(key) != 32 {
 		return "", fmt.Errorf("invalid key size: %d", len(key))
 	}
@@ -78,6 +93,10 @@ func EncryptAES256(key, data string) (string, error) {
 
 // DecryptAES256 decrypts a string using key
 func DecryptAES256(key, data string) (string, error) {
+	if key == "" {
+		return "", fmt.Errorf("server key is empty")
+	}
+	key = string(padKey(key))
 	if len(key) != 32 {
 		return "", fmt.Errorf("invalid key size: %d", len(key))
 	}

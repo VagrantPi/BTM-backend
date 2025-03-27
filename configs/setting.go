@@ -12,6 +12,7 @@ type Config struct {
 	Port                    string
 	ServerKey               string
 	SensitiveDataEncryptKey string
+	Env                     string
 	Gin                     GinConfig
 	TimeoutSecond           time.Duration
 	Db                      DbConfig
@@ -62,6 +63,7 @@ func loadConfig() {
 		ServerKey:               viper.GetString("server_key"),
 		SensitiveDataEncryptKey: viper.GetString("sensitive_data_encrypt_key"),
 		TimeoutSecond:           viper.GetDuration("timeout_second"),
+		Env:                     viper.GetString("env"),
 		Gin: GinConfig{
 			Mode: viper.GetString("gin.mode"),
 		},
