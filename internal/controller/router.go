@@ -37,6 +37,7 @@ func ThirdPartyRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/3rd")
 
 	group.POST("/v1/sumsub/webhook", middleware.SumsubGuardImpl.CheckDigest, sumsub.SumsubWebhook)
+	group.GET("/v1/sumsub/:applicant_id/review_history", middleware.Auth(), middleware.CheckRole(), sumsub.GetApplicantReviewHistory)
 }
 
 func CustomerRouter(apiGroup *gin.RouterGroup) {

@@ -7,6 +7,7 @@ import (
 	"BTM-backend/pkg/logger"
 	"BTM-backend/pkg/tools"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -52,8 +53,9 @@ func Auth() gin.HandlerFunc {
 		}
 
 		// 取得剛用戶權限路由表
-		role, ok := domain.GetTTLRoleMap(uint(userInfo.Role))
+		role, ok := domain.GetTTLMap[domain.RoleWithTTL](&domain.TTLRoleMap, fmt.Sprintf("%d", userInfo.Role))
 		if !ok {
+			fmt.Println("cache miss")
 			fetchRole, err := repo.GetRawRoleById(repo.GetDb(c), userInfo.Role)
 			if err != nil {
 				log.Error("GetRawRoleById", zap.Any("err", err))
@@ -63,14 +65,26 @@ func Auth() gin.HandlerFunc {
 				})
 				return
 			}
-			// TTL 不宜太長，因為前端可以動態更動
-			domain.SetTTLRoleMap(uint(userInfo.Role), fetchRole, time.Now().Add(1*time.Minute).UnixNano())
-			role = &fetchRole
+
+			expire := time.Now().Add(10 * time.Second).UnixNano()
+			// cache
+			roleWithTTL := domain.TTLMap[domain.RoleWithTTL]{
+				Cache: domain.RoleWithTTL{
+					CacheRole:  fetchRole,
+					Expiration: expire,
+				},
+				Expire: expire,
+			}
+
+			// 使用正確的結構調用 SetTTLMap
+			domain.SetTTLMap[domain.RoleWithTTL](&domain.TTLRoleMap, fmt.Sprintf("%d", userInfo.Role), roleWithTTL.Cache, roleWithTTL.Expire)
+			role = &roleWithTTL.Cache
 		}
 
 		var roles []domain.RoleItem
-		_ = json.Unmarshal([]byte(role.RoleRaw), &roles)
+		_ = json.Unmarshal([]byte(role.CacheRole.RoleRaw), &roles)
 		c.Set("roles", domain.PageIds(roles))
+		c.Set("role", role.CacheRole)
 
 		if configs.C.Env != "local" {
 			// 只允許一個裝置登入

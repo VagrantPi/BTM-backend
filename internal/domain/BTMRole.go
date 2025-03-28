@@ -33,51 +33,64 @@ type RoleWithTTL struct {
 	Expiration int64
 }
 
+// TODO: 未來改使用 redis
+type UserReviewHistory struct {
+	CacheHistory SumsubHistoryReviewData
+	Expiration   int64
+}
+
+type TTLMap[T any] struct {
+	Cache  T
+	Expire int64
+}
+
 var (
-	TTLRoleMap atomic.Value
+	TTLRoleMap        atomic.Value
+	TTLUserHistoryMap atomic.Value
 )
 
 func init() {
-	TTLRoleMap.Store(make(map[uint]RoleWithTTL))
+	TTLRoleMap.Store(make(map[string]TTLMap[RoleWithTTL]))
+	TTLUserHistoryMap.Store(make(map[string]TTLMap[UserReviewHistory]))
 }
 
-func GetTTLRoleMap(key uint) (*BTMRole, bool) {
-	roleMap := TTLRoleMap.Load().(map[uint]RoleWithTTL)
-	item, exists := roleMap[key]
+func GetTTLMap[T any](mapName *atomic.Value, key string) (*T, bool) {
+	m := mapName.Load().(map[string]TTLMap[T])
+	item, exists := m[key]
 	if !exists {
 		return nil, false
 	}
 
-	if time.Now().UnixNano() > item.Expiration {
-		_ = CleanTTLRoleMap(key)
+	if time.Now().UnixNano() > item.Expire {
+		CleanTTLMap[T](mapName, key)
 		return nil, false
 	}
 
-	return &item.CacheRole, true
+	return &item.Cache, true
 }
 
-func SetTTLRoleMap(key uint, role BTMRole, expiration int64) {
-	roleMap := TTLRoleMap.Load().(map[uint]RoleWithTTL)
-	newMap := make(map[uint]RoleWithTTL)
-	for k, v := range roleMap {
+func SetTTLMap[T any](mapName *atomic.Value, key string, item T, expiration int64) {
+	m := mapName.Load().(map[string]TTLMap[T])
+	newMap := make(map[string]TTLMap[T])
+	for k, v := range m {
 		newMap[k] = v
 	}
-	newMap[key] = RoleWithTTL{
-		CacheRole:  role,
-		Expiration: expiration,
+	newMap[key] = TTLMap[T]{
+		Cache:  item,
+		Expire: expiration,
 	}
-	TTLRoleMap.Store(newMap)
+	mapName.Store(newMap)
 }
 
-func CleanTTLRoleMap(key uint) error {
-	roleMap := TTLRoleMap.Load().(map[uint]RoleWithTTL)
-	newMap := make(map[uint]RoleWithTTL)
-	for k, v := range roleMap {
+func CleanTTLMap[T any](mapName *atomic.Value, key string) error {
+	m := mapName.Load().(map[string]TTLMap[T])
+	newMap := make(map[string]TTLMap[T])
+	for k, v := range m {
 		if k != key {
 			newMap[k] = v
 		}
 	}
-	TTLRoleMap.Store(newMap)
+	mapName.Store(newMap)
 	return nil
 }
 

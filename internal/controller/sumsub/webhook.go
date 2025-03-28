@@ -7,7 +7,6 @@ import (
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/third_party/sumsub"
-	"fmt"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -45,7 +44,6 @@ var apiLock *sync.Mutex
 var apiLockInitialFlag sync.Once
 
 func SumsubWebhook(c *gin.Context) {
-	fmt.Println("SumsubWebhook!!")
 	// init cache lock
 	apiLockInitialFlag.Do(func() {
 		apiLock = new(sync.Mutex)
@@ -77,8 +75,11 @@ func SumsubWebhook(c *gin.Context) {
 	}
 
 	// 審核後或標籤更新
-	if (req.Type == domain.SumsubWebhookTypeApplicantReviewed.String() || req.Type == domain.SumsubWebhookTypeApplicantTagsChanged.String()) &&
-		req.ReviewStatus == domain.SumsubApplicantStatusCompleted.String() {
+	if ((req.Type == domain.SumsubWebhookTypeApplicantReviewed.String() ||
+		req.Type == domain.SumsubWebhookTypeApplicantTagsChanged.String()) &&
+		req.ReviewStatus == domain.SumsubApplicantStatusCompleted.String()) ||
+		(req.Type == domain.SumsubWebhookTypeApplicantOnHold.String() &&
+			req.ReviewStatus == domain.SumsubApplicantStatusOnHold.String()) {
 
 		// fetch sumsub
 		_, err := sumsub.FetchDataAdapter(c, log, repo, req.ExternalUserId)

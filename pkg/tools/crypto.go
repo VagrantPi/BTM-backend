@@ -71,11 +71,11 @@ func EncryptAES256(key, data string) (string, error) {
 	if key == "" {
 		return "", fmt.Errorf("server key is empty")
 	}
-	key = string(padKey(key))
-	if len(key) != 32 {
-		return "", fmt.Errorf("invalid key size: %d", len(key))
+	keyBytes := padKey(key)
+	if len(keyBytes) != 32 {
+		return "", fmt.Errorf("invalid key size: %d", len(keyBytes))
 	}
-	block, err := aes.NewCipher([]byte(key))
+	block, err := aes.NewCipher(keyBytes)
 	if err != nil {
 		return "", err
 	}
@@ -96,11 +96,11 @@ func DecryptAES256(key, data string) (string, error) {
 	if key == "" {
 		return "", fmt.Errorf("server key is empty")
 	}
-	key = string(padKey(key))
-	if len(key) != 32 {
-		return "", fmt.Errorf("invalid key size: %d", len(key))
+	keyBytes := padKey(key)
+	if len(keyBytes) != 32 {
+		return "", fmt.Errorf("invalid key size: %d", len(keyBytes))
 	}
-	block, err := aes.NewCipher([]byte(key))
+	block, err := aes.NewCipher(keyBytes)
 	if err != nil {
 		return "", err
 	}

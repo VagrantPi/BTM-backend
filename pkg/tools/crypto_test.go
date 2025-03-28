@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -189,7 +188,6 @@ func TestEncryptDecryptAES256(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			encrypted, err := EncryptAES256(tt.key, tt.data)
-			fmt.Println("err", err)
 			if tt.wantErr {
 				assert.Error(t, err)
 				return

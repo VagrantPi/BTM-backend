@@ -41,6 +41,7 @@ const (
 	ErrSumsubBadRequest   = "ErrSumsubBadRequest"
 	ErrSumsubApiUnmarshal = "ErrSumsubApiUnmarshal"
 	ErrSumsubApiValidate  = "ErrSumsubApiValidate"
+	ErrSumsubApiError     = "ErrSumsubApiError"
 
 	// tools
 	ErrToolsUnzipFile         = "ErrToolsUnzipFile"

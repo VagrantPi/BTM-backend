@@ -2,6 +2,7 @@ package user
 
 import (
 	"BTM-backend/internal/di"
+	"BTM-backend/internal/domain"
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
@@ -37,10 +38,19 @@ func GetBTMUserInfo(c *gin.Context) {
 		return
 	}
 
-	role, err := repo.GetRawRoleById(repo.GetDb(c), userInfo.Role)
-	if err != nil {
-		log.Error("GetRawRoleById", zap.Any("err", err))
-		api.ErrResponse(c, "GetRawRoleById", errors.InternalServer(error_code.ErrDBError, "GetRawRoleById").WithCause(err))
+	roleAny, ok := c.Get("role")
+	if !ok {
+		roleAny, err = repo.GetRawRoleById(repo.GetDb(c), userInfo.Role)
+		if err != nil {
+			log.Error("GetRawRoleById error", zap.Any("err", err))
+			api.ErrResponse(c, "GetRawRoleById error", errors.InternalServer(error_code.ErrInternalError, "GetRawRoleById error").WithCause(err))
+			return
+		}
+	}
+	role, ok := roleAny.(domain.BTMRole)
+	if !ok || (ok && role.ID == 0) {
+		log.Error("role not found")
+		api.ErrResponse(c, "role not found", errors.NotFound(error_code.ErrDBError, "role not found"))
 		return
 	}
 

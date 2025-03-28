@@ -56,14 +56,17 @@ func UpdateOne(c *gin.Context) {
 	}
 	defer repo.TransactionCommit(tx)
 
-	// check role exist
-	role, err := repo.GetRawRoleById(tx, req.Role)
-	if err != nil {
-		log.Error("GetRawRoleById error", zap.Any("err", err))
-		api.ErrResponse(c, "GetRawRoleById error", errors.InternalServer(error_code.ErrInternalError, "GetRawRoleById error").WithCause(err))
-		return
+	roleAny, ok := c.Get("role")
+	if !ok {
+		roleAny, err = repo.GetRawRoleById(tx, req.Role)
+		if err != nil {
+			log.Error("GetRawRoleById error", zap.Any("err", err))
+			api.ErrResponse(c, "GetRawRoleById error", errors.InternalServer(error_code.ErrInternalError, "GetRawRoleById error").WithCause(err))
+			return
+		}
 	}
-	if role.ID == 0 {
+	role, ok := roleAny.(domain.BTMRole)
+	if !ok || (ok && role.ID == 0) {
 		log.Error("role not found")
 		api.ErrResponse(c, "role not found", errors.NotFound(error_code.ErrDBError, "role not found"))
 		return

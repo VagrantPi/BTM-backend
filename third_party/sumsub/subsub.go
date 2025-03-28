@@ -147,11 +147,6 @@ func FetchDataAdapter(c *gin.Context, log *logger.Logger, repo domain.Repository
 		return "", errors.InternalServer(error_code.ErrBTMSumsubGetItem, "sumsub.GetApplicantInfo").WithCause(err)
 	}
 
-	if data.Review.ReviewStatus != "completed" {
-		log.Error("sumsub.GetApplicantInfo ReviewStatus not completed", zap.Any("customerID", customerID), zap.Any("data", data))
-		return "", errors.InternalServer(error_code.ErrBTMSumsubIdNumberNotFound, "review status not completed")
-	}
-
 	// 抓取 sumsub id number
 	if len(data.Info.IdDocs) > 0 {
 		for _, v := range data.Info.IdDocs {
@@ -281,4 +276,16 @@ func GetApplicantRequiredIdDocs(applicantId string, inspectionId string) (respAp
 	}
 
 	return respApplicant, nil
+}
+
+// GetApplicantReviewHistory 取得申請人審核歷史
+func GetApplicantReviewHistory(applicantId string) (history domain.SumsubHistoryReviewData, err error) {
+	path := fmt.Sprintf("/resources/applicants/%s/review/history", applicantId)
+
+	history, err = sumsubSend[domain.SumsubHistoryReviewData](http.MethodGet, path, nil)
+	if err != nil {
+		return
+	}
+
+	return
 }

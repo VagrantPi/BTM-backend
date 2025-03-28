@@ -22,7 +22,6 @@ var SumsubGuardImpl SumsubGuard
 type SumsubGuard struct{}
 
 func (m SumsubGuard) CheckDigest(c *gin.Context) {
-	fmt.Println("SumsubGuard.CheckDigest!!")
 	sumsubPrivateKey := configs.C.Sumsub.WebhookSecretKey
 	algoHeader := c.GetHeader("X-Payload-Digest-Alg")
 	hashFunc, err := m.getAlgMethod(algoHeader)

@@ -8,6 +8,7 @@ import (
 	"BTM-backend/pkg/logger"
 	"BTM-backend/pkg/tools"
 	"encoding/json"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
@@ -239,7 +240,7 @@ func UpdateRole(c *gin.Context) {
 	}
 
 	// delete cache
-	domain.CleanTTLRoleMap(uint(beforeRoleValue.ID))
+	domain.CleanTTLMap[domain.RoleWithTTL](&domain.TTLRoleMap, fmt.Sprintf("%d", beforeRoleValue.ID))
 
 	afterDataJson, err := json.Marshal(updateData)
 	if err != nil {

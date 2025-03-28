@@ -20,6 +20,7 @@ type GetCustomerRiskControlRoleReq struct {
 }
 
 type GetBTMUserInfoDetailRes struct {
+	ApplicantId      string   `json:"applicant_id"`
 	Name             string   `json:"name"`
 	IDNumber         string   `json:"id_number"`
 	Birthday         string   `json:"birthday"`
@@ -31,6 +32,8 @@ type GetBTMUserInfoDetailRes struct {
 	IdCardFrontImgId string   `json:"id_card_front_img_id"`
 	IdCardBackImgId  string   `json:"id_card_back_img_id"`
 	SelfieImgIds     []string `json:"selfie_img_ids"`
+	ReviewStatus     string   `json:"review_status"`
+	ReviewCreateDate string   `json:"review_create_date"`
 }
 
 func GetBTMUserInfoDetail(c *gin.Context) {
@@ -59,6 +62,14 @@ func GetBTMUserInfoDetail(c *gin.Context) {
 	if err != nil {
 		log.Error("repo.GetBTMSumsub()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.GetBTMSumsub()", errors.InternalServer(error_code.ErrInternalError, "repo.GetBTMSumsub()").WithCause(err))
+		return
+	}
+
+	if sumsubInfo == nil {
+		log.Error("repo.GetBTMSumsub()", zap.Any("sumsubInfo", sumsubInfo))
+		api.ErrResponse(c, "repo.GetBTMSumsub()", errors.NotFound(error_code.ErrBTMSumsubGetItem, "repo.GetBTMSumsub()").WithMetadata(map[string]string{
+			"customerId": req.CustomerId,
+		}))
 		return
 	}
 
@@ -107,6 +118,7 @@ func GetBTMUserInfoDetail(c *gin.Context) {
 	c.JSON(200, api.DefaultRep{
 		Code: 20000,
 		Data: GetBTMUserInfoDetailRes{
+			ApplicantId:      sumsubInfo.ApplicantId,
 			Name:             sumsubInfo.Name,
 			IDNumber:         sumsubInfo.IdNumber,
 			Birthday:         info.Info.Dob,
@@ -118,6 +130,8 @@ func GetBTMUserInfoDetail(c *gin.Context) {
 			IdCardFrontImgId: sumsubInfo.IdCardFrontImgId,
 			IdCardBackImgId:  sumsubInfo.IdCardBackImgId,
 			SelfieImgIds:     selfieImgIds,
+			ReviewStatus:     info.Review.ReviewStatus,
+			ReviewCreateDate: info.Review.CreateDate,
 		},
 	})
 	c.Done()

@@ -376,6 +376,7 @@ func (e SumsubWebhookType) String() string { return string(e) }
 const (
 	SumsubWebhookTypeApplicantReviewed    SumsubWebhookType = "applicantReviewed"
 	SumsubWebhookTypeApplicantTagsChanged SumsubWebhookType = "applicantTagsChanged"
+	SumsubWebhookTypeApplicantOnHold      SumsubWebhookType = "applicantOnHold"
 )
 
 type SumsubApplicantStatus string
@@ -384,6 +385,7 @@ func (e SumsubApplicantStatus) String() string { return string(e) }
 
 const (
 	SumsubApplicantStatusCompleted SumsubApplicantStatus = "completed"
+	SumsubApplicantStatusOnHold    SumsubApplicantStatus = "onHold"
 )
 
 var KYCDocOccupation = map[string]string{
@@ -414,4 +416,26 @@ var KYCDocOccupation = map[string]string{
 	"25": "自由業",
 	"26": "待業中",
 	"27": "其他（未列表）",
+}
+
+type SumsubHistoryDataReviewResult struct {
+	ReviewAnswer      string   `json:"reviewAnswer,omitempty"`
+	RejectLabels      []string `json:"rejectLabels,omitempty"`
+	ReviewRejectType  string   `json:"reviewRejectType,omitempty"`
+	ModerationComment string   `json:"moderationComment,omitempty"`
+	ClientComment     string   `json:"clientComment,omitempty"`
+	ButtonIds         []string `json:"buttonIds,omitempty"`
+}
+
+type SumsubHistoryDataReview struct {
+	AttemptId    string                        `json:"attemptId"`
+	LevelName    string                        `json:"levelName"`
+	ReviewDate   string                        `json:"reviewDate"`
+	ReviewResult SumsubHistoryDataReviewResult `json:"reviewResult"`
+	ReviewStatus string                        `json:"reviewStatus"`
+}
+
+type SumsubHistoryReviewData struct {
+	Items      []SumsubHistoryDataReview `json:"items"`
+	TotalItems int                       `json:"totalItems"`
 }
