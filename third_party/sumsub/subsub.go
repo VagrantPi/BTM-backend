@@ -280,7 +280,7 @@ func GetApplicantRequiredIdDocs(applicantId string, inspectionId string) (respAp
 
 // GetApplicantReviewHistory 取得申請人審核歷史
 func GetApplicantReviewHistory(applicantId string) (history domain.SumsubHistoryReviewData, err error) {
-	path := fmt.Sprintf("/resources/applicants/%s/review/history", applicantId)
+	path := fmt.Sprintf("/resources/applicantTimeline/%s", applicantId)
 
 	history, err = sumsubSend[domain.SumsubHistoryReviewData](http.MethodGet, path, nil)
 	if err != nil {

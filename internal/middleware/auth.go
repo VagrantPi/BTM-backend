@@ -55,7 +55,6 @@ func Auth() gin.HandlerFunc {
 		// 取得剛用戶權限路由表
 		role, ok := domain.GetTTLMap[domain.RoleWithTTL](&domain.TTLRoleMap, fmt.Sprintf("%d", userInfo.Role))
 		if !ok {
-			fmt.Println("cache miss")
 			fetchRole, err := repo.GetRawRoleById(repo.GetDb(c), userInfo.Role)
 			if err != nil {
 				log.Error("GetRawRoleById", zap.Any("err", err))

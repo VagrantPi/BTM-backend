@@ -7,6 +7,7 @@ import (
 	"BTM-backend/pkg/logger"
 	sumsubApi "BTM-backend/third_party/sumsub"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -66,7 +67,70 @@ func GetApplicantReviewHistory(c *gin.Context) {
 
 	c.JSON(200, api.DefaultRep{
 		Code: 20000,
-		Data: resWithCache.CacheHistory,
+		Data: parseHistory(resWithCache.CacheHistory.Items),
 	})
 	c.Done()
+}
+
+type GetApplicantReviewHistoryItem struct {
+	SubmissionTime string   `json:"submissionTime"`
+	ReviewTime     string   `json:"reviewTime"`
+	Status         string   `json:"status"`
+	Reason         []string `json:"reason"`
+}
+
+func parseHistory(items []domain.SumsubHistoryItem) []GetApplicantReviewHistoryItem {
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].Ts < items[j].Ts
+	})
+
+	var submissionTimes []string
+
+	res := []GetApplicantReviewHistoryItem{}
+
+	for i := 0; i < len(items); i++ {
+		item := items[i]
+		if item.Status == "completed" {
+			status := ""
+			if item.ReviewAnswer == "GREEN" && item.Activity != "user:changed:applicantTag" {
+				status = "已核准"
+			} else if item.ReviewAnswer == "RED" && (item.ReviewRejectType == "FINAL" || item.ReviewRejectType == "RETRY") {
+				status = "已拒絕"
+			}
+
+			if status != "" {
+				reviewTime := item.Ts
+				submissionTime := reviewTime
+				if len(submissionTimes) > 0 {
+					submissionTime = submissionTimes[0]
+					submissionTimes = nil
+				}
+				res = append(res, GetApplicantReviewHistoryItem{
+					SubmissionTime: submissionTime,
+					ReviewTime:     reviewTime,
+					Status:         status,
+					Reason:         getReason(item.ReviewResult.RejectLabels),
+				})
+			}
+		} else {
+			submissionTimes = append([]string{item.Ts}, submissionTimes...)
+		}
+	}
+
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].ReviewTime > res[j].ReviewTime
+	})
+
+	return res
+}
+
+func getReason(tags []string) []string {
+	if len(tags) == 0 {
+		return []string{}
+	}
+	var reasons []string
+	for _, tag := range tags {
+		reasons = append(reasons, domain.KYCTag[tag])
+	}
+	return reasons
 }
