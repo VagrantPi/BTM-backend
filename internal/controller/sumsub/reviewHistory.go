@@ -6,7 +6,6 @@ import (
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	sumsubApi "BTM-backend/third_party/sumsub"
-	"fmt"
 	"sort"
 	"time"
 
@@ -33,7 +32,6 @@ func GetApplicantReviewHistory(c *gin.Context) {
 		api.ErrResponse(c, "c.ShouldBindUri(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.ShouldBindUri(&req)").WithCause(err))
 		return
 	}
-	fmt.Println("req", req)
 
 	resWithCache, ok := domain.GetTTLMap[domain.UserReviewHistory](&domain.TTLUserHistoryMap, req.ApplicantId)
 	if !ok {

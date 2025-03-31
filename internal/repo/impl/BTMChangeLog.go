@@ -30,11 +30,11 @@ func (repo *repository) GetBTMChangeLogs(db *gorm.DB, tableName, customerId stri
 
 	sql := db.Model(&model.BTMChangeLog{})
 	if strings.TrimSpace(tableName) != "" {
-		sql = db.Model(&model.BTMChangeLog{}).Where("table_name = ?", tableName)
+		sql = sql.Where("table_name = ?", tableName)
 	}
 
 	if strings.TrimSpace(customerId) != "" {
-		sql = db.Model(&model.BTMChangeLog{}).Where("customer_id = ?", customerId)
+		sql = sql.Where("customer_id = ?", customerId)
 	}
 
 	if !startAt.IsZero() {

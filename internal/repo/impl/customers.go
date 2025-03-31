@@ -39,7 +39,7 @@ func _prepareSearchCustomersSQL(db *gorm.DB,
 	case !customerCreatedStartAt.IsZero() && !customerCreatedEndAt.IsZero():
 		sql = sql.Where("customers.created BETWEEN ? AND ?", customerCreatedStartAt, customerCreatedEndAt)
 	case strings.TrimSpace(address) != "":
-		sql = sql.Where("btm_whitelists.address = ?", strings.TrimSpace(address))
+		sql = sql.Where("btm_whitelists.address = ? AND btm_whitelists.deleted_at IS NULL", strings.TrimSpace(address))
 	case strings.TrimSpace(phone) != "":
 		sql = sql.Where("customers.phone LIKE ?", "%"+strings.TrimSpace(phone)+"%")
 	case strings.TrimSpace(customerId) != "":
@@ -49,13 +49,13 @@ func _prepareSearchCustomersSQL(db *gorm.DB,
 	case strings.TrimSpace(emailHash) != "":
 		sql = sql.Where("btm_sumsubs.email_hash = ?", strings.TrimSpace(emailHash))
 	default:
-		if active {
-			sql = sql.Joins("INNER JOIN btm_sumsubs ON btm_sumsubs.customer_id = customers.id::text")
-			sql = sql.Where("btm_sumsubs.status = 'GREEN'")
-		} else {
-			sql = sql.Joins("LEFT JOIN btm_sumsubs ON btm_sumsubs.customer_id = customers.id::text")
-		}
 		sql = sql.Where("customers.phone != ''")
+	}
+	if active {
+		sql = sql.Joins("INNER JOIN btm_sumsubs ON btm_sumsubs.customer_id = customers.id::text")
+		sql = sql.Where("btm_sumsubs.status = 'GREEN'")
+	} else {
+		sql = sql.Joins("LEFT JOIN btm_sumsubs ON btm_sumsubs.customer_id = customers.id::text")
 	}
 
 	// 取得現在的中華民國年日期
