@@ -1,7 +1,7 @@
 package configs
 
 import (
-	"BTM-backend/pkg/osutil"
+	"BTM-backend/pkg/tools"
 	"fmt"
 	"os"
 
@@ -33,7 +33,7 @@ func NewConfigs() Config {
 
 func setFile() {
 	// 只有不在 cloud run 才能 load config
-	path, err := osutil.FilePath("configs", "dev.env")
+	path, err := tools.FilePath("configs", "dev.env")
 	if err != nil {
 		viper.SetConfigName("app")
 		viper.SetConfigType("env")

@@ -32,7 +32,7 @@ func Auth() gin.HandlerFunc {
 			return
 		}
 
-		userInfo, err := tools.ParseToken(token)
+		userInfo, err := tools.ParseToken(token, configs.C.JWT.Secret)
 		if err != nil {
 			log.Error("parseToken error", zap.Any("err", err))
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{

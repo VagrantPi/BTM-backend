@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"BTM-backend/configs"
 	"BTM-backend/internal/domain"
 	"BTM-backend/pkg/error_code"
 	"encoding/json"
@@ -66,8 +65,8 @@ func ParseJWT(tokenString string, secret string) ([]byte, error) {
 	return nil, errors.Unauthorized(error_code.ErrInvalidJWT, "ParseJWT")
 }
 
-func ParseToken(token string) (claim domain.UserJwt, err error) {
-	data, err := ParseJWT(token, configs.C.JWT.Secret)
+func ParseToken(token string, secret string) (claim domain.UserJwt, err error) {
+	data, err := ParseJWT(token, secret)
 	if err != nil {
 		err = errors.Unauthorized(error_code.ErrInvalidJWTParse, "ParseJWT").WithCause(err)
 		return
