@@ -50,6 +50,8 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group.POST("/whitelist", customer.CreateWhitelist)
 	group.DELETE("/whitelist", customer.DeleteWhitelist)
 	group.GET("/image", customer.GetSumsubImage)
+	group.GET("/:customer_id/notes", customer.GetCustomerNotes)
+	group.POST("/:customer_id/note", customer.CreateCustomerNote)
 }
 
 func UserConfigRouter(apiGroup *gin.RouterGroup) {

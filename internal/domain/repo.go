@@ -83,6 +83,10 @@ type Repository interface {
 	// BTMRiskControlCustomerLimitSettingChange
 	GetCustomerLimitChangeLogs(db *gorm.DB, customerID uuid.UUID, start, end time.Time, page, limit int) ([]BTMRiskControlCustomerLimitSettingChange, int64, error)
 
+	// BTMCustomerNote
+	CreateCustomerNote(db *gorm.DB, note BTMCustomerNote) error
+	GetCustomerNotes(db *gorm.DB, customerId uuid.UUID, limit int, page int) ([]BTMCustomerNote, int64, error)
+
 	/**
 	 * lamassu original
 	 **/

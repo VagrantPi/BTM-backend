@@ -29,6 +29,9 @@ func main() {
 
 		// 2025_03_24_新增後台登入日誌
 		&model.BTMLoginLog{},
+
+		// 2025_03_31_新增用戶備註
+		&model.BTMCustomerNote{},
 	); err != nil {
 		panic(err)
 	}

@@ -35,4 +35,6 @@ const (
 	BTMChangeLogTableNameBTMRoles                           BTMChangeLogTableName = "btm_roles"
 	BTMChangeLogTableNameBTMRiskControlCustomerLimitSetting BTMChangeLogTableName = "btm_risk_control_customer_limit_settings"
 	BTMChangeLogTableNameBTMRiskControlLimitSetting         BTMChangeLogTableName = "btm_risk_control_limit_settings"
+	BTMChangeLogTableNameBTMRiskControlThreshold            BTMChangeLogTableName = "btm_risk_control_thresholds"
+	BTMChangeLogTableNameBTMCustomerNotes                   BTMChangeLogTableName = "btm_customer_notes"
 )
