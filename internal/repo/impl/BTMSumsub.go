@@ -27,6 +27,7 @@ func (repo *repository) UpsertBTMSumsub(db *gorm.DB, btmsumsub domain.BTMSumsub)
 		"id_card_back_img_id":  item.IdCardBackImgId,
 		"selfie_img_id":        item.SelfieImgId,
 		"name":                 item.Name,
+		"status":               item.Status,
 	}
 
 	if item.BanExpireDate.Valid {
@@ -78,6 +79,27 @@ func (repo *repository) DeleteBTMSumsub(db *gorm.DB, customerId string) error {
 	return db.Unscoped().Delete(&model.BTMSumsub{}, "customer_id = ?", customerId).Error
 }
 
+func (repo *repository) GetUnCompletedSumsubCustomerIds(db *gorm.DB) ([]string, error) {
+	if db == nil {
+		return nil, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	var ids []string
+	err := db.Model(&model.Customer{}).
+		Select("customers.id").
+		Joins("LEFT JOIN btm_sumsubs ON btm_sumsubs.customer_id = customers.id::text").
+		Where("customers.phone != '' AND btm_sumsubs.status IS DISTINCT FROM 'GREEN'").
+		Find(&ids).Error
+	if err != nil {
+		err = errors.InternalServer(error_code.ErrBTMSumsubGetItem, "GetBTMSumsub err").WithCause(err).
+			WithMetadata(map[string]string{
+				"status": "uncompleted",
+			})
+		return nil, err
+	}
+	return ids, nil
+}
+
 func BTMSumsubDomainToModel(itme domain.BTMSumsub) model.BTMSumsub {
 	return model.BTMSumsub{
 		CustomerId:       itme.CustomerId,
@@ -92,6 +114,7 @@ func BTMSumsubDomainToModel(itme domain.BTMSumsub) model.BTMSumsub {
 		IdCardBackImgId:  itme.IdCardBackImgId,
 		SelfieImgId:      itme.SelfieImgId,
 		Name:             itme.Name,
+		Status:           itme.Status,
 	}
 }
 
@@ -109,5 +132,6 @@ func BTMSumsubModelToDomain(itme model.BTMSumsub) domain.BTMSumsub {
 		IdCardBackImgId:  itme.IdCardBackImgId,
 		SelfieImgId:      itme.SelfieImgId,
 		Name:             itme.Name,
+		Status:           itme.Status,
 	}
 }

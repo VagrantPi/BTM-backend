@@ -12,6 +12,7 @@ import (
 	"time"
 	_ "time/tzdata"
 
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
 	"golang.org/x/net/http2"
@@ -45,6 +46,7 @@ func setupGin() http.Handler {
 	r := gin.New()
 
 	r.Use(middleware.CORS)
+	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.Use(middleware.RequestId)
 	r.Use(middleware.ErrHandler)
 
@@ -82,6 +84,11 @@ func CronJob() {
 	// 每天處理告誡名單 - 每日 1:00
 	cron.AddFunc("0 1 * * *", func() {
 		cronjob.DownlaodCIBAndUpsert()
+	})
+
+	// 每天處理未完成的 Sumsub 資料 - 每日 1:30
+	cron.AddFunc("30 1 * * *", func() {
+		cronjob.SyncNotComplateSumsub()
 	})
 
 	cron.Start()

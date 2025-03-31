@@ -51,14 +51,6 @@ func GetSumsubImage(c *gin.Context) {
 	// 設定 Content-Type 為圖片
 	c.Header("Content-Type", "image/jpeg") // 根據實際圖片類型調整
 
-	// 縮放圖片
-	resizedImageReader, err := resizeImage(imageReader, 0.1)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "圖片縮放失敗",
-		})
-		return
-	}
 	// 直接將圖片串流回傳
 
 	// 使用 DataFromReader 回傳
@@ -66,7 +58,7 @@ func GetSumsubImage(c *gin.Context) {
 		http.StatusOK,
 		-1, // 未知長度
 		"image/jpeg",
-		resizedImageReader,
+		imageReader,
 		map[string]string{
 			"Cache-Control": "no-cache",
 		},

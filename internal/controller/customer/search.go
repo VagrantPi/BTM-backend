@@ -28,6 +28,7 @@ type SearchCustomersReq struct {
 	CustomerDateStart  time.Time           `form:"customer_date_start"`
 	CustomerDateEnd    time.Time           `form:"customer_date_end"`
 	CustomerType       domain.CustomerType `form:"customer_type"`
+	Active             bool                `form:"active"`
 	Limit              int                 `form:"limit"`
 	Page               int                 `form:"page"`
 }
@@ -99,7 +100,7 @@ func SearchCustomers(c *gin.Context) {
 
 	customers, total, err := repo.SearchCustomers(repo.GetDb(c), req.Query, _customerId, req.Address, reqEmailHash, req.Name,
 		req.WhiteListDateStart, req.WhiteListDateEnd, req.CustomerDateStart, req.CustomerDateEnd,
-		req.CustomerType,
+		req.CustomerType, req.Active,
 		req.Limit, req.Page)
 	if err != nil {
 		log.Error("repo.SearchCustomersByCustomerId", zap.Any("err", err))

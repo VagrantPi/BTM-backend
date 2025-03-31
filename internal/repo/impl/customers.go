@@ -13,10 +13,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func _searchCustomers(db *gorm.DB,
+func _prepareSearchCustomersSQL(db *gorm.DB,
 	phone, customerId, address, emailHash, name string,
 	whitelistCreatedStartAt, whitelistCreatedEndAt, customerCreatedStartAt, customerCreatedEndAt time.Time,
-	customerType domain.CustomerType, limit, page int) (*gorm.DB, error) {
+	customerType domain.CustomerType, active bool) (*gorm.DB, error) {
 	if db == nil {
 		return nil, errors.InternalServer(error_code.ErrDBError, "db is nil")
 	}
@@ -31,8 +31,7 @@ func _searchCustomers(db *gorm.DB,
 			"customers.created",
 			"btm_whitelists.created_at AS first_white_list_created",
 		).
-		Joins("INNER JOIN btm_whitelists ON customers.id = btm_whitelists.customer_id").
-		Joins("LEFT JOIN btm_sumsubs ON btm_sumsubs.customer_id = customers.id::text")
+		Joins("LEFT JOIN btm_whitelists ON customers.id = btm_whitelists.customer_id")
 
 	switch {
 	case !whitelistCreatedStartAt.IsZero() && !whitelistCreatedEndAt.IsZero():
@@ -50,6 +49,12 @@ func _searchCustomers(db *gorm.DB,
 	case strings.TrimSpace(emailHash) != "":
 		sql = sql.Where("btm_sumsubs.email_hash = ?", strings.TrimSpace(emailHash))
 	default:
+		if active {
+			sql = sql.Joins("INNER JOIN btm_sumsubs ON btm_sumsubs.customer_id = customers.id::text")
+			sql = sql.Where("btm_sumsubs.status = 'GREEN'")
+		} else {
+			sql = sql.Joins("LEFT JOIN btm_sumsubs ON btm_sumsubs.customer_id = customers.id::text")
+		}
 		sql = sql.Where("customers.phone != ''")
 	}
 
@@ -78,7 +83,6 @@ func _searchCustomers(db *gorm.DB,
 			"btm_risk_control_customer_limit_settings.role = 3 AS is_admin_block",
 			"UPPER(TRIM(btm_sumsubs.id_number)) = UPPER(TRIM(btm_cibs.pid)) AS is_cib_block",
 		).
-			Joins("LEFT JOIN btm_sumsubs ON customers.id::TEXT = btm_sumsubs.customer_id").
 			Joins("LEFT JOIN btm_risk_control_customer_limit_settings ON customers.id::TEXT = btm_risk_control_customer_limit_settings.customer_id").
 			Joins("LEFT JOIN btm_cibs ON btm_sumsubs.id_number = btm_cibs.pid").
 			Where("(btm_sumsubs.ban_expire_date IS NOT NULL AND btm_sumsubs.ban_expire_date < ?) OR btm_risk_control_customer_limit_settings.role = ? OR customers.authorized_override = 'blocked' OR UPPER(TRIM(btm_sumsubs.id_number)) = UPPER(TRIM(btm_cibs.pid))", today, domain.RiskControlRoleBlack)
@@ -90,7 +94,7 @@ func _searchCustomers(db *gorm.DB,
 func (repo *repository) SearchCustomers(db *gorm.DB,
 	phone, customerId, address, emailHash, name string,
 	whitelistCreatedStartAt, whitelistCreatedEndAt, customerCreatedStartAt, customerCreatedEndAt time.Time,
-	customerType domain.CustomerType,
+	customerType domain.CustomerType, active bool,
 	limit, page int) ([]domain.CustomerWithWhiteListCreated, int, error) {
 	if db == nil {
 		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
@@ -99,9 +103,9 @@ func (repo *repository) SearchCustomers(db *gorm.DB,
 	offset := (page - 1) * limit
 	list := []domain.CustomerWithWhiteListCreated{}
 
-	sql, err := _searchCustomers(db, phone, customerId, address, emailHash, name,
+	sql, err := _prepareSearchCustomersSQL(db, phone, customerId, address, emailHash, name,
 		whitelistCreatedStartAt, whitelistCreatedEndAt, customerCreatedStartAt, customerCreatedEndAt,
-		customerType, limit, page)
+		customerType, active)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -111,9 +115,9 @@ func (repo *repository) SearchCustomers(db *gorm.DB,
 		return nil, 0, err
 	}
 
-	sql, err = _searchCustomers(db, phone, customerId, address, emailHash, name,
+	sql, err = _prepareSearchCustomersSQL(db, phone, customerId, address, emailHash, name,
 		whitelistCreatedStartAt, whitelistCreatedEndAt, customerCreatedStartAt, customerCreatedEndAt,
-		customerType, limit, page)
+		customerType, active)
 	if err != nil {
 		return nil, 0, err
 	}

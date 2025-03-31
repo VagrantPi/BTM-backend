@@ -23,4 +23,5 @@ type BTMSumsub struct {
 	Name             string
 	EmailHash        string `gorm:"index"`
 	InfoHash         string
+	Status           string `gorm:"index"`
 }

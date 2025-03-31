@@ -7,6 +7,7 @@ import (
 	"BTM-backend/internal/controller/debug"
 	"BTM-backend/internal/controller/riskControl"
 	"BTM-backend/internal/controller/sumsub"
+	"BTM-backend/internal/controller/tool"
 	"BTM-backend/internal/controller/tx"
 	"BTM-backend/internal/controller/user"
 	"BTM-backend/internal/middleware"
@@ -81,4 +82,8 @@ func InternalRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/id_number", customer.GetCustomerIdNumber)
 	group.POST("/cib", debug.DownlaodCIB)
 	group.POST("/add_sumsub_tag", customer.AddSumsubTag)
+
+	toolGroup := apiGroup.Group("/tool", middleware.ServerKeyAuth())
+	toolGroup.GET("/sync_sumsub", tool.SyncAllCustomerSumsub)
+
 }

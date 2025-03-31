@@ -6,6 +6,7 @@ import (
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/pkg/tools"
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"database/sql"
@@ -18,7 +19,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -125,7 +125,7 @@ func GettingDocumentImages(inspectionId, imageId string) (output io.ReadCloser, 
 var fetchSumsubLock *sync.Mutex
 var fetchSumsubLockInitialFlag sync.Once
 
-func FetchDataAdapter(c *gin.Context, log *logger.Logger, repo domain.Repository, externalUserId string) (idNumber string, err error) {
+func FetchDataAdapter(ctx context.Context, log *logger.Logger, repo domain.Repository, externalUserId string) (idNumber string, err error) {
 	fetchSumsubLockInitialFlag.Do(func() {
 		fetchSumsubLock = new(sync.Mutex)
 	})
@@ -199,10 +199,11 @@ func FetchDataAdapter(c *gin.Context, log *logger.Logger, repo domain.Repository
 		IdCardBackImgId:  idDocs.IdCardBackImgId,
 		SelfieImgId:      idDocs.SelfieImgId,
 		Name:             fmt.Sprintf("%v%v", data.Info.LastName, data.Info.FirstName),
+		Status:           data.Review.ReviewResult.ReviewAnswer,
 	}
 
 	// 檢查告誡名單
-	exist, fetchExpireDate, err := repo.IsBTMCIBExist(repo.GetDb(c), idNumber)
+	exist, fetchExpireDate, err := repo.IsBTMCIBExist(repo.GetDb(ctx), idNumber)
 	if err != nil {
 		log.Error("repo.IsBTMCIBExist", zap.Any("customerID", customerID), zap.Any("err", err))
 		return "", errors.InternalServer(error_code.ErrBTMSumsubCreateItem, "repo.IsBTMCIBExist").WithCause(err)
@@ -215,7 +216,7 @@ func FetchDataAdapter(c *gin.Context, log *logger.Logger, repo domain.Repository
 	}
 
 	// store db
-	err = repo.UpsertBTMSumsub(repo.GetDb(c), insertData)
+	err = repo.UpsertBTMSumsub(repo.GetDb(ctx), insertData)
 	if err != nil {
 		log.Error("repo.UpsertBTMSumsub", zap.Any("customerID", customerID), zap.Any("err", err))
 		return "", errors.InternalServer(error_code.ErrBTMSumsubCreateItem, "repo.UpsertBTMSumsub").WithCause(err)

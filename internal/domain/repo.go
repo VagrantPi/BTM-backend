@@ -67,6 +67,7 @@ type Repository interface {
 	GetBTMSumsub(db *gorm.DB, customerId string) (*BTMSumsub, error)
 	UpdateBTMSumsubBanExpireDate(db *gorm.DB, customerId string, banExpireDate int64) error
 	DeleteBTMSumsub(db *gorm.DB, customerId string) error
+	GetUnCompletedSumsubCustomerIds(db *gorm.DB) ([]string, error)
 
 	// BTMChangeLog
 	CreateBTMChangeLog(db *gorm.DB, c BTMChangeLog) error
@@ -90,7 +91,7 @@ type Repository interface {
 	GetCustomerById(db *gorm.DB, id uuid.UUID) (*Customer, error)
 	SearchCustomers(db *gorm.DB, phone, customerId, address, emailHash, name string,
 		whitelistCreatedStartAt, whitelistCreatedEndAt, customerCreatedStartAt, customerCreatedEndAt time.Time,
-		customerType CustomerType,
+		customerType CustomerType, active bool,
 		limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
 
 	// userConfig

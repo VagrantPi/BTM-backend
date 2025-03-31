@@ -19,4 +19,5 @@ type BTMSumsub struct {
 	Name             string
 	EmailHash        string
 	InfoHash         string
+	Status           string
 }
