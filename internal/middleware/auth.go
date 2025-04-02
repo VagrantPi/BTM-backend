@@ -65,7 +65,7 @@ func Auth() gin.HandlerFunc {
 				return
 			}
 
-			expire := time.Now().Add(10 * time.Second).UnixNano()
+			expire := time.Now().Add(30 * time.Minute).UnixNano()
 			// cache
 			roleWithTTL := domain.TTLMap[domain.RoleWithTTL]{
 				Cache: domain.RoleWithTTL{
