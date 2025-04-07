@@ -25,3 +25,5 @@ go.work.sum
 configs/dev.env
 dist/*
 !dist/.gitkeep
+*.key
+*.crt

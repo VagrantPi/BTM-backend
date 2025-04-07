@@ -1,4 +1,9 @@
 FROM nginx:latest
+
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+
+COPY docker/ssl/ /ssl/
+
 EXPOSE 80
+
 CMD ["nginx", "-g", "daemon off;"]

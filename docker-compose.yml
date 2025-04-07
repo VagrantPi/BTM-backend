@@ -18,6 +18,13 @@ services:
     volumes:
       - ./dist:/usr/share/nginx/html
     ports:
-      - "8081:80"
+      - "8081:443"
     depends_on:
       - btm-backend
+    networks:
+      - mynetwork
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+networks:
+  mynetwork:
+    driver: bridge
