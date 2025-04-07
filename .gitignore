@@ -27,3 +27,4 @@ dist/*
 !dist/.gitkeep
 *.key
 *.crt
+*.cer
