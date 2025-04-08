@@ -93,6 +93,7 @@ func URIToF2ERouterId(method string, uri string) []string {
 			F2EWhitelist.String(),
 			F2EGraylist.String(),
 			F2EBlacklist.String(),
+			F2EUserInfo.String(),
 		}
 
 	// 用戶基本資料頁面
