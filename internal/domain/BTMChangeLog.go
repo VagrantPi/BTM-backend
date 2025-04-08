@@ -8,6 +8,7 @@ import (
 )
 
 type BTMChangeLog struct {
+	ID              uint                      `json:"id"`
 	OperationUserId uint                      `json:"operation_user_id"`
 	TableName       BTMChangeLogTableName     `json:"table_name"`
 	OperationType   BTMChangeLogOperationType `json:"operation_type"`

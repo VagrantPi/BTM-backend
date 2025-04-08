@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -37,14 +38,16 @@ func CompleteAddressBindingLog(c *gin.Context) {
 	}
 
 	lostLogs := []domain.BTMChangeLog{}
+	updateNum := 0
 	for _, whitelist := range whitelists {
-		exists, err := repo.IsAddressExistsInAfterValue(repo.GetDb(c), whitelist.Address)
+		logInfo, err := repo.AddressExistsInAfterValue(repo.GetDb(c), whitelist.Address)
 		if err != nil {
 			log.Error("repo.IsAddressExistsInAfterValue()", zap.Any("err", err))
 			api.ErrResponse(c, "repo.IsAddressExistsInAfterValue()", errors.InternalServer(error_code.ErrDBError, "repo.IsAddressExistsInAfterValue()").WithCause(err))
 			return
 		}
-		if !exists {
+		if logInfo.TableName == "" {
+			// 不存在則建立
 			whitelistJson := &domain.BTMWhitelist{
 				CustomerID: whitelist.CustomerID,
 				CryptoCode: whitelist.CryptoCode,
@@ -66,10 +69,25 @@ func CompleteAddressBindingLog(c *gin.Context) {
 				AfterValue:      createJsonData,
 				CreatedAt:       whitelist.CreatedAt,
 			})
+		} else if logInfo.CustomerId.String() == uuid.Nil.String() {
+			// 遺失 customerId
+			fetchAddressInfo, err := repo.GetWhiteListByAddress(repo.GetDb(c), whitelist.Address)
+			if err != nil {
+				log.Error("repo.GetWhiteListByAddress()", zap.Any("err", err))
+				continue
+			}
+
+			if err := repo.UpdateBTMChangeLog(repo.GetDb(c), logInfo.ID, domain.BTMChangeLog{
+				CustomerId: &fetchAddressInfo.CustomerID,
+			}); err != nil {
+				log.Error("repo.UpdateBTMChangeLog()", zap.Any("err", err))
+			}
+			updateNum += 1
 		}
 	}
 
 	log.Info("補綁定地址紀錄", zap.Int("資料筆數", len(lostLogs)))
+	log.Info("補綁定地址紀錄", zap.Int("更新資料筆數", updateNum))
 
 	if len(lostLogs) > 0 {
 		err = repo.BatchCreateBTMChangeLog(repo.GetDb(c), lostLogs)

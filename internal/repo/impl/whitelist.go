@@ -119,6 +119,19 @@ func (repo *repository) GetWhiteListById(db *gorm.DB, id int64) (data domain.BTM
 	return WhitelistModelToDomain(modelWhitelist), nil
 }
 
+func (repo *repository) GetWhiteListByAddress(db *gorm.DB, address string) (data domain.BTMWhitelist, err error) {
+	if db == nil {
+		return domain.BTMWhitelist{}, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	var modelWhitelist model.BTMWhitelist
+	if err := db.First(&modelWhitelist, "address = ?", address).Error; err != nil {
+		return domain.BTMWhitelist{}, err
+	}
+
+	return WhitelistModelToDomain(modelWhitelist), nil
+}
+
 func (repo *repository) DeleteWhitelist(db *gorm.DB, id int64) error {
 	if db == nil {
 		return errors.InternalServer(error_code.ErrDBError, "db is nil")
