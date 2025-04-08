@@ -57,6 +57,23 @@ func (repo *repository) GetWhiteListByCustomerId(db *gorm.DB, customerID uuid.UU
 	return whitelists, total, nil
 }
 
+func (repo *repository) GetWhiteLists(db *gorm.DB) (list []domain.BTMWhitelist, err error) {
+	if db == nil {
+		return nil, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	var modelWhitelists []model.BTMWhitelist
+	if err := db.Find(&modelWhitelists).Error; err != nil {
+		return nil, err
+	}
+
+	whitelists := make([]domain.BTMWhitelist, len(modelWhitelists))
+	for i, modelWhitelist := range modelWhitelists {
+		whitelists[i] = WhitelistModelToDomain(modelWhitelist)
+	}
+	return whitelists, nil
+}
+
 func (repo *repository) CheckExistWhitelist(db *gorm.DB, customerID uuid.UUID, cryptoCode string, address string, isUnscoped bool) (bool, bool, error) {
 	if db == nil {
 		return false, false, errors.InternalServer(error_code.ErrDBError, "db is nil")

@@ -20,6 +20,18 @@ func (repo *repository) CreateBTMChangeLog(db *gorm.DB, c domain.BTMChangeLog) e
 	return db.Create(&item).Error
 }
 
+func (repo *repository) BatchCreateBTMChangeLog(db *gorm.DB, c []domain.BTMChangeLog) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	items := make([]model.BTMChangeLog, 0, len(c))
+	for _, item := range c {
+		items = append(items, BTMChangeLogDomainToModel(item))
+	}
+	return db.Create(&items).Error
+}
+
 func (repo *repository) GetBTMChangeLogs(db *gorm.DB, tableName, customerId string, startAt, endAt time.Time, limit int, page int) ([]domain.BTMChangeLog, int64, error) {
 	if db == nil {
 		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")

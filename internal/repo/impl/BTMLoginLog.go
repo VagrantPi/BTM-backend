@@ -47,6 +47,29 @@ func (repo *repository) GetLoginLogs(db *gorm.DB, limit int, page int) ([]domain
 	return resp, int64(total), nil
 }
 
+func (repo *repository) IsAddressExistsInAfterValue(db *gorm.DB, address string) (bool, error) {
+	if db == nil {
+		return false, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	query := `
+		SELECT EXISTS (
+			SELECT 1 
+			FROM btm_change_logs 
+			WHERE UPPER(convert_from(after_value, 'UTF8')::json->>'address') = UPPER($1)
+		)
+	`
+
+	var exists bool
+	// 執行查詢並將結果存入 exists 變數
+	err := db.Raw(query, address).Scan(&exists).Error
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
+
 func BTMLoginLogDomainToModel(item domain.BTMLoginLog) model.BTMLoginLog {
 	return model.BTMLoginLog{
 		UserID:   item.UserID,

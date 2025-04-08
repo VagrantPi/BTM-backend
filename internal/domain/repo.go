@@ -34,6 +34,7 @@ type Repository interface {
 	UpdateWhitelistSoftDelete(db *gorm.DB, whitelist *BTMWhitelist) error
 	GetWhiteListById(db *gorm.DB, id int64) (data BTMWhitelist, err error)
 	GetWhiteListByCustomerId(db *gorm.DB, customerID uuid.UUID, limit int, page int) (list []BTMWhitelist, total int64, err error)
+	GetWhiteLists(db *gorm.DB) (list []BTMWhitelist, err error)
 	CheckExistWhitelist(db *gorm.DB, customerID uuid.UUID, cryptoCode string, address string, isUnscoped bool) (bool, bool, error)
 	UpdateWhitelist(db *gorm.DB, whitelist *BTMWhitelist) error
 	DeleteWhitelist(db *gorm.DB, id int64) error
@@ -47,6 +48,7 @@ type Repository interface {
 	// BTMLoginLog
 	CreateLoginLog(db *gorm.DB, log BTMLoginLog) error
 	GetLoginLogs(db *gorm.DB, limit int, page int) ([]BTMLoginLog, int64, error)
+	IsAddressExistsInAfterValue(db *gorm.DB, address string) (bool, error)
 
 	// BTMRole
 	InitRawRole(db *gorm.DB) error
@@ -71,6 +73,7 @@ type Repository interface {
 
 	// BTMChangeLog
 	CreateBTMChangeLog(db *gorm.DB, c BTMChangeLog) error
+	BatchCreateBTMChangeLog(db *gorm.DB, c []BTMChangeLog) error
 	GetBTMChangeLogs(db *gorm.DB, tableName, customerId string, startAt, endAt time.Time, limit int, page int) (list []BTMChangeLog, total int64, err error)
 
 	// BTMRiskControlLimitSetting

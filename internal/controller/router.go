@@ -87,5 +87,6 @@ func InternalRouter(apiGroup *gin.RouterGroup) {
 
 	toolGroup := apiGroup.Group("/tool", middleware.ServerKeyAuth())
 	toolGroup.GET("/sync_sumsub", tool.SyncAllCustomerSumsub)
+	toolGroup.GET("/complete_address_binding_log", tool.CompleteAddressBindingLog)
 
 }
