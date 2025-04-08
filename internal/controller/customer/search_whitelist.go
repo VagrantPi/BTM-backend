@@ -81,11 +81,8 @@ func SearchWhitelist(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: SearchWhitelistData{
-			Total: total,
-			Items: whitelists,
-		},
+	api.OKResponse(c, SearchWhitelistData{
+		Total: total,
+		Items: whitelists,
 	})
 }

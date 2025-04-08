@@ -60,6 +60,7 @@ func (repo *repository) CreateCustomerLimit(db *gorm.DB, customerID uuid.UUID) e
 		MonthlyLimit:        defaultLimit.MonthlyLimit,
 		IsCustomized:        false,
 		LastBlackToNormalAt: sql.NullTime{},
+		LastRole:            domain.RiskControlRoleInit.Uint8(), // 預設都為未設定
 	}).Error; err != nil {
 		tx.Rollback()
 		return err
@@ -138,6 +139,7 @@ func (repo *repository) UpdateCustomerLimit(db *gorm.DB, operationUserId uint, c
 	customerLimit.MonthlyLimit = newMonthlyLimit
 	customerLimit.IsCustomized = true
 	customerLimit.UpdatedAt = time.Now()
+	customerLimit.LastRole = beforeCustomerLimit.Role.Uint8()
 
 	if err := tx.Save(&customerLimit).Error; err != nil {
 		tx.Rollback()
@@ -157,10 +159,16 @@ func (repo *repository) ChangeCustomerRole(db *gorm.DB, operationUserId uint, cu
 		return errors.BadRequest(error_code.ErrInvalidRequest, "same role")
 	}
 
-	// 取得新的預設限制
 	var newDefaultLimit model.BTMRiskControlLimitSetting
-	if err := db.Where("role = ?", newRole.Uint8()).First(&newDefaultLimit).Error; err != nil {
-		return err
+	if newRole == domain.RiskControlRoleBlack {
+		// 如果設為黑名單，或從黑名單切換回原始，則用戶限額保留原始
+		newDefaultLimit.DailyLimit = customerLimit.DailyLimit
+		newDefaultLimit.MonthlyLimit = customerLimit.MonthlyLimit
+	} else {
+		// 取得新的預設限制
+		if err := db.Where("role = ?", newRole.Uint8()).First(&newDefaultLimit).Error; err != nil {
+			return err
+		}
 	}
 
 	tx := db.Begin()
@@ -211,6 +219,7 @@ func (repo *repository) ChangeCustomerRole(db *gorm.DB, operationUserId uint, cu
 	customerLimit.MonthlyLimit = newDefaultLimit.MonthlyLimit
 	customerLimit.IsCustomized = false
 	customerLimit.UpdatedAt = time.Now()
+	customerLimit.LastRole = beforeCustomerLimit.Role.Uint8() // 紀錄修改前的 role
 
 	if err := tx.Save(&customerLimit).Error; err != nil {
 		tx.Rollback()

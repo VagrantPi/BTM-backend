@@ -10,9 +10,5 @@ import (
 func SyncAllCustomerSumsub(c *gin.Context) {
 	go cronjob.SyncNotComplateSumsub()
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: "success",
-	})
-	c.Done()
+	api.OKResponse(c, nil)
 }

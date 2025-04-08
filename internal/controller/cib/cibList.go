@@ -52,12 +52,8 @@ func GetCibsList(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: GetCibsListRepItem{
-			Total: total,
-			Items: cibs,
-		},
+	api.OKResponse(c, GetCibsListRepItem{
+		Total: total,
+		Items: cibs,
 	})
-	c.Done()
 }

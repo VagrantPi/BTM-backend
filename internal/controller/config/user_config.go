@@ -34,8 +34,5 @@ func GetConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: data,
-	})
+	api.OKResponse(c, data)
 }

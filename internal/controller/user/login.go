@@ -94,10 +94,7 @@ func LoginBTMAdmin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: LoginBTMAdminRespItem{
-			Token: token,
-		},
+	api.OKResponse(c, LoginBTMAdminRespItem{
+		Token: token,
 	})
 }

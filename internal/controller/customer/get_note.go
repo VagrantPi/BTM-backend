@@ -77,11 +77,8 @@ func GetCustomerNotes(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: GetCustomerNotesData{
-			Total: total,
-			Items: notes,
-		},
+	api.OKResponse(c, GetCustomerNotesData{
+		Total: total,
+		Items: notes,
 	})
 }

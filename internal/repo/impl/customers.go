@@ -85,7 +85,7 @@ func _prepareSearchCustomersSQL(db *gorm.DB,
 		).
 			Joins("LEFT JOIN btm_risk_control_customer_limit_settings ON customers.id::TEXT = btm_risk_control_customer_limit_settings.customer_id").
 			Joins("LEFT JOIN btm_cibs ON btm_sumsubs.id_number = btm_cibs.pid").
-			Where("(btm_sumsubs.ban_expire_date IS NOT NULL AND btm_sumsubs.ban_expire_date < ?) OR btm_risk_control_customer_limit_settings.role = ? OR customers.authorized_override = 'blocked' OR UPPER(TRIM(btm_sumsubs.id_number)) = UPPER(TRIM(btm_cibs.pid))", today, domain.RiskControlRoleBlack)
+			Where("(btm_sumsubs.ban_expire_date IS NOT NULL AND btm_sumsubs.ban_expire_date <= ?) OR btm_risk_control_customer_limit_settings.role = ? OR customers.authorized_override = 'blocked' OR UPPER(TRIM(btm_sumsubs.id_number)) = UPPER(TRIM(btm_cibs.pid))", today, domain.RiskControlRoleBlack)
 	}
 
 	return sql, nil

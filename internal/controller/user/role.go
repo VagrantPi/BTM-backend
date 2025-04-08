@@ -16,11 +16,7 @@ import (
 )
 
 func GetBTMUserRoleRoutes(c *gin.Context) {
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: domain.DefaultRoleRaw,
-	})
-	c.Done()
+	api.OKResponse(c, domain.DefaultRoleRaw)
 }
 
 type BTMRoleOnlyNameResp struct {
@@ -59,19 +55,11 @@ func GetBTMUserRoles(c *gin.Context) {
 				RoleName: v.RoleName,
 			})
 		}
-		c.JSON(200, api.DefaultRep{
-			Code: 20000,
-			Data: onlyNameList,
-		})
-		c.Done()
+		api.OKResponse(c, onlyNameList)
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: list,
-	})
-	c.Done()
+	api.OKResponse(c, list)
 }
 
 type CreateRoleReq struct {
@@ -151,11 +139,7 @@ func CreateRole(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: nil,
-	})
-	c.Done()
+	api.OKResponse(c, nil)
 }
 
 type UpdateRoleReq struct {
@@ -264,10 +248,5 @@ func UpdateRole(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: nil,
-	})
-	c.Done()
-
+	api.OKResponse(c, nil)
 }

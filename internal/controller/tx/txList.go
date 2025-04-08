@@ -63,12 +63,8 @@ func GetTxsList(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: GetTxsListRep{
-			Total: total,
-			Items: txs,
-		},
+	api.OKResponse(c, GetTxsListRep{
+		Total: total,
+		Items: txs,
 	})
-	c.Done()
 }

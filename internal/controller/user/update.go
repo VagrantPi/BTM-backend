@@ -56,24 +56,20 @@ func UpdateOne(c *gin.Context) {
 	}
 	defer repo.TransactionCommit(tx)
 
-	roleAny, ok := c.Get("role")
-	if !ok {
-		roleAny, err = repo.GetRawRoleById(tx, req.Role)
-		if err != nil {
-			log.Error("GetRawRoleById error", zap.Any("err", err))
-			api.ErrResponse(c, "GetRawRoleById error", errors.InternalServer(error_code.ErrInternalError, "GetRawRoleById error").WithCause(err))
-			return
-		}
+	role, err := repo.GetRawRoleById(tx, req.Role)
+	if err != nil {
+		log.Error("GetRawRoleById error", zap.Any("err", err))
+		api.ErrResponse(c, "GetRawRoleById error", errors.InternalServer(error_code.ErrInternalError, "GetRawRoleById error").WithCause(err))
+		return
 	}
-	role, ok := roleAny.(domain.BTMRole)
-	if !ok || (ok && role.ID == 0) {
+	if role.ID == 0 {
 		log.Error("role not found")
 		api.ErrResponse(c, "role not found", errors.NotFound(error_code.ErrDBError, "role not found"))
 		return
 	}
 	if role.RoleName == "admin" {
 		log.Error("role not allowed")
-		api.ErrResponse(c, "role not allowed", errors.Forbidden(error_code.ErrForbidden, "不能修改 admin 權限"))
+		api.ErrResponse(c, "role not allowed", errors.Forbidden(error_code.ErrForbidden, "不能修改成 admin 權限"))
 		return
 	}
 
@@ -147,10 +143,5 @@ func UpdateOne(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: nil,
-	})
-	c.Done()
-
+	api.OKResponse(c, nil)
 }

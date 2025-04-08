@@ -62,16 +62,12 @@ func GetCustomerRiskControlRole(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: GetCustomerRiskControlRoleResp{
-			RoleId:       userInfo.Role.Uint8(),
-			RoleName:     userInfo.Role.String(),
-			DailyLimit:   userInfo.DailyLimit,
-			MonthlyLimit: userInfo.MonthlyLimit,
-		},
+	api.OKResponse(c, GetCustomerRiskControlRoleResp{
+		RoleId:       userInfo.Role.Uint8(),
+		RoleName:     userInfo.Role.String(),
+		DailyLimit:   userInfo.DailyLimit,
+		MonthlyLimit: userInfo.MonthlyLimit,
 	})
-	c.Done()
 }
 
 type UpdateCustomerRiskControlRoleReq struct {
@@ -136,7 +132,5 @@ func UpdateCustomerRiskControlRole(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-	})
+	api.OKResponse(c, nil)
 }

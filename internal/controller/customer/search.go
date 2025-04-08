@@ -145,9 +145,5 @@ func SearchCustomers(c *gin.Context) {
 		}
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: resp,
-	})
-	c.Done()
+	api.OKResponse(c, resp)
 }

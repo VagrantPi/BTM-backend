@@ -32,6 +32,9 @@ func main() {
 
 		// 2025_03_31_新增用戶備註
 		&model.BTMCustomerNote{},
+
+		// 2025_04_02_新增 新增限額塞入假資料 log
+		&model.BTMMockTxHistoryLog{},
 	); err != nil {
 		panic(err)
 	}

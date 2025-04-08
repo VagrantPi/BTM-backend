@@ -115,24 +115,20 @@ func GetBTMUserInfoDetail(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: GetBTMUserInfoDetailRes{
-			ApplicantId:      sumsubInfo.ApplicantId,
-			Name:             sumsubInfo.Name,
-			IDNumber:         sumsubInfo.IdNumber,
-			Birthday:         info.Info.Dob,
-			Address:          address,
-			Occupation:       occupation,
-			PhoneNumber:      info.Phone,
-			Email:            info.Email,
-			InspectionId:     sumsubInfo.InspectionId,
-			IdCardFrontImgId: sumsubInfo.IdCardFrontImgId,
-			IdCardBackImgId:  sumsubInfo.IdCardBackImgId,
-			SelfieImgIds:     selfieImgIds,
-			ReviewStatus:     info.Review.ReviewStatus,
-			ReviewCreateDate: info.Review.CreateDate,
-		},
+	api.OKResponse(c, GetBTMUserInfoDetailRes{
+		ApplicantId:      sumsubInfo.ApplicantId,
+		Name:             sumsubInfo.Name,
+		IDNumber:         sumsubInfo.IdNumber,
+		Birthday:         info.Info.Dob,
+		Address:          address,
+		Occupation:       occupation,
+		PhoneNumber:      info.Phone,
+		Email:            info.Email,
+		InspectionId:     sumsubInfo.InspectionId,
+		IdCardFrontImgId: sumsubInfo.IdCardFrontImgId,
+		IdCardBackImgId:  sumsubInfo.IdCardBackImgId,
+		SelfieImgIds:     selfieImgIds,
+		ReviewStatus:     info.Review.ReviewStatus,
+		ReviewCreateDate: info.Review.CreateDate,
 	})
-	c.Done()
 }

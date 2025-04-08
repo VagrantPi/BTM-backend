@@ -22,9 +22,5 @@ func GetRiskControlRoles(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: roles,
-	})
-	c.Done()
+	api.OKResponse(c, roles)
 }

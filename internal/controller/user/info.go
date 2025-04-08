@@ -54,13 +54,8 @@ func GetBTMUserInfo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: GetBTMUserInfoRespItem{
-			Name:  userInfo.Account,
-			Roles: []string{role.RoleName},
-		},
+	api.OKResponse(c, GetBTMUserInfoRespItem{
+		Name:  userInfo.Account,
+		Roles: []string{role.RoleName},
 	})
-	c.Done()
-
 }

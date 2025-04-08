@@ -63,11 +63,7 @@ func GetApplicantReviewHistory(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: parseHistory(resWithCache.CacheHistory.Items),
-	})
-	c.Done()
+	api.OKResponse(c, parseHistory(resWithCache.CacheHistory.Items))
 }
 
 type GetApplicantReviewHistoryItem struct {

@@ -51,12 +51,9 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: GetUsersRep{
-			Total: int(total),
-			Items: users,
-		},
+	api.OKResponse(c, GetUsersRep{
+		Total: int(total),
+		Items: users,
 	})
 	c.Done()
 }

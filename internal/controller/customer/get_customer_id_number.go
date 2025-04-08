@@ -67,11 +67,8 @@ func GetCustomerIdNumber(c *gin.Context) {
 			return
 		}
 
-		c.JSON(200, api.DefaultRep{
-			Code: 20000,
-			Data: GetCustomerIdNumberRes{
-				IdNumber: idNumber,
-			},
+		api.OKResponse(c, GetCustomerIdNumberRes{
+			IdNumber: idNumber,
 		})
 		return
 	}
@@ -92,10 +89,7 @@ func GetCustomerIdNumber(c *gin.Context) {
 		}
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-		Data: GetCustomerIdNumberRes{
-			IdNumber: sumsubInfo.IdNumber,
-		},
+	api.OKResponse(c, GetCustomerIdNumberRes{
+		IdNumber: sumsubInfo.IdNumber,
 	})
 }

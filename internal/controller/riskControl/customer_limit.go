@@ -75,7 +75,5 @@ func UpdateCustomerRiskControlLimit(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, api.DefaultRep{
-		Code: 20000,
-	})
+	api.OKResponse(c, nil)
 }
