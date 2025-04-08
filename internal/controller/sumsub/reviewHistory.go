@@ -84,7 +84,8 @@ func parseHistory(items []domain.SumsubHistoryItem) []GetApplicantReviewHistoryI
 
 	for i := 0; i < len(items); i++ {
 		item := items[i]
-		if item.Status == "completed" {
+		// SubjectName: coin_now.com 為系統自動審核
+		if item.Status == "completed" && item.SubjectName != "coin_now.com" {
 			status := ""
 			if item.ReviewAnswer == "GREEN" && item.Activity != "user:changed:applicantTag" {
 				status = "已核准"
@@ -96,7 +97,7 @@ func parseHistory(items []domain.SumsubHistoryItem) []GetApplicantReviewHistoryI
 				reviewTime := item.Ts
 				submissionTime := reviewTime
 				if len(submissionTimes) > 0 {
-					submissionTime = submissionTimes[0]
+					submissionTime = submissionTimes[len(submissionTimes)-1]
 					submissionTimes = nil
 				}
 				res = append(res, GetApplicantReviewHistoryItem{
@@ -124,7 +125,11 @@ func getReason(tags []string) []string {
 	}
 	var reasons []string
 	for _, tag := range tags {
-		reasons = append(reasons, domain.KYCTag[tag])
+		kycTag := domain.KYCTag[tag]
+		if kycTag == "" {
+			kycTag = tag
+		}
+		reasons = append(reasons, kycTag)
 	}
 	return reasons
 }
