@@ -81,8 +81,8 @@ type Repository interface {
 	// BTMRiskControlLimitSetting
 	GetRiskControlCustomerLimitSetting(db *gorm.DB, customerID uuid.UUID) (BTMRiskControlCustomerLimitSetting, error)
 	CreateCustomerLimit(db *gorm.DB, customerID uuid.UUID) error
-	UpdateCustomerLimit(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newDailyLimit, newMonthlyLimit decimal.Decimal) error
-	ChangeCustomerRole(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newRole RiskControlRole) error
+	UpdateCustomerLimit(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newDailyLimit, newMonthlyLimit decimal.Decimal, reason string) error
+	ChangeCustomerRole(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newRole RiskControlRole, reason string) error
 	GetRiskControlRoles() ([]RiskControlRoleKeyValue, error)
 
 	// BTMRiskControlCustomerLimitSettingChange

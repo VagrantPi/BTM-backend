@@ -21,6 +21,7 @@ type UpdateCustomerRiskControlLimitUriReq struct {
 type UpdateCustomerRiskControlLimitBodyReq struct {
 	DailyLimit   decimal.Decimal `json:"daily_limit" binding:"required"`
 	MonthlyLimit decimal.Decimal `json:"monthly_limit" binding:"required"`
+	Reason       string          `json:"reason" binding:"required"`
 }
 
 func UpdateCustomerRiskControlLimit(c *gin.Context) {
@@ -68,7 +69,7 @@ func UpdateCustomerRiskControlLimit(c *gin.Context) {
 		return
 	}
 
-	err = repo.UpdateCustomerLimit(repo.GetDb(c), operationUserInfo.Id, customerID, reqBody.DailyLimit, reqBody.MonthlyLimit)
+	err = repo.UpdateCustomerLimit(repo.GetDb(c), operationUserInfo.Id, customerID, reqBody.DailyLimit, reqBody.MonthlyLimit, reqBody.Reason)
 	if err != nil {
 		log.Error("repo.UpdateCustomerLimit()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.UpdateCustomerLimit()", err)

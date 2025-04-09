@@ -17,6 +17,8 @@ type BTMRiskControlCustomerLimitSetting struct {
 	IsCustomized        bool            `gorm:"not null; default:false; comment:'是否有客製化限額'"`
 	LastBlackToNormalAt sql.NullTime    `gorm:"comment:'最後一次黑名單切回正常名單的時間'"`
 	LastRole            uint8           `gorm:"comment:'前一次角色權限'"`
+	ChangeRoleReason    string          `gorm:"comment:'角色權限變更原因'"`
+	ChangeLimitReason   string          `gorm:"comment:'限額變更原因'"`
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
 }

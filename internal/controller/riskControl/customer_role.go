@@ -73,6 +73,7 @@ func GetCustomerRiskControlRole(c *gin.Context) {
 type UpdateCustomerRiskControlRoleReq struct {
 	CustomerId string `uri:"customer_id"`
 	RoleId     uint8  `json:"role_id"`
+	Reason     string `json:"reason"`
 }
 
 func UpdateCustomerRiskControlRole(c *gin.Context) {
@@ -104,6 +105,12 @@ func UpdateCustomerRiskControlRole(c *gin.Context) {
 		return
 	}
 
+	if req.Reason == "" {
+		log.Error("invalid reason", zap.Any("reason", req.Reason))
+		api.ErrResponse(c, "invalid reason", errors.BadRequest(error_code.ErrInvalidRequest, "invalid reason").WithCause(err))
+		return
+	}
+
 	repo, err := di.NewRepo()
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
@@ -125,7 +132,7 @@ func UpdateCustomerRiskControlRole(c *gin.Context) {
 		return
 	}
 
-	err = repo.ChangeCustomerRole(repo.GetDb(c), operationUserInfo.Id, customerID, domain.RiskControlRole(req.RoleId))
+	err = repo.ChangeCustomerRole(repo.GetDb(c), operationUserInfo.Id, customerID, domain.RiskControlRole(req.RoleId), req.Reason)
 	if err != nil {
 		log.Error("repo.ChangeCustomerRole()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.ChangeCustomerRole()", errors.InternalServer(error_code.ErrDBError, "repo.ChangeCustomerRole()").WithCause(err))

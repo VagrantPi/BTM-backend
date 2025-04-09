@@ -88,12 +88,14 @@ type BTMRiskControlLimitSettingChange struct {
 }
 
 type BTMRiskControlCustomerLimitSetting struct {
-	ID           uint            `json:"id"`
-	Role         RiskControlRole `json:"role"`
-	CustomerId   uuid.UUID       `json:"customer_id"`
-	DailyLimit   decimal.Decimal `json:"daily_limit"`
-	MonthlyLimit decimal.Decimal `json:"monthly_limit"`
-	IsCustomized bool            `json:"is_customized"`
+	ID                uint            `json:"id"`
+	Role              RiskControlRole `json:"role"`
+	CustomerId        uuid.UUID       `json:"customer_id"`
+	DailyLimit        decimal.Decimal `json:"daily_limit"`
+	MonthlyLimit      decimal.Decimal `json:"monthly_limit"`
+	IsCustomized      bool            `json:"is_customized"`
+	ChangeRoleReason  string          `json:"change_role_reason"`
+	ChangeLimitReason string          `json:"change_limit_reason"`
 }
 
 type BTMRiskControlCustomerLimitSettingChange struct {
