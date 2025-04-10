@@ -20,12 +20,8 @@ type CreateCustomerNoteUri struct {
 }
 
 type CreateCustomerNoteReq struct {
-	Note string `form:"note" binding:"required"`
-}
-
-type CreateCustomerNoteData struct {
-	Total int64                    `json:"total"`
-	Items []domain.BTMCustomerNote `json:"items"`
+	Note     string `json:"note" binding:"required"`
+	NoteType int    `json:"note_type" binding:"required"`
 }
 
 func CreateCustomerNote(c *gin.Context) {
@@ -75,6 +71,7 @@ func CreateCustomerNote(c *gin.Context) {
 	input := domain.BTMCustomerNote{
 		CustomerId: customerId,
 		Note:       reqBody.Note,
+		NoteType:   domain.CustomerNoteType(reqBody.NoteType),
 	}
 	afterJsonData, err := json.Marshal(input)
 	if err != nil {

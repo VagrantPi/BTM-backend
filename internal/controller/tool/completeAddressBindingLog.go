@@ -69,7 +69,7 @@ func CompleteAddressBindingLog(c *gin.Context) {
 				AfterValue:      createJsonData,
 				CreatedAt:       whitelist.CreatedAt,
 			})
-		} else if logInfo.CustomerId.String() == uuid.Nil.String() {
+		} else if logInfo.CustomerId == nil || (logInfo.CustomerId != nil && logInfo.CustomerId.String() == uuid.Nil.String()) {
 			// 遺失 customerId
 			fetchAddressInfo, err := repo.GetWhiteListByAddress(repo.GetDb(c), whitelist.Address)
 			if err != nil {

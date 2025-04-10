@@ -4,7 +4,6 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
@@ -43,6 +42,7 @@ type RiskControlRoleKeyValue struct {
 	Name string `json:"name"`
 }
 
+// 用來存放每次限額功能多塞入的假交易紀錄
 type BTMRiskControlLimitSetting struct {
 	ID           uint            `json:"id"`
 	Role         RiskControlRole `json:"role"`
@@ -76,36 +76,15 @@ func (s BTMRiskControlLimitSetting) Value() (driver.Value, error) {
 	return json.Marshal(s)
 }
 
-type BTMRiskControlLimitSettingChange struct {
-	ID              uint            `json:"id"`
-	OldRole         RiskControlRole `json:"old_role"`
-	OldDailyLimit   decimal.Decimal `json:"old_daily_limit"`
-	OldMonthlyLimit decimal.Decimal `json:"old_monthly_limit"`
-	NewRole         RiskControlRole `json:"new_role"`
-	NewDailyLimit   decimal.Decimal `json:"new_daily_limit"`
-	NewMonthlyLimit decimal.Decimal `json:"new_monthly_limit"`
-	CreatedAt       time.Time       `json:"created_at"`
-}
-
 type BTMRiskControlCustomerLimitSetting struct {
 	ID                uint            `json:"id"`
 	Role              RiskControlRole `json:"role"`
 	CustomerId        uuid.UUID       `json:"customer_id"`
 	DailyLimit        decimal.Decimal `json:"daily_limit"`
 	MonthlyLimit      decimal.Decimal `json:"monthly_limit"`
+	Level1            decimal.Decimal `json:"level1"`
+	Level2            decimal.Decimal `json:"level2"`
 	IsCustomized      bool            `json:"is_customized"`
 	ChangeRoleReason  string          `json:"change_role_reason"`
 	ChangeLimitReason string          `json:"change_limit_reason"`
-}
-
-type BTMRiskControlCustomerLimitSettingChange struct {
-	ID              uint            `json:"id"`
-	CustomerId      uuid.UUID       `json:"customer_id"`
-	OldRole         RiskControlRole `json:"old_role"`
-	OldDailyLimit   decimal.Decimal `json:"old_daily_limit"`
-	OldMonthlyLimit decimal.Decimal `json:"old_monthly_limit"`
-	NewRole         RiskControlRole `json:"new_role"`
-	NewDailyLimit   decimal.Decimal `json:"new_daily_limit"`
-	NewMonthlyLimit decimal.Decimal `json:"new_monthly_limit"`
-	CreatedAt       time.Time       `json:"created_at"`
 }

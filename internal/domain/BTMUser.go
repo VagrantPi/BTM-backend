@@ -14,3 +14,15 @@ type BTMUserWithRoles struct {
 	RoleId   int64  `json:"role_id"`
 	RoleName string `json:"role_name"`
 }
+
+type CustomerNoteType int
+
+const (
+	CustomerNoteTypeUnknown CustomerNoteType = iota
+	CustomerNoteTypeUser
+	CustomerNoteTypeRiskControl
+)
+
+func (c CustomerNoteType) Int() int {
+	return int(c)
+}

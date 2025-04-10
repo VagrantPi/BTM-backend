@@ -82,15 +82,13 @@ type Repository interface {
 	GetRiskControlCustomerLimitSetting(db *gorm.DB, customerID uuid.UUID) (BTMRiskControlCustomerLimitSetting, error)
 	CreateCustomerLimit(db *gorm.DB, customerID uuid.UUID) error
 	UpdateCustomerLimit(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newDailyLimit, newMonthlyLimit decimal.Decimal, reason string) error
+	UpdateCustomerEdd(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newLevel1, newLevel2 decimal.Decimal) error
 	ChangeCustomerRole(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newRole RiskControlRole, reason string) error
 	GetRiskControlRoles() ([]RiskControlRoleKeyValue, error)
 
-	// BTMRiskControlCustomerLimitSettingChange
-	GetCustomerLimitChangeLogs(db *gorm.DB, customerID uuid.UUID, start, end time.Time, page, limit int) ([]BTMRiskControlCustomerLimitSettingChange, int64, error)
-
 	// BTMCustomerNote
 	CreateCustomerNote(db *gorm.DB, note BTMCustomerNote) error
-	GetCustomerNotes(db *gorm.DB, customerId uuid.UUID, limit int, page int) ([]BTMCustomerNote, int64, error)
+	GetCustomerNotes(db *gorm.DB, customerId uuid.UUID, noteType CustomerNoteType, limit int, page int) ([]BTMCustomerNote, int64, error)
 
 	/**
 	 * lamassu original
@@ -110,6 +108,6 @@ type Repository interface {
 	GetCashIns(db *gorm.DB, customerID, phone string, startAt, endAt time.Time, limit int, page int) ([]CashInTx, int, error)
 }
 
-type Count struct {
-	Count int `json:"count"`
-}
+// type Count struct {
+// 	Count int `json:"count"`
+// }

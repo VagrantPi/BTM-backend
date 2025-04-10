@@ -19,14 +19,14 @@ func (repo *repository) CreateCustomerNote(db *gorm.DB, note domain.BTMCustomerN
 	return db.Create(&modelNote).Error
 }
 
-func (repo *repository) GetCustomerNotes(db *gorm.DB, customerId uuid.UUID, limit int, page int) ([]domain.BTMCustomerNote, int64, error) {
+func (repo *repository) GetCustomerNotes(db *gorm.DB, customerId uuid.UUID, noteType domain.CustomerNoteType, limit int, page int) ([]domain.BTMCustomerNote, int64, error) {
 	if db == nil {
 		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
 	}
 
 	offset := (page - 1) * limit
 	sql := db.Model(&model.BTMCustomerNote{}).
-		Where("customer_id = ?", customerId)
+		Where("customer_id = ? AND note_type = ?", customerId, noteType.Int())
 
 	var total int64
 	if err := sql.Count(&total).Error; err != nil {
@@ -58,6 +58,7 @@ func CustomerNotesDomainToModel(note domain.BTMCustomerNote) model.BTMCustomerNo
 		Note:              note.Note,
 		OperationUserId:   note.OperationUserId,
 		OperationUserName: note.OperationUserName,
+		NoteType:          note.NoteType.Int(),
 	}
 }
 
@@ -69,5 +70,6 @@ func CustomerNotesModelToDomain(note model.BTMCustomerNote) domain.BTMCustomerNo
 		Note:              note.Note,
 		OperationUserId:   note.OperationUserId,
 		OperationUserName: note.OperationUserName,
+		NoteType:          domain.CustomerNoteType(note.NoteType),
 	}
 }

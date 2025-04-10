@@ -18,8 +18,9 @@ type GetCustomerNotesUri struct {
 }
 
 type GetCustomerNotesReq struct {
-	Limit int `form:"limit"`
-	Page  int `form:"page"`
+	Limit    int                     `form:"limit"`
+	Page     int                     `form:"page"`
+	NoteType domain.CustomerNoteType `form:"note_type"`
 }
 
 type GetCustomerNotesData struct {
@@ -63,6 +64,12 @@ func GetCustomerNotes(c *gin.Context) {
 		reqQuery.Page = 1
 	}
 
+	if reqQuery.NoteType.Int() == 0 {
+		log.Error("noteType is required")
+		api.ErrResponse(c, "noteType is required", errors.BadRequest(error_code.ErrInvalidRequest, "noteType is required"))
+		return
+	}
+
 	repo, err := di.NewRepo()
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
@@ -70,7 +77,7 @@ func GetCustomerNotes(c *gin.Context) {
 		return
 	}
 
-	notes, total, err := repo.GetCustomerNotes(repo.GetDb(c), customerID, reqQuery.Limit, reqQuery.Page)
+	notes, total, err := repo.GetCustomerNotes(repo.GetDb(c), customerID, reqQuery.NoteType, reqQuery.Limit, reqQuery.Page)
 	if err != nil {
 		log.Error("repo.GetCustomerNotes", zap.Any("err", err))
 		api.ErrResponse(c, "repo.GetCustomerNotes", errors.NotFound(error_code.ErrDBError, "repo.GetCustomerNotes").WithCause(err))

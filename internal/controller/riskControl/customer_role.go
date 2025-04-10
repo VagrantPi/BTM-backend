@@ -24,6 +24,8 @@ type GetCustomerRiskControlRoleResp struct {
 	RoleName     string          `json:"role_name"`
 	DailyLimit   decimal.Decimal `json:"daily_limit"`
 	MonthlyLimit decimal.Decimal `json:"monthly_limit"`
+	Level1       decimal.Decimal `json:"level1"`
+	Level2       decimal.Decimal `json:"level2"`
 }
 
 func GetCustomerRiskControlRole(c *gin.Context) {
@@ -67,6 +69,8 @@ func GetCustomerRiskControlRole(c *gin.Context) {
 		RoleName:     userInfo.Role.String(),
 		DailyLimit:   userInfo.DailyLimit,
 		MonthlyLimit: userInfo.MonthlyLimit,
+		Level1:       userInfo.Level1,
+		Level2:       userInfo.Level2,
 	})
 }
 
