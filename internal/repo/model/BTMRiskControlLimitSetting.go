@@ -13,6 +13,8 @@ type BTMRiskControlLimitSetting struct {
 	MonthlyLimit decimal.Decimal `gorm:"not null; comment:'月交易限額'"`
 	Level1       decimal.Decimal `gorm:"comment:'等級門檻一'"`
 	Level2       decimal.Decimal `gorm:"comment:'等級門檻二'"`
+	Level1Days   uint32          `gorm:"comment:'等級門檻一天數'"`
+	Level2Days   uint32          `gorm:"comment:'等級門檻二天數'"`
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }

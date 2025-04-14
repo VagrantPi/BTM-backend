@@ -79,6 +79,10 @@ func RiskControlRouter(apiGroup *gin.RouterGroup) {
 	group.PATCH("/:customer_id/edd", riskControl.UpdateCustomerRiskControlEdd)
 }
 
+func ViewRouter(apiGroup *gin.RouterGroup) {
+	// group := apiGroup.Group("/view", middleware.Auth(), middleware.CheckRole())
+}
+
 func InternalRouter(apiGroup *gin.RouterGroup) {
 	apiGroup.GET("/btm/logs", middleware.Auth(), middleware.CheckRole(), debug.GetBTMChangeLogs)
 

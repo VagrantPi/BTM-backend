@@ -19,8 +19,10 @@ type UpdateCustomerRiskControlEddUriReq struct {
 }
 
 type UpdateCustomerRiskControlEddBodyReq struct {
-	Level1 decimal.Decimal `json:"level1" binding:"required"`
-	Level2 decimal.Decimal `json:"level2" binding:"required"`
+	Level1     decimal.Decimal `json:"level1" binding:"required"`
+	Level2     decimal.Decimal `json:"level2" binding:"required"`
+	Level1Days uint32          `json:"level1_days" binding:"required"`
+	Level2Days uint32          `json:"level2_days" binding:"required"`
 }
 
 func UpdateCustomerRiskControlEdd(c *gin.Context) {
@@ -68,7 +70,7 @@ func UpdateCustomerRiskControlEdd(c *gin.Context) {
 		return
 	}
 
-	err = repo.UpdateCustomerEdd(repo.GetDb(c), operationUserInfo.Id, customerID, reqBody.Level1, reqBody.Level2)
+	err = repo.UpdateCustomerEdd(repo.GetDb(c), operationUserInfo.Id, customerID, reqBody.Level1, reqBody.Level2, reqBody.Level1Days, reqBody.Level2Days)
 	if err != nil {
 		log.Error("repo.UpdateCustomerEdd()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.UpdateCustomerEdd()", err)

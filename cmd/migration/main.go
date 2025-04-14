@@ -136,9 +136,9 @@ ON CONFLICT ("role") DO NOTHING;
 
 	// 2025_04_10_新增每種角色的等級門檻
 	if err := db.Exec(`
-		UPDATE "public"."btm_risk_control_limit_settings" SET "level1" = '500000', "level2" = '2000000' WHERE "role" = 1;
-		UPDATE "public"."btm_risk_control_limit_settings" SET "level1" = '400000', "level2" = '1500000' WHERE "role" = 2;
-		UPDATE "public"."btm_risk_control_limit_settings" SET "level1" = '0', "level2" = '0' WHERE "role" = 3;
+		UPDATE "public"."btm_risk_control_limit_settings" SET "level1" = '500000', "level2" = '2000000', "level1_days" = 7, "level2_days" = 60 WHERE "role" = 1;
+		UPDATE "public"."btm_risk_control_limit_settings" SET "level1" = '400000', "level2" = '1500000', "level1_days" = 7, "level2_days" = 60 WHERE "role" = 2;
+		UPDATE "public"."btm_risk_control_limit_settings" SET "level1" = '0', "level2" = '0', "level1_days" = 7, "level2_days" = 60 WHERE "role" = 3;
 	`).Error; err != nil {
 		panic(err)
 	}

@@ -26,6 +26,8 @@ type GetCustomerRiskControlRoleResp struct {
 	MonthlyLimit decimal.Decimal `json:"monthly_limit"`
 	Level1       decimal.Decimal `json:"level1"`
 	Level2       decimal.Decimal `json:"level2"`
+	Level1Days   uint32          `json:"level1_days"`
+	Level2Days   uint32          `json:"level2_days"`
 }
 
 func GetCustomerRiskControlRole(c *gin.Context) {
@@ -71,6 +73,8 @@ func GetCustomerRiskControlRole(c *gin.Context) {
 		MonthlyLimit: userInfo.MonthlyLimit,
 		Level1:       userInfo.Level1,
 		Level2:       userInfo.Level2,
+		Level1Days:   userInfo.Level1Days,
+		Level2Days:   userInfo.Level2Days,
 	})
 }
 

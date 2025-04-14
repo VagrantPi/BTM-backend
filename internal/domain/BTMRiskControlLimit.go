@@ -84,7 +84,10 @@ type BTMRiskControlCustomerLimitSetting struct {
 	MonthlyLimit      decimal.Decimal `json:"monthly_limit"`
 	Level1            decimal.Decimal `json:"level1"`
 	Level2            decimal.Decimal `json:"level2"`
+	Level1Days        uint32          `json:"level1_days"`
+	Level2Days        uint32          `json:"level2_days"`
 	IsCustomized      bool            `json:"is_customized"`
+	IsCustomizedEdd   bool            `json:"is_customized_edd"`
 	ChangeRoleReason  string          `json:"change_role_reason"`
 	ChangeLimitReason string          `json:"change_limit_reason"`
 }
