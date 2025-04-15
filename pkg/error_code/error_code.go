@@ -43,6 +43,9 @@ const (
 	ErrSumsubApiValidate  = "ErrSumsubApiValidate"
 	ErrSumsubApiError     = "ErrSumsubApiError"
 
+	// user
+	ErrUserUpdate = "ErrUserUpdate"
+
 	// tools
 	ErrToolsUnzipFile         = "ErrToolsUnzipFile"
 	ErrToolsCsvOpen           = "ErrToolsCsvOpen"

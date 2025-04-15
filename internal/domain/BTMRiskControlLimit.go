@@ -88,6 +88,7 @@ type BTMRiskControlCustomerLimitSetting struct {
 	Level2Days        uint32          `json:"level2_days"`
 	IsCustomized      bool            `json:"is_customized"`
 	IsCustomizedEdd   bool            `json:"is_customized_edd"`
+	EddType           string          `json:"edd_type"`
 	ChangeRoleReason  string          `json:"change_role_reason"`
 	ChangeLimitReason string          `json:"change_limit_reason"`
 }

@@ -79,9 +79,9 @@ func _prepareSearchCustomersSQL(db *gorm.DB,
 			"customers.phone",
 			"customers.created",
 			"btm_whitelists.created_at AS first_white_list_created",
-			"customers.authorized_override = 'blocked' AS is_lamassu_block",
-			"btm_risk_control_customer_limit_settings.role = 3 AS is_admin_block",
 			"UPPER(TRIM(btm_sumsubs.id_number)) = UPPER(TRIM(btm_cibs.pid)) AS is_cib_block",
+			"btm_risk_control_customer_limit_settings.edd_type",
+			"btm_risk_control_customer_limit_settings.change_role_reason",
 		).
 			Joins("LEFT JOIN btm_risk_control_customer_limit_settings ON customers.id::TEXT = btm_risk_control_customer_limit_settings.customer_id").
 			Joins("LEFT JOIN btm_cibs ON btm_sumsubs.id_number = btm_cibs.pid").
@@ -145,11 +145,28 @@ func (repo *repository) GetCustomerById(db *gorm.DB, id uuid.UUID) (*domain.Cust
 	return &customer, nil
 }
 
+func (repo *repository) UpdateCustomerAuthorizedOverride(db *gorm.DB, customerID uuid.UUID, authorizedOverride domain.CustomerAuthorizedOverride) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	if authorizedOverride.String() == "" {
+		return errors.BadRequest(error_code.ErrUserUpdate, "authorizedOverride is empty")
+	}
+
+	return db.Model(&model.Customer{}).Where("id = ?", customerID).Update("authorized_override", authorizedOverride.String()).Error
+}
+
 func CustomerModelToDomain(customer model.Customer) domain.Customer {
+	suspendedUntil := ""
+	if customer.SuspendedUntil != nil && !customer.SuspendedUntil.IsZero() {
+		suspendedUntil = customer.SuspendedUntil.String()
+	}
 	return domain.Customer{
-		ID:      customer.ID,
-		Phone:   customer.Phone,
-		Created: customer.Created,
+		ID:             customer.ID,
+		Phone:          customer.Phone,
+		Created:        customer.Created,
+		SuspendedUntil: suspendedUntil,
 	}
 }
 

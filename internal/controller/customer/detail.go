@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -34,6 +35,7 @@ type GetBTMUserInfoDetailRes struct {
 	SelfieImgIds     []string `json:"selfie_img_ids"`
 	ReviewStatus     string   `json:"review_status"`
 	ReviewCreateDate string   `json:"review_create_date"`
+	SuspendedUntil   string   `json:"suspended_until"`
 }
 
 func GetBTMUserInfoDetail(c *gin.Context) {
@@ -58,10 +60,24 @@ func GetBTMUserInfoDetail(c *gin.Context) {
 		return
 	}
 
+	customerId, err := uuid.Parse(req.CustomerId)
+	if err != nil {
+		log.Error("uuid.Parse(req.CustomerId)", zap.Any("err", err))
+		api.ErrResponse(c, "uuid.Parse(req.CustomerId)", errors.BadRequest(error_code.ErrInvalidRequest, "uuid.Parse(req.CustomerId)").WithCause(err))
+		return
+	}
+
 	sumsubInfo, err := repo.GetBTMSumsub(repo.GetDb(c), req.CustomerId)
 	if err != nil {
 		log.Error("repo.GetBTMSumsub()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.GetBTMSumsub()", errors.InternalServer(error_code.ErrInternalError, "repo.GetBTMSumsub()").WithCause(err))
+		return
+	}
+
+	customer, err := repo.GetCustomerById(repo.GetDb(c), customerId)
+	if err != nil {
+		log.Error("repo.GetCustomerById()", zap.Any("err", err))
+		api.ErrResponse(c, "repo.GetCustomerById()", errors.InternalServer(error_code.ErrInternalError, "repo.GetCustomerById()").WithCause(err))
 		return
 	}
 
@@ -130,5 +146,6 @@ func GetBTMUserInfoDetail(c *gin.Context) {
 		SelfieImgIds:     selfieImgIds,
 		ReviewStatus:     info.Review.ReviewStatus,
 		ReviewCreateDate: info.Review.CreateDate,
+		SuspendedUntil:   customer.SuspendedUntil,
 	})
 }

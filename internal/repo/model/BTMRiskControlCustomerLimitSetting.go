@@ -20,6 +20,7 @@ type BTMRiskControlCustomerLimitSetting struct {
 	Level2Days          uint32          `gorm:"comment:'等級門檻二的天數'"`
 	IsCustomized        bool            `gorm:"not null; default:false; comment:'是否有客製化限額'"`
 	IsCustomizedEdd     bool            `gorm:"not null; default:false; comment:'是否有客製化EDD'"`
+	EddType             string          `gorm:"not null; default:''; comment:'EDD類型'"`
 	LastBlackToNormalAt sql.NullTime    `gorm:"comment:'最後一次黑名單切回正常名單的時間'"`
 	LastRole            uint8           `gorm:"comment:'前一次角色權限'"`
 	ChangeRoleReason    string          `gorm:"comment:'角色權限變更原因'"`

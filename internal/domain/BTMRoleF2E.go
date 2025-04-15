@@ -4,22 +4,27 @@ package domain
 type F2ERouterId string
 
 const (
-	// F2EPermission - 權限設定
+	// F2EAdminUsers - 後台用戶管理
+	F2EAdminUsers F2ERouterId = "adminUsers"
+	// F2EPermission - 權限管理
 	F2EPermission F2ERouterId = "permission"
+
+	// F2EUser - 用戶總覽
+	F2EUser F2ERouterId = "users"
+	// F2EUserInfo - 用戶總覽 > 個人基本資料
+	F2EUserInfo F2ERouterId = "userInfo"
+	// F2ERiskView - 用戶總覽 > 風險管理
+	F2ERiskView F2ERouterId = "riskView"
 	// F2ETx - 交易紀錄
 	F2ETx F2ERouterId = "transaction"
-	// F2EWhitelist - 風控白名單
-	F2EWhitelist F2ERouterId = "whitelist"
-	// F2EGraylist - 風控灰名單
-	F2EGraylist F2ERouterId = "graylist"
-	// F2EBlacklist - 風控黑名單
-	F2EBlacklist F2ERouterId = "blacklist"
+
+	// F2ERiskMemberList - 風控名單
+	F2ERiskMemberList F2ERouterId = "riskMemberList"
+
 	// F2ECIBs - 告誡名單
 	F2ECIBs F2ERouterId = "cibs"
 	// F2EAddressList - 綁定地址
 	F2EAddressList F2ERouterId = "addresslist"
-	// F2EUserInfo - 個人基本資料
-	F2EUserInfo F2ERouterId = "userInfo"
 )
 
 func (r F2ERouterId) String() string {
@@ -39,9 +44,8 @@ func URIToF2ERouterId(method string, uri string) []string {
 	case method == "GET" && uri == "/api/customer/list":
 		return []string{
 			F2EAddressList.String(),
-			F2EWhitelist.String(),
-			F2EGraylist.String(),
-			F2EBlacklist.String(),
+			F2EUser.String(),
+			F2ERiskMemberList.String(),
 		}
 	// 綁定地址頁面相關
 	case method == "GET" && uri == "/api/customer/whitelist":
@@ -64,35 +68,26 @@ func URIToF2ERouterId(method string, uri string) []string {
 		return []string{F2ECIBs.String()}
 
 	// 風控頁面相關
-	case method == "GET" && uri == "/api/risk_control/roles":
+	case method == "GET" && uri == "/api/user/role/roles":
 		return []string{
-			F2EWhitelist.String(),
-			F2EGraylist.String(),
-			F2EBlacklist.String(),
+			F2EPermission.String(),
+			F2EAdminUsers.String(),
 		}
 	case method == "GET" && uri == "/api/risk_control/:customer_id/role":
 		return []string{
-			F2EWhitelist.String(),
-			F2EGraylist.String(),
-			F2EBlacklist.String(),
+			F2ERiskView.String(),
 		}
 	case method == "PATCH" && uri == "/api/risk_control/:customer_id/role":
 		return []string{
-			F2EWhitelist.String(),
-			F2EGraylist.String(),
-			F2EBlacklist.String(),
+			F2ERiskView.String(),
 		}
 	case method == "PATCH" && uri == "/api/risk_control/:customer_id/limit":
 		return []string{
-			F2EWhitelist.String(),
-			F2EGraylist.String(),
-			F2EBlacklist.String(),
+			F2ERiskView.String(),
 		}
 	case method == "GET" && uri == "/api/btm/logs":
 		return []string{
-			F2EWhitelist.String(),
-			F2EGraylist.String(),
-			F2EBlacklist.String(),
+			F2ERiskView.String(),
 			F2EUserInfo.String(),
 		}
 

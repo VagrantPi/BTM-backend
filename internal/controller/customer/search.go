@@ -45,9 +45,9 @@ type SearchCustomersRepItem struct {
 	Name                  string    `json:"name"`
 	Created               time.Time `json:"created_at"`
 	FirstWhiteListCreated time.Time `json:"first_white_list_created"`
-	IsLamassuBlock        bool      `json:"is_lamassu_block"`
-	IsAdminBlock          bool      `json:"is_admin_block"`
 	IsCibBlock            bool      `json:"is_cib_block"`
+	EddType               string    `json:"edd_type"`
+	ChangeRoleReason      string    `json:"change_role_reason"`
 }
 
 func SearchCustomers(c *gin.Context) {
@@ -139,9 +139,9 @@ func SearchCustomers(c *gin.Context) {
 			Name:                  tools.MaskName(v.Name),
 			Created:               v.Created,
 			FirstWhiteListCreated: v.FirstWhiteListCreated,
-			IsLamassuBlock:        v.IsLamassuBlock,
-			IsAdminBlock:          v.IsAdminBlock,
 			IsCibBlock:            v.IsCibBlock,
+			EddType:               v.EddType,
+			ChangeRoleReason:      v.ChangeRoleReason,
 		}
 	}
 

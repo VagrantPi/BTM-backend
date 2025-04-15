@@ -175,6 +175,7 @@ func (repo *repository) UpdateCustomerLimit(db *gorm.DB, operationUserId uint, c
 	customerLimit.UpdatedAt = time.Now()
 	customerLimit.LastRole = beforeCustomerLimit.Role.Uint8()
 	customerLimit.ChangeLimitReason = reason
+	customerLimit.ChangeRoleReason = "X"
 
 	if err := tx.Save(&customerLimit).Error; err != nil {
 		tx.Rollback()
@@ -207,6 +208,7 @@ func (repo *repository) ChangeCustomerRole(db *gorm.DB, operationUserId uint, cu
 		newDefaultLimit.Level2 = customerLimit.Level2
 		newDefaultLimit.Level1Days = customerLimit.Level1Days
 		newDefaultLimit.Level2Days = customerLimit.Level2Days
+
 	} else {
 		// 取得新的預設限制
 		if err := db.Where("role = ?", newRole.Uint8()).First(&newDefaultLimit).Error; err != nil {
@@ -247,7 +249,7 @@ func (repo *repository) ChangeCustomerRole(db *gorm.DB, operationUserId uint, cu
 		Level1Days:        newDefaultLimit.Level1Days,
 		Level2Days:        newDefaultLimit.Level2Days,
 		ChangeRoleReason:  reason,
-		ChangeLimitReason: customerLimit.ChangeLimitReason, // 保留原限額變更原因
+		ChangeLimitReason: "",
 	}
 	afterCustomerLimitJsonData, err := json.Marshal(afterCustomerLimit)
 	if err != nil {
@@ -268,6 +270,21 @@ func (repo *repository) ChangeCustomerRole(db *gorm.DB, operationUserId uint, cu
 	if customerLimit.Role == domain.RiskControlRoleBlack.Uint8() {
 		// 原始為黑名單切回白或黑需要記錄時間戳
 		customerLimit.LastBlackToNormalAt = sql.NullTime{Time: time.Now(), Valid: true}
+		customerLimit.EddType = ""
+
+		// customers.authorized_override 切換回 verified
+		err = repo.UpdateCustomerAuthorizedOverride(tx, customerID, domain.CustomerAuthorizedOverrideVerified)
+		if err != nil {
+			return errors.InternalServer(error_code.ErrUserUpdate, "UpdateCustomerAuthorizedOverride").WithCause(err)
+		}
+	}
+
+	if newRole == domain.RiskControlRoleBlack {
+		// customers.authorized_override 切換成 blocked
+		err = repo.UpdateCustomerAuthorizedOverride(tx, customerID, domain.CustomerAuthorizedOverrideBlocked)
+		if err != nil {
+			return errors.InternalServer(error_code.ErrUserUpdate, "UpdateCustomerAuthorizedOverride").WithCause(err)
+		}
 	}
 
 	customerLimit.Role = newRole.Uint8()
@@ -281,6 +298,7 @@ func (repo *repository) ChangeCustomerRole(db *gorm.DB, operationUserId uint, cu
 	customerLimit.UpdatedAt = time.Now()
 	customerLimit.LastRole = beforeCustomerLimit.Role.Uint8() // 紀錄修改前的 role
 	customerLimit.ChangeRoleReason = reason
+	customerLimit.ChangeLimitReason = "X"
 
 	if err := tx.Save(&customerLimit).Error; err != nil {
 		tx.Rollback()
@@ -434,6 +452,7 @@ func BTMRiskControlCustomerLimitSettingDomainToModel(item domain.BTMRiskControlC
 		Level2Days:      item.Level2Days,
 		IsCustomized:    item.IsCustomized,
 		IsCustomizedEdd: item.IsCustomizedEdd,
+		EddType:         item.EddType,
 	}
 }
 
@@ -450,5 +469,6 @@ func BTMRiskControlCustomerLimitSettingModelToDomain(item model.BTMRiskControlCu
 		Level2Days:      item.Level2Days,
 		IsCustomized:    item.IsCustomized,
 		IsCustomizedEdd: item.IsCustomizedEdd,
+		EddType:         item.EddType,
 	}
 }

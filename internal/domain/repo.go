@@ -100,6 +100,7 @@ type Repository interface {
 		whitelistCreatedStartAt, whitelistCreatedEndAt, customerCreatedStartAt, customerCreatedEndAt time.Time,
 		customerType CustomerType, active bool,
 		limit int, page int) ([]CustomerWithWhiteListCreated, int, error)
+	UpdateCustomerAuthorizedOverride(db *gorm.DB, customerID uuid.UUID, authorizedOverride CustomerAuthorizedOverride) error
 
 	// userConfig
 	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)
