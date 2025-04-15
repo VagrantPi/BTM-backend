@@ -84,6 +84,7 @@ type Repository interface {
 	UpdateCustomerLimit(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newDailyLimit, newMonthlyLimit decimal.Decimal, reason string) error
 	UpdateCustomerEdd(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newLevel1, newLevel2 decimal.Decimal, newLevel1Days, newLevel2Days uint32) error
 	ChangeCustomerRole(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newRole RiskControlRole, reason string) error
+	ResetCustomerRole(db *gorm.DB, operationUserId uint, customerID uuid.UUID) error
 	GetRiskControlRoles() ([]RiskControlRoleKeyValue, error)
 
 	// BTMCustomerNote

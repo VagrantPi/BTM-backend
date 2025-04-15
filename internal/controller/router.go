@@ -75,6 +75,7 @@ func RiskControlRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/roles", riskControl.GetRiskControlRoles)
 	group.GET("/:customer_id/role", riskControl.GetCustomerRiskControlRole)
 	group.PATCH("/:customer_id/role", riskControl.UpdateCustomerRiskControlRole)
+	group.PATCH("/:customer_id/role/reset", riskControl.ResetCustomerRiskControlRole)
 	group.PATCH("/:customer_id/limit", riskControl.UpdateCustomerRiskControlLimit)
 	group.PATCH("/:customer_id/edd", riskControl.UpdateCustomerRiskControlEdd)
 }

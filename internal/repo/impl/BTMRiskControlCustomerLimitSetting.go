@@ -185,6 +185,81 @@ func (repo *repository) UpdateCustomerLimit(db *gorm.DB, operationUserId uint, c
 	return tx.Commit().Error
 }
 
+func (repo *repository) ResetCustomerRole(db *gorm.DB, operationUserId uint, customerID uuid.UUID) error {
+	var customerLimit model.BTMRiskControlCustomerLimitSetting
+	if err := db.Where("customer_id = ?", customerID).First(&customerLimit).Error; err != nil {
+		return err
+	}
+
+	if customerLimit.Role != domain.RiskControlRoleBlack.Uint8() {
+		return errors.BadRequest(error_code.ErrInvalidRequest, "customer role need black")
+	}
+
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	beforeCustomerLimit := domain.BTMRiskControlCustomerLimitSetting{
+		CustomerId:        customerID,
+		Role:              domain.RiskControlRole(customerLimit.Role),
+		DailyLimit:        customerLimit.DailyLimit,
+		MonthlyLimit:      customerLimit.MonthlyLimit,
+		Level1:            customerLimit.Level1,
+		Level2:            customerLimit.Level2,
+		Level1Days:        customerLimit.Level1Days,
+		Level2Days:        customerLimit.Level2Days,
+		ChangeRoleReason:  customerLimit.ChangeRoleReason,
+		ChangeLimitReason: customerLimit.ChangeLimitReason,
+	}
+	beforeCustomerLimitJsonData, err := json.Marshal(beforeCustomerLimit)
+	if err != nil {
+		return errors.InternalServer(error_code.ErrDBError, "json.Marshal(beforeCustomerLimitChange)").WithCause(err)
+	}
+	afterCustomerLimit := domain.BTMRiskControlCustomerLimitSetting{
+		CustomerId:        customerID,
+		Role:              domain.RiskControlRole(customerLimit.LastRole),
+		DailyLimit:        customerLimit.DailyLimit,
+		MonthlyLimit:      customerLimit.MonthlyLimit,
+		Level1:            customerLimit.Level1,
+		Level2:            customerLimit.Level2,
+		Level1Days:        customerLimit.Level1Days,
+		Level2Days:        customerLimit.Level2Days,
+		ChangeRoleReason:  "系統回復原始角色",
+		ChangeLimitReason: "",
+	}
+	afterCustomerLimitJsonData, err := json.Marshal(afterCustomerLimit)
+	if err != nil {
+		return errors.InternalServer(error_code.ErrDBError, "json.Marshal(afterCustomerLimitChange)").WithCause(err)
+	}
+	err = repo.CreateBTMChangeLog(tx, domain.BTMChangeLog{
+		OperationUserId: operationUserId,
+		TableName:       domain.BTMChangeLogTableNameBTMRiskControlCustomerLimitSetting,
+		OperationType:   domain.BTMChangeLogOperationTypeUpdate,
+		CustomerId:      &customerID,
+		BeforeValue:     beforeCustomerLimitJsonData,
+		AfterValue:      afterCustomerLimitJsonData,
+	})
+	if err != nil {
+		return errors.InternalServer(error_code.ErrDBError, "CreateBTMChangeLog").WithCause(err)
+	}
+
+	customerLimit.Role = customerLimit.LastRole // 返回原本角色
+	customerLimit.UpdatedAt = time.Now()
+	customerLimit.LastRole = customerLimit.Role
+	customerLimit.ChangeRoleReason = "系統回復原始角色"
+	customerLimit.ChangeLimitReason = "X"
+
+	if err := tx.Save(&customerLimit).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
+}
+
 func (repo *repository) ChangeCustomerRole(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newRole domain.RiskControlRole, reason string) error {
 	var customerLimit model.BTMRiskControlCustomerLimitSetting
 	if err := db.Where("customer_id = ?", customerID).First(&customerLimit).Error; err != nil {
