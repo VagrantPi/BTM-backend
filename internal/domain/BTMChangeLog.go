@@ -9,7 +9,7 @@ import (
 
 type BTMChangeLog struct {
 	ID              uint                      `json:"id"`
-	OperationUserId uint                      `json:"operation_user_id"`
+	OperationUserId int64                     `json:"operation_user_id"`
 	TableName       BTMChangeLogTableName     `json:"table_name"`
 	OperationType   BTMChangeLogOperationType `json:"operation_type"`
 	CustomerId      *uuid.UUID                `json:"customer_id"`
@@ -18,7 +18,7 @@ type BTMChangeLog struct {
 	CreatedAt       time.Time                 `json:"created_at"`
 }
 
-const OperationUserIdSystem uint = 0
+const OperationUserIdSystem int64 = 0
 
 type BTMChangeLogOperationType uint8
 

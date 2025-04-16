@@ -87,7 +87,7 @@ func Auth() gin.HandlerFunc {
 
 		if configs.C.Env != "local" {
 			// 只允許一個裝置登入
-			isLastLoginToken, err := repo.IsLastLoginToken(repo.GetDb(c), userInfo.Id, token)
+			isLastLoginToken, err := repo.IsLastLoginToken(repo.GetDb(c), uint(userInfo.Id), token)
 			if err != nil {
 				log.Error("IsLastLoginToken error", zap.Any("err", err))
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{

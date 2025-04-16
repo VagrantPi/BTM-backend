@@ -13,6 +13,6 @@ type BTMCustomerNote struct {
 	CustomerId        uuid.UUID `gorm:"index; not null"`
 	Note              string    `gorm:"not null"`
 	NoteType          int       `gorm:"not null; default: 1"`
-	OperationUserId   uint      `gorm:"not null"`
+	OperationUserId   int64     `gorm:"not null"`
 	OperationUserName string    `gorm:"not null"`
 }

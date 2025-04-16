@@ -78,7 +78,7 @@ func LoginBTMAdmin(c *gin.Context) {
 	token, err := tools.GenerateJWT(domain.UserJwt{
 		Account: req.Username,
 		Role:    user.Roles,
-		Id:      user.Id,
+		Id:      int64(user.Id),
 	}, configs.C.JWT.Secret)
 	if err != nil {
 		log.Error("GenerateJWT", zap.Any("err", err))

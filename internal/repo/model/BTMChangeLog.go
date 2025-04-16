@@ -11,7 +11,7 @@ type BTMChangeLog struct {
 	Db *gorm.DB `gorm:"-"`
 	gorm.Model
 
-	OperationUserId uint
+	OperationUserId int64
 	TableName       string     `gorm:"index:operation_table,priority:1; index:operation_table_customer,priority:1"`
 	OperationType   uint8      `gorm:"index:operation_table,priority:2"`
 	CustomerId      *uuid.UUID `gorm:"index:operation_table_customer,priority:2"`

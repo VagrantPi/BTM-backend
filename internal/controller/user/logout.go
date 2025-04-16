@@ -28,7 +28,7 @@ func LogoutBTMAdmin(c *gin.Context) {
 		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
 		return
 	}
-	err = repo.DeleteLastLoginToken(repo.GetDb(c), userInfo.(domain.UserJwt).Id)
+	err = repo.DeleteLastLoginToken(repo.GetDb(c), uint(userInfo.(domain.UserJwt).Id))
 	if err != nil {
 		log.Error("DeleteLastLoginToken", zap.Any("err", err))
 		api.ErrResponse(c, "DeleteLastLoginToken", errors.InternalServer(error_code.ErrDBError, "DeleteLastLoginToken").WithCause(err))

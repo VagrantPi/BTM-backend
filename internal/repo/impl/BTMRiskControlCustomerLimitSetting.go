@@ -79,7 +79,7 @@ func (repo *repository) CreateCustomerLimit(db *gorm.DB, customerID uuid.UUID) e
 	return tx.Commit().Error
 }
 
-func (repo *repository) UpdateCustomerLimit(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newDailyLimit, newMonthlyLimit decimal.Decimal, reason string) error {
+func (repo *repository) UpdateCustomerLimit(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newDailyLimit, newMonthlyLimit decimal.Decimal, reason string) error {
 	var customerLimit model.BTMRiskControlCustomerLimitSetting
 	if err := db.Where("customer_id = ?", customerID).First(&customerLimit).Error; err != nil {
 		return err
@@ -185,7 +185,7 @@ func (repo *repository) UpdateCustomerLimit(db *gorm.DB, operationUserId uint, c
 	return tx.Commit().Error
 }
 
-func (repo *repository) ResetCustomerRole(db *gorm.DB, operationUserId uint, customerID uuid.UUID) error {
+func (repo *repository) ResetCustomerRole(db *gorm.DB, operationUserId int64, customerID uuid.UUID) error {
 	var customerLimit model.BTMRiskControlCustomerLimitSetting
 	if err := db.Where("customer_id = ?", customerID).First(&customerLimit).Error; err != nil {
 		return err
@@ -246,11 +246,18 @@ func (repo *repository) ResetCustomerRole(db *gorm.DB, operationUserId uint, cus
 		return errors.InternalServer(error_code.ErrDBError, "CreateBTMChangeLog").WithCause(err)
 	}
 
+	// customers.authorized_override 切換成 verified
+	err = repo.UpdateCustomerAuthorizedOverride(tx, customerID, domain.CustomerAuthorizedOverrideVerified)
+	if err != nil {
+		return errors.InternalServer(error_code.ErrUserUpdate, "UpdateCustomerAuthorizedOverride").WithCause(err)
+	}
+
 	customerLimit.Role = customerLimit.LastRole // 返回原本角色
 	customerLimit.UpdatedAt = time.Now()
 	customerLimit.LastRole = customerLimit.Role
 	customerLimit.ChangeRoleReason = "系統回復原始角色"
 	customerLimit.ChangeLimitReason = "X"
+	customerLimit.LastBlackToNormalAt = sql.NullTime{Time: time.Now(), Valid: true}
 
 	if err := tx.Save(&customerLimit).Error; err != nil {
 		tx.Rollback()
@@ -260,7 +267,7 @@ func (repo *repository) ResetCustomerRole(db *gorm.DB, operationUserId uint, cus
 	return tx.Commit().Error
 }
 
-func (repo *repository) ChangeCustomerRole(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newRole domain.RiskControlRole, reason string) error {
+func (repo *repository) ChangeCustomerRole(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newRole domain.RiskControlRole, reason string) error {
 	var customerLimit model.BTMRiskControlCustomerLimitSetting
 	if err := db.Where("customer_id = ?", customerID).First(&customerLimit).Error; err != nil {
 		return err
@@ -432,7 +439,7 @@ func (repo *repository) GetRiskControlRoles() ([]domain.RiskControlRoleKeyValue,
 	}, nil
 }
 
-func (repo *repository) UpdateCustomerEdd(db *gorm.DB, operationUserId uint, customerID uuid.UUID, newLevel1, newLevel2 decimal.Decimal, newLevel1Days, newLevel2Days uint32) error {
+func (repo *repository) UpdateCustomerEdd(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newLevel1, newLevel2 decimal.Decimal, newLevel1Days, newLevel2Days uint32) error {
 	var customerLimit model.BTMRiskControlCustomerLimitSetting
 	if err := db.Where("customer_id = ?", customerID).First(&customerLimit).Error; err != nil {
 		return err
