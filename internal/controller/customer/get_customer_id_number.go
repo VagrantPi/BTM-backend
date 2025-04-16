@@ -47,6 +47,16 @@ func GetCustomerIdNumber(c *gin.Context) {
 		return
 	}
 
+	// 檢查客製化限額是否存在，不存在則建立
+	// 原本設計上未 KYC 不會有客製化限額，所以在撈出時會是 limit: 0，但前端不應顯示 suspend，而應該要走原本 none-kyc 流程
+	// 因此查詢時都去做初始化的動作
+	_, err = repo.GetRiskControlCustomerLimitSetting(repo.GetDb(c), customerID)
+	if err != nil {
+		log.Error("repo.GetRiskControlCustomerLimitSetting", zap.Any("customerID", customerID), zap.Any("err", err))
+		api.ErrResponse(c, "repo.GetRiskControlCustomerLimitSetting", errors.InternalServer(error_code.ErrDBError, "repo.GetRiskControlCustomerLimitSetting").WithCause(err))
+		return
+	}
+
 	// 如果沒有存 email 則清除 DB 快取
 	if sumsubInfo != nil && (sumsubInfo.EmailHash == "" || sumsubInfo.InspectionId == "") {
 		err := repo.DeleteBTMSumsub(repo.GetDb(c), customerID.String())
