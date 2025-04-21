@@ -10,6 +10,7 @@ import (
 	"BTM-backend/internal/controller/tool"
 	"BTM-backend/internal/controller/tx"
 	"BTM-backend/internal/controller/user"
+	"BTM-backend/internal/controller/view"
 	"BTM-backend/internal/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -81,7 +82,8 @@ func RiskControlRouter(apiGroup *gin.RouterGroup) {
 }
 
 func ViewRouter(apiGroup *gin.RouterGroup) {
-	// group := apiGroup.Group("/view", middleware.Auth(), middleware.CheckRole())
+	group := apiGroup.Group("/view", middleware.Auth(), middleware.CheckRole())
+	group.GET("/tx_volumns", view.GetTxVolumns)
 }
 
 func InternalRouter(apiGroup *gin.RouterGroup) {
@@ -95,5 +97,6 @@ func InternalRouter(apiGroup *gin.RouterGroup) {
 	toolGroup := apiGroup.Group("/tool", middleware.ServerKeyAuth())
 	toolGroup.GET("/sync_sumsub", tool.SyncAllCustomerSumsub)
 	toolGroup.GET("/complete_address_binding_log", tool.CompleteAddressBindingLog)
+	toolGroup.GET("/sync_daily_tx_volumn", tool.SyncDailyTxVolumn)
 
 }

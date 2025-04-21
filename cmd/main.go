@@ -92,5 +92,10 @@ func CronJob() {
 		cronjob.SyncNotComplateSumsub()
 	})
 
+	// 每天凌晨 12:30 快照前天交易量 by 個台機器
+	cron.AddFunc("30 0 * * *", func() {
+		cronjob.ShapshotYesterdayVolumn()
+	})
+
 	cron.Start()
 }

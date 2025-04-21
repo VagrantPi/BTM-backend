@@ -91,6 +91,12 @@ type Repository interface {
 	CreateCustomerNote(db *gorm.DB, note BTMCustomerNote) error
 	GetCustomerNotes(db *gorm.DB, customerId uuid.UUID, noteType CustomerNoteType, limit int, page int) ([]BTMCustomerNote, int64, error)
 
+	// BTMDailyDeviceIncome
+	SnapshotYesterday(db *gorm.DB) error
+	SnapshotByDate(db *gorm.DB, dateStr string) error
+	SnapshotRange(db *gorm.DB, startDateStr, endDateStr string) error
+	FetchByStatDate(db *gorm.DB, startDate, endDate string) ([]BTMDailyDeviceIncome, error)
+
 	/**
 	 * lamassu original
 	 **/

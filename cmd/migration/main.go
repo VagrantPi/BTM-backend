@@ -25,7 +25,7 @@ func main() {
 		&model.BTMRiskControlCustomerLimitSetting{},
 		&model.BTMRiskControlLimitSetting{},
 		&model.BTMRiskControlThreshold{},
-		// &model.BTMRiskControlMachineRequestLimitLog{},
+		&model.BTMRiskControlMachineRequestLimitLog{},
 
 		// 2025_03_24_新增後台登入日誌
 		&model.BTMLoginLog{},
@@ -35,6 +35,9 @@ func main() {
 
 		// 2025_04_02_新增 新增限額塞入假資料 log
 		&model.BTMMockTxHistoryLog{},
+
+		// 2025_04_18_新增日交易快照
+		&model.BTMDailyDeviceIncome{},
 	); err != nil {
 		panic(err)
 	}
