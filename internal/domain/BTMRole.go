@@ -39,6 +39,12 @@ type UserReviewHistory struct {
 	Expiration   int64
 }
 
+// TODO: 未來改使用 redis
+type DeviceList struct {
+	DeviceList []Device
+	Expiration int64
+}
+
 type TTLMap[T any] struct {
 	Cache  T
 	Expire int64
@@ -47,11 +53,13 @@ type TTLMap[T any] struct {
 var (
 	TTLRoleMap        atomic.Value
 	TTLUserHistoryMap atomic.Value
+	TTLDeviceListMap  atomic.Value
 )
 
 func init() {
 	TTLRoleMap.Store(make(map[string]TTLMap[RoleWithTTL]))
 	TTLUserHistoryMap.Store(make(map[string]TTLMap[UserReviewHistory]))
+	TTLDeviceListMap.Store(make(map[string]TTLMap[DeviceList]))
 }
 
 func GetTTLMap[T any](mapName *atomic.Value, key string) (*T, bool) {

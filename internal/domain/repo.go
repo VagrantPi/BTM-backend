@@ -114,6 +114,9 @@ type Repository interface {
 
 	// cashInTx
 	GetCashIns(db *gorm.DB, customerID, phone string, startAt, endAt time.Time, limit int, page int) ([]CashInTx, int, error)
+
+	// device
+	GetDeviceAll(db *gorm.DB) ([]Device, error)
 }
 
 // type Count struct {

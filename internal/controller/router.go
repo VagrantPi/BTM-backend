@@ -84,6 +84,8 @@ func RiskControlRouter(apiGroup *gin.RouterGroup) {
 func ViewRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/view", middleware.Auth(), middleware.CheckRole())
 	group.GET("/tx_volumns", view.GetTxVolumns)
+	group.GET("/device_list", view.GetDeviceList)
+
 }
 
 func InternalRouter(apiGroup *gin.RouterGroup) {
