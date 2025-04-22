@@ -41,7 +41,7 @@ type UserReviewHistory struct {
 
 // TODO: 未來改使用 redis
 type DeviceList struct {
-	DeviceList []Device
+	DeviceList map[string]Device
 	Expiration int64
 }
 

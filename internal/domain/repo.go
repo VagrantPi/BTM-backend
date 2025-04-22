@@ -96,6 +96,8 @@ type Repository interface {
 	SnapshotByDate(db *gorm.DB, dateStr string) error
 	SnapshotRange(db *gorm.DB, startDateStr, endDateStr string) error
 	FetchByStatDate(db *gorm.DB, startDate, endDate string) ([]BTMDailyDeviceIncome, error)
+	FetchByStatDateAndGroupByDeviceId(db *gorm.DB, startDate, endDate string) ([]DeviceData, int64,
+		error)
 
 	/**
 	 * lamassu original
@@ -116,9 +118,10 @@ type Repository interface {
 	GetCashIns(db *gorm.DB, customerID, phone string, startAt, endAt time.Time, limit int, page int) ([]CashInTx, int, error)
 
 	// device
-	GetDeviceAll(db *gorm.DB) ([]Device, error)
+	GetDeviceAll(db *gorm.DB) (map[string]Device, error)
+	GetDeviceAllWithCache(db *gorm.DB) (map[string]Device, error)
 }
 
-// type Count struct {
-// 	Count int `json:"count"`
-// }
+type Sum struct {
+	Sum decimal.Decimal `json:"sum"`
+}

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -126,6 +127,56 @@ func (repo *repository) FetchByStatDate(db *gorm.DB, startDate, endDate string) 
 		resp = append(resp, BTMDailyDeviceIncomeModelToDomain(item))
 	}
 	return resp, nil
+}
+
+// TODO: 包太多商業邏輯，應該是屬於 service 層，未來優化
+func (repo *repository) FetchByStatDateAndGroupByDeviceId(db *gorm.DB, startDate, endDate string) ([]domain.DeviceData, int64, error) {
+	if db == nil {
+		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	sql := db.Model(&model.BTMDailyDeviceIncome{}).
+		Where("stat_date >= ? AND stat_date <= ? AND total_fiat ~ '^[0-9]+(\\.[0-9]+)?$'", startDate, endDate)
+
+	var sum = domain.Sum{Sum: decimal.Zero}
+	err := sql.Select("SUM(total_fiat::NUMERIC) AS sum").
+		Scan(&sum).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var result []struct {
+		DeviceId  string          `json:"device_id"`
+		TotalFiat decimal.Decimal `json:"total_fiat"`
+	}
+
+	err = sql.
+		Select("device_id, SUM(total_fiat::NUMERIC) AS total_fiat").
+		Group("device_id").
+		Scan(&result).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// get device list
+	deviceList, err := repo.GetDeviceAllWithCache(db)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	resp := []domain.DeviceData{}
+	for _, item := range result {
+		name := deviceList[item.DeviceId].Name
+		if name == "" {
+			name = item.DeviceId
+		}
+		resp = append(resp, domain.DeviceData{
+			Name:  name,
+			Value: item.TotalFiat.IntPart(),
+		})
+	}
+
+	return resp, sum.Sum.IntPart(), nil
 }
 
 func BTMDailyDeviceIncomeDomainToModel(item domain.BTMDailyDeviceIncome) model.BTMDailyDeviceIncome {
