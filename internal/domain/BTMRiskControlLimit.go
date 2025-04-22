@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
@@ -88,6 +89,8 @@ type BTMRiskControlCustomerLimitSetting struct {
 	Level2Days        uint32          `json:"level2_days"`
 	IsCustomized      bool            `json:"is_customized"`
 	IsCustomizedEdd   bool            `json:"is_customized_edd"`
+	EddAt             sql.NullTime    `json:"edd_at"`
+	IsEdd             bool            `json:"is_edd"`
 	EddType           string          `json:"edd_type"`
 	ChangeRoleReason  string          `json:"change_role_reason"`
 	ChangeLimitReason string          `json:"change_limit_reason"`

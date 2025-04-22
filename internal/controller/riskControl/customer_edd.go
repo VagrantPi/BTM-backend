@@ -14,25 +14,25 @@ import (
 	"go.uber.org/zap"
 )
 
-type UpdateCustomerRiskControlEddUriReq struct {
+type UpdateCustomerRiskControlEddSettingUriReq struct {
 	CustomerId string `uri:"customer_id"`
 }
 
-type UpdateCustomerRiskControlEddBodyReq struct {
+type UpdateCustomerRiskControlEddSettingBodyReq struct {
 	Level1     decimal.Decimal `json:"level1" binding:"required"`
 	Level2     decimal.Decimal `json:"level2" binding:"required"`
 	Level1Days uint32          `json:"level1_days" binding:"required"`
 	Level2Days uint32          `json:"level2_days" binding:"required"`
 }
 
-func UpdateCustomerRiskControlEdd(c *gin.Context) {
-	log := logger.Zap().WithClassFunction("api", "UpdateCustomerRiskControlEdd")
+func UpdateCustomerRiskControlEddSetting(c *gin.Context) {
+	log := logger.Zap().WithClassFunction("api", "UpdateCustomerRiskControlEddSetting")
 	defer func() {
 		_ = log.Sync()
 	}()
 	c.Set("log", log)
 
-	reqUri := UpdateCustomerRiskControlEddUriReq{}
+	reqUri := UpdateCustomerRiskControlEddSettingUriReq{}
 	err := c.ShouldBindUri(&reqUri)
 	if err != nil {
 		log.Error("c.ShouldBindUri(reqUri)", zap.Any("err", err))
@@ -47,7 +47,7 @@ func UpdateCustomerRiskControlEdd(c *gin.Context) {
 		return
 	}
 
-	reqBody := UpdateCustomerRiskControlEddBodyReq{}
+	reqBody := UpdateCustomerRiskControlEddSettingBodyReq{}
 	err = c.ShouldBindJSON(&reqBody)
 	if err != nil {
 		log.Error("c.ShouldBindJSON(reqBody)", zap.Any("err", err))
@@ -70,10 +70,10 @@ func UpdateCustomerRiskControlEdd(c *gin.Context) {
 		return
 	}
 
-	err = repo.UpdateCustomerEdd(repo.GetDb(c), operationUserInfo.Id, customerID, reqBody.Level1, reqBody.Level2, reqBody.Level1Days, reqBody.Level2Days)
+	err = repo.UpdateCustomerEddSetting(repo.GetDb(c), operationUserInfo.Id, customerID, reqBody.Level1, reqBody.Level2, reqBody.Level1Days, reqBody.Level2Days)
 	if err != nil {
-		log.Error("repo.UpdateCustomerEdd()", zap.Any("err", err))
-		api.ErrResponse(c, "repo.UpdateCustomerEdd()", err)
+		log.Error("repo.UpdateCustomerEddSetting()", zap.Any("err", err))
+		api.ErrResponse(c, "repo.UpdateCustomerEddSetting()", err)
 		return
 	}
 

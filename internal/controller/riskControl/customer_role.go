@@ -200,3 +200,66 @@ func ResetCustomerRiskControlRole(c *gin.Context) {
 
 	api.OKResponse(c, nil)
 }
+
+type ResetCustomerRiskControlRoleBatchReq struct {
+	CustomerIds []string `json:"customer_ids"`
+}
+
+func ResetCustomerRiskControlRoleBatch(c *gin.Context) {
+	log := logger.Zap().WithClassFunction("api", "ResetCustomerRiskControlRoleBatch")
+	defer func() {
+		_ = log.Sync()
+	}()
+	c.Set("log", log)
+
+	req := ResetCustomerRiskControlRoleBatchReq{}
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		log.Error("c.ShouldBindJSON(req)", zap.Any("err", err))
+		api.ErrResponse(c, "c.ShouldBindJSON(&req)", errors.BadRequest(error_code.ErrInvalidRequest, "c.ShouldBindJSON(&req)").WithCause(err))
+		return
+	}
+
+	if len(req.CustomerIds) == 0 {
+		log.Error("empty customer_ids")
+		api.ErrResponse(c, "empty customer_ids", errors.BadRequest(error_code.ErrInvalidRequest, "empty customer_ids"))
+		return
+	}
+
+	customerIds := []uuid.UUID{}
+	for _, item := range req.CustomerIds {
+		customerID, err := uuid.Parse(item)
+		if err != nil {
+			log.Error("uuid.Parse(req.CustomerID)", zap.Any("err", err))
+			api.ErrResponse(c, "uuid.Parse(req.CustomerID)", errors.BadRequest(error_code.ErrInvalidRequest, "uuid.Parse(req.CustomerID)").WithCause(err))
+			return
+		}
+		customerIds = append(customerIds, customerID)
+	}
+
+	repo, err := di.NewRepo()
+	if err != nil {
+		log.Error("di.NewRepo()", zap.Any("err", err))
+		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
+		return
+	}
+
+	// 取得後台更改人
+	operationUserInfo, err := tools.FetchTokenInfo(c)
+	if err != nil {
+		log.Error("repo.CreateWhitelist(whitelist)", zap.Any("err", err))
+		api.ErrResponse(c, "repo.CreateWhitelist(whitelist)", errors.InternalServer(error_code.ErrDBError, "repo.CreateWhitelist(whitelist)").WithCause(err))
+		return
+	}
+
+	for _, customerId := range customerIds {
+		err = repo.ResetCustomerRole(repo.GetDb(c), operationUserInfo.Id, customerId)
+		if err != nil {
+			log.Error("repo.ResetCustomerRole()", zap.Any("err", err))
+			api.ErrResponse(c, "repo.ResetCustomerRole()", errors.InternalServer(error_code.ErrDBError, "repo.ResetCustomerRole()").WithCause(err))
+			return
+		}
+	}
+
+	api.OKResponse(c, nil)
+}

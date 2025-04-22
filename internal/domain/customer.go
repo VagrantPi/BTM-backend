@@ -46,3 +46,11 @@ const (
 	CustomerAuthorizedOverrideBlocked   CustomerAuthorizedOverride = "blocked"
 	CustomerAuthorizedOverrideAutomatic CustomerAuthorizedOverride = "automatic"
 )
+
+type CustomerWithEddInfo struct {
+	EddAt      time.Time `json:"edd_at"`
+	CustomerId string    `json:"customer_id"`
+	Name       string    `json:"name"`
+	Phone      string    `json:"phone"`
+	EddType    string    `json:"edd_type"`
+}

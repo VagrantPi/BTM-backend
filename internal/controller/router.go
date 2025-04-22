@@ -46,6 +46,7 @@ func ThirdPartyRouter(apiGroup *gin.RouterGroup) {
 func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/customer", middleware.Auth(), middleware.CheckRole())
 	group.GET("/list", customer.SearchCustomers)
+	group.GET("/list/edd", customer.SearchEddUsers)
 	group.GET("/:customer_id/detail", customer.GetBTMUserInfoDetail)
 	group.GET("/whitelist", customer.GetWhitelist)
 	group.GET("/whitelist/search", customer.SearchWhitelist)
@@ -77,8 +78,9 @@ func RiskControlRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/:customer_id/role", riskControl.GetCustomerRiskControlRole)
 	group.PATCH("/:customer_id/role", riskControl.UpdateCustomerRiskControlRole)
 	group.PATCH("/:customer_id/role/reset", riskControl.ResetCustomerRiskControlRole)
+	group.PATCH("/role_reset/batch", riskControl.ResetCustomerRiskControlRoleBatch)
 	group.PATCH("/:customer_id/limit", riskControl.UpdateCustomerRiskControlLimit)
-	group.PATCH("/:customer_id/edd", riskControl.UpdateCustomerRiskControlEdd)
+	group.PATCH("/:customer_id/edd", riskControl.UpdateCustomerRiskControlEddSetting)
 }
 
 func ViewRouter(apiGroup *gin.RouterGroup) {

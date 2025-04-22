@@ -4,6 +4,7 @@ import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
 	"BTM-backend/pkg/error_code"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
@@ -98,6 +99,57 @@ func (repo *repository) GetUnCompletedSumsubCustomerIds(db *gorm.DB) ([]string, 
 		return nil, err
 	}
 	return ids, nil
+}
+
+func (repo *repository) SearchEddUsers(db *gorm.DB, customerId, phone, name string, eddStartAt, eddEndAt time.Time, limit int, page int) ([]domain.CustomerWithEddInfo, int64, error) {
+	if db == nil {
+		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	var customers []domain.CustomerWithEddInfo
+	sql := db.Model(&model.BTMSumsub{}).
+		Select(
+			"btm_risk_control_customer_limit_settings.edd_at",
+			"btm_sumsubs.customer_id",
+			"btm_sumsubs.name",
+			"btm_sumsubs.phone",
+			"btm_risk_control_customer_limit_settings.edd_type",
+		).
+		Joins("INNER JOIN btm_risk_control_customer_limit_settings ON btm_sumsubs.customer_id = btm_risk_control_customer_limit_settings.customer_id").
+		Where("btm_risk_control_customer_limit_settings.is_edd = TRUE")
+
+	switch {
+	case strings.TrimSpace(customerId) != "":
+		sql = sql.Where("btm_sumsubs.customer_id = ?", strings.TrimSpace(customerId))
+	case strings.TrimSpace(phone) != "":
+		sql = sql.Where("btm_sumsubs.phone LIKE ?", "%"+strings.TrimSpace(phone)+"%")
+	case strings.TrimSpace(name) != "":
+		sql = sql.Where("btm_sumsubs.name = ?", strings.TrimSpace(name))
+	}
+
+	if !eddStartAt.IsZero() && !eddEndAt.IsZero() {
+		sql = sql.Where("btm_risk_control_customer_limit_settings.edd_at BETWEEN ? AND ?", eddStartAt, eddEndAt)
+	}
+
+	var total int64
+	if err := sql.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	offset := (page - 1) * limit
+	err := sql.
+		Limit(limit).
+		Offset(offset).
+		Find(&customers).Error
+	if err != nil {
+		err = errors.InternalServer(error_code.ErrBTMSumsubGetItem, "GetBTMSumsub err").WithCause(err).
+			WithMetadata(map[string]string{
+				"status": "green",
+			})
+		return nil, 0, err
+	}
+
+	return customers, total, nil
 }
 
 func BTMSumsubDomainToModel(itme domain.BTMSumsub) model.BTMSumsub {

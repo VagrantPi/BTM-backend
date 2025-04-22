@@ -155,3 +155,19 @@ func MaskEmail(email string) string {
 
 	return email[:5] + strings.Repeat("x", atIndex-5) + email[atIndex:]
 }
+
+// MaskPhone 會將phone進行遮罩處理
+func MaskPhone(phone string) string {
+	if phone == "" {
+		return ""
+	}
+	phoneLen := len(phone)
+	if phoneLen < 6 {
+		return phone
+	}
+	masked := []rune(phone)
+	for i := phoneLen - 6; i < phoneLen-3; i++ {
+		masked[i] = 'X'
+	}
+	return string(masked)
+}

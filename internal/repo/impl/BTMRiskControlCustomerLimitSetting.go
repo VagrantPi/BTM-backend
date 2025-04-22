@@ -258,6 +258,7 @@ func (repo *repository) ResetCustomerRole(db *gorm.DB, operationUserId int64, cu
 	customerLimit.ChangeRoleReason = "系統回復原始角色"
 	customerLimit.ChangeLimitReason = "X"
 	customerLimit.LastBlackToNormalAt = sql.NullTime{Time: time.Now(), Valid: true}
+	customerLimit.IsEdd = false
 
 	if err := tx.Save(&customerLimit).Error; err != nil {
 		tx.Rollback()
@@ -439,7 +440,7 @@ func (repo *repository) GetRiskControlRoles() ([]domain.RiskControlRoleKeyValue,
 	}, nil
 }
 
-func (repo *repository) UpdateCustomerEdd(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newLevel1, newLevel2 decimal.Decimal, newLevel1Days, newLevel2Days uint32) error {
+func (repo *repository) UpdateCustomerEddSetting(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newLevel1, newLevel2 decimal.Decimal, newLevel1Days, newLevel2Days uint32) error {
 	var customerLimit model.BTMRiskControlCustomerLimitSetting
 	if err := db.Where("customer_id = ?", customerID).First(&customerLimit).Error; err != nil {
 		return err

@@ -70,6 +70,7 @@ type Repository interface {
 	UpdateBTMSumsubBanExpireDate(db *gorm.DB, customerId string, banExpireDate int64) error
 	DeleteBTMSumsub(db *gorm.DB, customerId string) error
 	GetUnCompletedSumsubCustomerIds(db *gorm.DB) ([]string, error)
+	SearchEddUsers(db *gorm.DB, customerId, phone, name string, eddStartAt, eddEndAt time.Time, limit int, page int) ([]CustomerWithEddInfo, int64, error)
 
 	// BTMChangeLog
 	CreateBTMChangeLog(db *gorm.DB, c BTMChangeLog) error
@@ -82,7 +83,7 @@ type Repository interface {
 	GetRiskControlCustomerLimitSetting(db *gorm.DB, customerID uuid.UUID) (BTMRiskControlCustomerLimitSetting, error)
 	CreateCustomerLimit(db *gorm.DB, customerID uuid.UUID) error
 	UpdateCustomerLimit(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newDailyLimit, newMonthlyLimit decimal.Decimal, reason string) error
-	UpdateCustomerEdd(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newLevel1, newLevel2 decimal.Decimal, newLevel1Days, newLevel2Days uint32) error
+	UpdateCustomerEddSetting(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newLevel1, newLevel2 decimal.Decimal, newLevel1Days, newLevel2Days uint32) error
 	ChangeCustomerRole(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newRole RiskControlRole, reason string) error
 	ResetCustomerRole(db *gorm.DB, operationUserId int64, customerID uuid.UUID) error
 	GetRiskControlRoles() ([]RiskControlRoleKeyValue, error)

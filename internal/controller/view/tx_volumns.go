@@ -6,7 +6,6 @@ import (
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
-	"fmt"
 	"sync"
 	"time"
 
@@ -65,9 +64,7 @@ func GetTxVolumns(c *gin.Context) {
 		defer wg.Done()
 
 		today := time.Now().Format("2006-01-02")
-		fmt.Println("today", today)
 		start := time.Now().AddDate(0, 0, -7).Format("2006-01-02")
-		fmt.Println("start", start)
 		txs, total, err := repo.FetchByStatDateAndGroupByDeviceId(repo.GetDb(c), start, today)
 		if err != nil {
 			log.Error("repo.GetCustomers()", zap.Any("err", err))
