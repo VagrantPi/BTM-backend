@@ -68,11 +68,6 @@ func URIToF2ERouterId(method string, uri string) []string {
 		return []string{F2ECIBs.String()}
 
 	// 風控頁面相關
-	case method == "GET" && uri == "/api/user/role/roles":
-		return []string{
-			F2EPermission.String(),
-			F2EAdminUsers.String(),
-		}
 	case method == "GET" && uri == "/api/risk_control/:customer_id/role":
 		return []string{
 			F2ERiskView.String(),
