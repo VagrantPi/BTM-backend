@@ -43,12 +43,16 @@ type RiskControlRoleKeyValue struct {
 	Name string `json:"name"`
 }
 
-// 用來存放每次限額功能多塞入的假交易紀錄
 type BTMRiskControlLimitSetting struct {
 	ID           uint            `json:"id"`
 	Role         RiskControlRole `json:"role"`
 	DailyLimit   decimal.Decimal `json:"daily_limit"`
 	MonthlyLimit decimal.Decimal `json:"monthly_limit"`
+	Level1       decimal.Decimal `json:"level1"`
+	Level2       decimal.Decimal `json:"level2"`
+	Level1Days   uint32          `json:"level1_days"`
+	Level2Days   uint32          `json:"level2_days"`
+	ChangeReason string          `json:"change_reason"`
 }
 
 // Scan scan value into Jsonb, implements sql.Scanner interface

@@ -22,6 +22,10 @@ type UpdateCustomerRiskControlLimitBodyReq struct {
 	DailyLimit   decimal.Decimal `json:"daily_limit" binding:"required"`
 	MonthlyLimit decimal.Decimal `json:"monthly_limit" binding:"required"`
 	Reason       string          `json:"reason" binding:"required"`
+	Level1       decimal.Decimal `json:"level1" binding:"required"`
+	Level2       decimal.Decimal `json:"level2" binding:"required"`
+	Level1Days   uint32          `json:"level1_days" binding:"required"`
+	Level2Days   uint32          `json:"level2_days" binding:"required"`
 }
 
 func UpdateCustomerRiskControlLimit(c *gin.Context) {
@@ -69,10 +73,19 @@ func UpdateCustomerRiskControlLimit(c *gin.Context) {
 		return
 	}
 
+	// 更新限額
 	err = repo.UpdateCustomerLimit(repo.GetDb(c), operationUserInfo.Id, customerID, reqBody.DailyLimit, reqBody.MonthlyLimit, reqBody.Reason)
 	if err != nil {
 		log.Error("repo.UpdateCustomerLimit()", zap.Any("err", err))
 		api.ErrResponse(c, "repo.UpdateCustomerLimit()", err)
+		return
+	}
+
+	// 更新 EDD 設定
+	err = repo.UpdateCustomerEddSetting(repo.GetDb(c), operationUserInfo.Id, customerID, reqBody.Level1, reqBody.Level2, reqBody.Level1Days, reqBody.Level2Days)
+	if err != nil {
+		log.Error("repo.UpdateCustomerEddSetting()", zap.Any("err", err))
+		api.ErrResponse(c, "repo.UpdateCustomerEddSetting()", err)
 		return
 	}
 

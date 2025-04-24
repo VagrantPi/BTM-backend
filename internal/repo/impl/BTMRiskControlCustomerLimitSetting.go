@@ -523,6 +523,88 @@ func (repo *repository) UpdateCustomerEddSetting(db *gorm.DB, operationUserId in
 	return tx.Commit().Error
 }
 
+func (repo *repository) UpdateAllCustomerLimitSettingWithoutCustomized(db *gorm.DB, operationUserId int64, newSetting domain.BTMRiskControlLimitSetting, reason string) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	// 只修改未客製化過的
+	var customerLimits []model.BTMRiskControlCustomerLimitSetting
+	if err := db.Where("is_customized = False and is_customized_edd = False").Find(&customerLimits).Error; err != nil {
+		return err
+	}
+
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	for _, item := range customerLimits {
+		beforeCustomerLimitJsonData, err := json.Marshal(BTMRiskControlCustomerLimitSettingModelToDomain(item))
+		if err != nil {
+			return errors.InternalServer(error_code.ErrDBError, "json.Marshal(beforeCustomerLimit)").WithCause(err)
+		}
+
+		afterCustomerLimit := domain.BTMRiskControlCustomerLimitSetting{
+			Role:              domain.RiskControlRole(item.Role),
+			CustomerId:        item.CustomerId,
+			DailyLimit:        newSetting.DailyLimit,
+			MonthlyLimit:      newSetting.MonthlyLimit,
+			Level1:            newSetting.Level1,
+			Level2:            newSetting.Level2,
+			Level1Days:        newSetting.Level1Days,
+			Level2Days:        newSetting.Level2Days,
+			IsCustomized:      item.IsCustomized,
+			IsCustomizedEdd:   item.IsCustomizedEdd,
+			EddType:           item.EddType,
+			ChangeRoleReason:  reason,
+			ChangeLimitReason: reason,
+		}
+		afterCustomerLimitJsonData, err := json.Marshal(afterCustomerLimit)
+		if err != nil {
+			return errors.InternalServer(error_code.ErrDBError, "json.Marshal(afterCustomerLimit)").WithCause(err)
+		}
+
+		// 建立系統修改預設設定的 change log
+		err = repo.CreateBTMChangeLog(tx, domain.BTMChangeLog{
+			OperationUserId: operationUserId,
+			TableName:       domain.BTMChangeLogTableNameBTMRiskControlCustomerLimitSetting,
+			OperationType:   domain.BTMChangeLogOperationTypeUpdate,
+			CustomerId:      nil,
+			BeforeValue:     beforeCustomerLimitJsonData,
+			AfterValue:      afterCustomerLimitJsonData,
+		})
+		if err != nil {
+			return errors.InternalServer(error_code.ErrDBError, "CreateBTMChangeLog").WithCause(err)
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	updateSettingIds := make([]uint, len(customerLimits))
+	for i := range customerLimits {
+		updateSettingIds[i] = customerLimits[i].ID
+	}
+
+	// 批量更新
+	return db.Model(model.BTMRiskControlCustomerLimitSetting{}).
+		Where("id IN (?)", updateSettingIds).
+		Updates(model.BTMRiskControlCustomerLimitSetting{
+			DailyLimit:        newSetting.DailyLimit,
+			MonthlyLimit:      newSetting.MonthlyLimit,
+			Level1:            newSetting.Level1,
+			Level2:            newSetting.Level2,
+			Level1Days:        newSetting.Level1Days,
+			Level2Days:        newSetting.Level2Days,
+			ChangeRoleReason:  reason,
+			ChangeLimitReason: reason,
+		}).Error
+}
+
 func BTMRiskControlCustomerLimitSettingDomainToModel(item domain.BTMRiskControlCustomerLimitSetting) model.BTMRiskControlCustomerLimitSetting {
 	return model.BTMRiskControlCustomerLimitSetting{
 		Role:            item.Role.Uint8(),

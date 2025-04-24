@@ -24,7 +24,7 @@ func main() {
 		// 2025_03_21_新增限額功能
 		&model.BTMRiskControlCustomerLimitSetting{},
 		&model.BTMRiskControlLimitSetting{},
-		&model.BTMRiskControlThreshold{},
+		// &model.BTMRiskControlThreshold{}, -- delete
 		&model.BTMRiskControlMachineRequestLimitLog{},
 
 		// 2025_03_24_新增後台登入日誌
@@ -61,81 +61,71 @@ func main() {
 
 	// migration
 	// 2025_02_13_新增 udx 到 btm_whitelists
-	if err := db.Exec("DROP INDEX IF EXISTS idx_btm_whitelist_address;").Error; err != nil {
-		panic(err)
-	}
-	if err := db.Exec(`
-DO $$ 
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_indexes WHERE tablename = 'btm_whitelists' AND indexname = 'unique_address_idx'
-    ) THEN
-        CREATE UNIQUE INDEX unique_address_idx ON btm_whitelists (address) WHERE deleted_at IS NULL;
-    END IF;
-END $$;
-`).Error; err != nil {
-		panic(err)
-	}
+	// 	if err := db.Exec("DROP INDEX IF EXISTS idx_btm_whitelist_address;").Error; err != nil {
+	// 		panic(err)
+	// 	}
+	// 	if err := db.Exec(`
+	// DO $$
+	// BEGIN
+	//     IF NOT EXISTS (
+	//         SELECT 1 FROM pg_indexes WHERE tablename = 'btm_whitelists' AND indexname = 'unique_address_idx'
+	//     ) THEN
+	//         CREATE UNIQUE INDEX unique_address_idx ON btm_whitelists (address) WHERE deleted_at IS NULL;
+	//     END IF;
+	// END $$;
+	// `).Error; err != nil {
+	// 		panic(err)
+	// 	}
 
 	// 2025_02_27_新增 idx 到 cash_in_txs
-	if err := db.Exec(`
-DO $$ 
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_indexes 
-        WHERE tablename = 'cash_in_txs' 
-        AND indexname = 'idx_cash_in_txs_fiat_nonzero'
-    ) THEN
-        CREATE INDEX idx_cash_in_txs_fiat_nonzero ON cash_in_txs (fiat) WHERE fiat != 0;
-    END IF;
-END $$;
-`).Error; err != nil {
-		panic(err)
-	}
+	// 	if err := db.Exec(`
+	// DO $$
+	// BEGIN
+	//     IF NOT EXISTS (
+	//         SELECT 1 FROM pg_indexes
+	//         WHERE tablename = 'cash_in_txs'
+	//         AND indexname = 'idx_cash_in_txs_fiat_nonzero'
+	//     ) THEN
+	//         CREATE INDEX idx_cash_in_txs_fiat_nonzero ON cash_in_txs (fiat) WHERE fiat != 0;
+	//     END IF;
+	// END $$;
+	// `).Error; err != nil {
+	// 		panic(err)
+	// 	}
 
 	// 2025_03_07_新增初始限額
-	if err := db.Exec(`
-INSERT INTO "public"."btm_risk_control_limit_settings" ("role", "daily_limit", "monthly_limit", "created_at", "updated_at")
-VALUES 
-    (1, '300000', '1000000', NOW(), NOW()),
-    (2, '250000', '700000', NOW(), NOW()),
-    (3, '0', '0', NOW(), NOW())
-ON CONFLICT ("role") DO NOTHING;
-`).Error; err != nil {
-		panic(err)
-	}
-
-	// 2025_03_21_新增初始白名單與灰名單門檻
-	if err := db.Exec(`
-		INSERT INTO "public"."btm_risk_control_thresholds" ("role", "threshold", "threshold_days", "created_at") VALUES (1, '500000', 7, NOW()) ON CONFLICT ("role", "threshold") DO NOTHING;
-		INSERT INTO "public"."btm_risk_control_thresholds" ("role", "threshold", "threshold_days", "created_at") VALUES (1, '2000000', 60, NOW()) ON CONFLICT ("role", "threshold") DO NOTHING;
-		INSERT INTO "public"."btm_risk_control_thresholds" ("role", "threshold", "threshold_days", "created_at") VALUES (2, '400000', 7, NOW()) ON CONFLICT ("role", "threshold") DO NOTHING;
-		INSERT INTO "public"."btm_risk_control_thresholds" ("role", "threshold", "threshold_days", "created_at") VALUES (2, '1500000', 60, NOW()) ON CONFLICT ("role", "threshold") DO NOTHING;
-	`).Error; err != nil {
-		panic(err)
-	}
+	// 	if err := db.Exec(`
+	// INSERT INTO "public"."btm_risk_control_limit_settings" ("role", "daily_limit", "monthly_limit", "created_at", "updated_at")
+	// VALUES
+	//     (1, '300000', '1000000', NOW(), NOW()),
+	//     (2, '250000', '700000', NOW(), NOW()),
+	//     (3, '0', '0', NOW(), NOW())
+	// ON CONFLICT ("role") DO NOTHING;
+	// `).Error; err != nil {
+	// 		panic(err)
+	// 	}
 
 	// 2025_03_24_移除 btm_roles.role
-	if err := db.Exec(`ALTER TABLE IF EXISTS "public"."btm_roles" DROP COLUMN IF EXISTS "role";`).Error; err != nil {
-		panic(err)
-	}
+	// if err := db.Exec(`ALTER TABLE IF EXISTS "public"."btm_roles" DROP COLUMN IF EXISTS "role";`).Error; err != nil {
+	// 	panic(err)
+	// }
 
 	// 2025_03_25_新增 default no_role
-	if err := db.Exec(`
-		INSERT INTO "public"."btm_roles" ("role_name", "role_desc", "role_raw", "created_at")
-		VALUES ('no_role', 'default role', '[]', NOW())
-		ON CONFLICT ("role_name") DO NOTHING;
-	`).Error; err != nil {
-		panic(err)
-	}
+	// if err := db.Exec(`
+	// 	INSERT INTO "public"."btm_roles" ("role_name", "role_desc", "role_raw", "created_at")
+	// 	VALUES ('no_role', 'default role', '[]', NOW())
+	// 	ON CONFLICT ("role_name") DO NOTHING;
+	// `).Error; err != nil {
+	// 	panic(err)
+	// }
 
 	// 2025_03_26_加密 BTMSumsub
-	if err := db.Exec(`
-		ALTER TABLE IF EXISTS "public"."btm_sumsubs" DROP COLUMN IF EXISTS "email";
-		ALTER TABLE IF EXISTS "public"."btm_sumsubs" DROP COLUMN IF EXISTS "info";
-	`).Error; err != nil {
-		panic(err)
-	}
+	// if err := db.Exec(`
+	// 	ALTER TABLE IF EXISTS "public"."btm_sumsubs" DROP COLUMN IF EXISTS "email";
+	// 	ALTER TABLE IF EXISTS "public"."btm_sumsubs" DROP COLUMN IF EXISTS "info";
+	// `).Error; err != nil {
+	// 	panic(err)
+	// }
 
 	// 2025_04_10_新增每種角色的等級門檻
 	if err := db.Exec(`

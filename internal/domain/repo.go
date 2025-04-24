@@ -79,14 +79,19 @@ type Repository interface {
 	GetBTMChangeLogs(db *gorm.DB, tableName, customerId string, startAt, endAt time.Time, limit int, page int) (list []BTMChangeLog, total int64, err error)
 	AddressExistsInAfterValue(db *gorm.DB, address string) (BTMChangeLog, error)
 
-	// BTMRiskControlLimitSetting
+	// BTMRiskControlCustomerLimitSetting
 	GetRiskControlCustomerLimitSetting(db *gorm.DB, customerID uuid.UUID) (BTMRiskControlCustomerLimitSetting, error)
 	CreateCustomerLimit(db *gorm.DB, customerID uuid.UUID) error
 	UpdateCustomerLimit(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newDailyLimit, newMonthlyLimit decimal.Decimal, reason string) error
 	UpdateCustomerEddSetting(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newLevel1, newLevel2 decimal.Decimal, newLevel1Days, newLevel2Days uint32) error
+	UpdateAllCustomerLimitSettingWithoutCustomized(db *gorm.DB, operationUserId int64, newSetting BTMRiskControlLimitSetting, reason string) error
 	ChangeCustomerRole(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newRole RiskControlRole, reason string) error
 	ResetCustomerRole(db *gorm.DB, operationUserId int64, customerID uuid.UUID) error
 	GetRiskControlRoles() ([]RiskControlRoleKeyValue, error)
+
+	// BTMRiskControlLimitSetting
+	GetRiskControlLimitSetting(db *gorm.DB) ([]BTMRiskControlLimitSetting, error)
+	UpdateRiskControlLimitSetting(db *gorm.DB, operationUserId int64, newSetting BTMRiskControlLimitSetting, reason string) error
 
 	// BTMCustomerNote
 	CreateCustomerNote(db *gorm.DB, note BTMCustomerNote) error

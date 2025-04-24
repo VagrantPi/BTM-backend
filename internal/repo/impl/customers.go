@@ -67,12 +67,14 @@ func _prepareSearchCustomersSQL(db *gorm.DB,
 		sql = sql.
 			Joins("LEFT JOIN btm_risk_control_customer_limit_settings ON customers.id::TEXT = btm_risk_control_customer_limit_settings.customer_id").
 			Where("btm_sumsubs.ban_expire_date IS NULL OR btm_sumsubs.ban_expire_date > ?", today).
-			Where("btm_risk_control_customer_limit_settings.role IS NULL OR btm_risk_control_customer_limit_settings.role = ?", domain.RiskControlRoleWhite)
+			Where("btm_risk_control_customer_limit_settings.role IS NULL OR btm_risk_control_customer_limit_settings.role = ?", domain.RiskControlRoleWhite).
+			Where("customers.authorized_override != 'blocked'")
 	case domain.CustomerTypeGrayList:
 		sql = sql.
 			Joins("LEFT JOIN btm_risk_control_customer_limit_settings ON customers.id::TEXT = btm_risk_control_customer_limit_settings.customer_id").
 			Where("btm_sumsubs.ban_expire_date IS NULL OR btm_sumsubs.ban_expire_date > ?", today).
-			Where("btm_risk_control_customer_limit_settings.role = ?", domain.RiskControlRoleGray)
+			Where("btm_risk_control_customer_limit_settings.role = ?", domain.RiskControlRoleGray).
+			Where("customers.authorized_override != 'blocked'")
 	case domain.CustomerTypeBlackList:
 		sql = sql.Select(
 			"DISTINCT ON (customers.id) customers.id",

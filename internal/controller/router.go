@@ -59,6 +59,11 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 
 func UserConfigRouter(apiGroup *gin.RouterGroup) {
 	apiGroup.GET("/config", middleware.Auth(), middleware.CheckRole(), config.GetConfig)
+
+	group := apiGroup.Group("/config", middleware.Auth(), middleware.CheckRole())
+
+	group.GET("/limit", middleware.Auth(), middleware.CheckRole(), config.GetConfigLimit)
+	group.PATCH("/limit", middleware.Auth(), middleware.CheckRole(), config.UpdateConfigLimit)
 }
 
 func TxRouter(apiGroup *gin.RouterGroup) {
@@ -80,7 +85,6 @@ func RiskControlRouter(apiGroup *gin.RouterGroup) {
 	group.PATCH("/:customer_id/role/reset", riskControl.ResetCustomerRiskControlRole)
 	group.PATCH("/role_reset/batch", riskControl.ResetCustomerRiskControlRoleBatch)
 	group.PATCH("/:customer_id/limit", riskControl.UpdateCustomerRiskControlLimit)
-	group.PATCH("/:customer_id/edd", riskControl.UpdateCustomerRiskControlEddSetting)
 }
 
 func ViewRouter(apiGroup *gin.RouterGroup) {
