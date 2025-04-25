@@ -37,7 +37,7 @@ func (repo *repository) UpdateRiskControlLimitSetting(db *gorm.DB, operationUser
 	if err := db.Where("role = ?", domain.RiskControlRoleWhite).First(&beforeLimit).Error; err != nil {
 		return err
 	}
-	beforeLimitJsonData, err := json.Marshal(beforeLimit)
+	beforeLimitJsonData, err := json.Marshal(BTMRiskControlLimitSettingModelToDomain(beforeLimit))
 	if err != nil {
 		return errors.InternalServer(error_code.ErrDBError, "json.Marshal(beforeLimit)").WithCause(err)
 	}
@@ -54,7 +54,7 @@ func (repo *repository) UpdateRiskControlLimitSetting(db *gorm.DB, operationUser
 		VelocityTimes: newSetting.VelocityTimes,
 		ChangeReason:  reason,
 	}
-	afterLimitJsonData, err := json.Marshal(afterLimit)
+	afterLimitJsonData, err := json.Marshal(BTMRiskControlLimitSettingModelToDomain(afterLimit))
 	if err != nil {
 		return errors.InternalServer(error_code.ErrDBError, "json.Marshal(afterLimit)").WithCause(err)
 	}
@@ -89,5 +89,6 @@ func BTMRiskControlLimitSettingModelToDomain(m model.BTMRiskControlLimitSetting)
 		Level2Days:    m.Level2Days,
 		VelocityDays:  m.VelocityDays,
 		VelocityTimes: m.VelocityTimes,
+		ChangeReason:  m.ChangeReason,
 	}
 }
