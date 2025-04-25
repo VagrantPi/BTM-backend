@@ -44,15 +44,17 @@ type RiskControlRoleKeyValue struct {
 }
 
 type BTMRiskControlLimitSetting struct {
-	ID           uint            `json:"id"`
-	Role         RiskControlRole `json:"role"`
-	DailyLimit   decimal.Decimal `json:"daily_limit"`
-	MonthlyLimit decimal.Decimal `json:"monthly_limit"`
-	Level1       decimal.Decimal `json:"level1"`
-	Level2       decimal.Decimal `json:"level2"`
-	Level1Days   uint32          `json:"level1_days"`
-	Level2Days   uint32          `json:"level2_days"`
-	ChangeReason string          `json:"change_reason"`
+	ID            uint            `json:"id"`
+	Role          RiskControlRole `json:"role"`
+	DailyLimit    decimal.Decimal `json:"daily_limit"`
+	MonthlyLimit  decimal.Decimal `json:"monthly_limit"`
+	Level1        decimal.Decimal `json:"level1"`
+	Level2        decimal.Decimal `json:"level2"`
+	Level1Days    uint32          `json:"level1_days"`
+	Level2Days    uint32          `json:"level2_days"`
+	VelocityDays  uint32          `json:"velocity_days"`
+	VelocityTimes uint32          `json:"velocity_times"`
+	ChangeReason  string          `json:"change_reason"`
 }
 
 // Scan scan value into Jsonb, implements sql.Scanner interface
@@ -82,20 +84,24 @@ func (s BTMRiskControlLimitSetting) Value() (driver.Value, error) {
 }
 
 type BTMRiskControlCustomerLimitSetting struct {
-	ID                uint            `json:"id"`
-	Role              RiskControlRole `json:"role"`
-	CustomerId        uuid.UUID       `json:"customer_id"`
-	DailyLimit        decimal.Decimal `json:"daily_limit"`
-	MonthlyLimit      decimal.Decimal `json:"monthly_limit"`
-	Level1            decimal.Decimal `json:"level1"`
-	Level2            decimal.Decimal `json:"level2"`
-	Level1Days        uint32          `json:"level1_days"`
-	Level2Days        uint32          `json:"level2_days"`
-	IsCustomized      bool            `json:"is_customized"`
-	IsCustomizedEdd   bool            `json:"is_customized_edd"`
-	EddAt             sql.NullTime    `json:"edd_at"`
-	IsEdd             bool            `json:"is_edd"`
-	EddType           string          `json:"edd_type"`
-	ChangeRoleReason  string          `json:"change_role_reason"`
-	ChangeLimitReason string          `json:"change_limit_reason"`
+	ID                   uint            `json:"id"`
+	Role                 RiskControlRole `json:"role"`
+	CustomerId           uuid.UUID       `json:"customer_id"`
+	DailyLimit           decimal.Decimal `json:"daily_limit"`
+	MonthlyLimit         decimal.Decimal `json:"monthly_limit"`
+	Level1               decimal.Decimal `json:"level1"`
+	Level2               decimal.Decimal `json:"level2"`
+	Level1Days           uint32          `json:"level1_days"`
+	Level2Days           uint32          `json:"level2_days"`
+	VelocityDays         uint32          `json:"velocity_days"`
+	VelocityTimes        uint32          `json:"velocity_times"`
+	IsCustomized         bool            `json:"is_customized"`
+	IsCustomizedEdd      bool            `json:"is_customized_edd"`
+	IsCustomizedVelocity bool            `json:"is_customized_velocity"`
+	EddAt                sql.NullTime    `json:"edd_at"`
+	IsEdd                bool            `json:"is_edd"`
+	EddType              string          `json:"edd_type"`
+	ChangeRoleReason     string          `json:"change_role_reason"`
+	ChangeLimitReason    string          `json:"change_limit_reason"`
+	ChangeVelocityReason string          `json:"change_velocity_reason"`
 }

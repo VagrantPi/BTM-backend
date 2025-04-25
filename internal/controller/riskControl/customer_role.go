@@ -20,14 +20,16 @@ type GetCustomerRiskControlRoleReq struct {
 }
 
 type GetCustomerRiskControlRoleResp struct {
-	RoleId       uint8           `json:"role_id"`
-	RoleName     string          `json:"role_name"`
-	DailyLimit   decimal.Decimal `json:"daily_limit"`
-	MonthlyLimit decimal.Decimal `json:"monthly_limit"`
-	Level1       decimal.Decimal `json:"level1"`
-	Level2       decimal.Decimal `json:"level2"`
-	Level1Days   uint32          `json:"level1_days"`
-	Level2Days   uint32          `json:"level2_days"`
+	RoleId        uint8           `json:"role_id"`
+	RoleName      string          `json:"role_name"`
+	DailyLimit    decimal.Decimal `json:"daily_limit"`
+	MonthlyLimit  decimal.Decimal `json:"monthly_limit"`
+	Level1        decimal.Decimal `json:"level1"`
+	Level2        decimal.Decimal `json:"level2"`
+	Level1Days    uint32          `json:"level1_days"`
+	Level2Days    uint32          `json:"level2_days"`
+	VelocityDays  uint32          `json:"velocity_days"`
+	VelocityTimes uint32          `json:"velocity_times"`
 }
 
 func GetCustomerRiskControlRole(c *gin.Context) {
@@ -67,14 +69,16 @@ func GetCustomerRiskControlRole(c *gin.Context) {
 	}
 
 	api.OKResponse(c, GetCustomerRiskControlRoleResp{
-		RoleId:       userInfo.Role.Uint8(),
-		RoleName:     userInfo.Role.String(),
-		DailyLimit:   userInfo.DailyLimit,
-		MonthlyLimit: userInfo.MonthlyLimit,
-		Level1:       userInfo.Level1,
-		Level2:       userInfo.Level2,
-		Level1Days:   userInfo.Level1Days,
-		Level2Days:   userInfo.Level2Days,
+		RoleId:        userInfo.Role.Uint8(),
+		RoleName:      userInfo.Role.String(),
+		DailyLimit:    userInfo.DailyLimit,
+		MonthlyLimit:  userInfo.MonthlyLimit,
+		Level1:        userInfo.Level1,
+		Level2:        userInfo.Level2,
+		Level1Days:    userInfo.Level1Days,
+		Level2Days:    userInfo.Level2Days,
+		VelocityDays:  userInfo.VelocityDays,
+		VelocityTimes: userInfo.VelocityTimes,
 	})
 }
 

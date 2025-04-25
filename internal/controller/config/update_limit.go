@@ -7,7 +7,6 @@ import (
 	"BTM-backend/pkg/error_code"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/pkg/tools"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kratos/kratos/v2/errors"
@@ -16,14 +15,16 @@ import (
 )
 
 type UpdateConfigLimitReq struct {
-	Role         domain.RiskControlRole `json:"role" binding:"required"`
-	DailyLimit   decimal.Decimal        `json:"daily_limit" binding:"required"`
-	MonthlyLimit decimal.Decimal        `json:"monthly_limit" binding:"required"`
-	Level1       decimal.Decimal        `json:"level1_volumn" binding:"required"`
-	Level2       decimal.Decimal        `json:"level2_volumn" binding:"required"`
-	Level1Days   uint32                 `json:"level1_days" binding:"required"`
-	Level2Days   uint32                 `json:"level2_days" binding:"required"`
-	Reason       string                 `json:"reason" binding:"required"`
+	Role          domain.RiskControlRole `json:"role" binding:"required"`
+	DailyLimit    decimal.Decimal        `json:"daily_limit" binding:"required"`
+	MonthlyLimit  decimal.Decimal        `json:"monthly_limit" binding:"required"`
+	Level1        decimal.Decimal        `json:"level1_volumn" binding:"required"`
+	Level2        decimal.Decimal        `json:"level2_volumn" binding:"required"`
+	Level1Days    uint32                 `json:"level1_days" binding:"required"`
+	Level2Days    uint32                 `json:"level2_days" binding:"required"`
+	VelocityDays  uint32                 `json:"velocity_days" binding:"required"`
+	VelocityTimes uint32                 `json:"velocity_times" binding:"required"`
+	Reason        string                 `json:"reason" binding:"required"`
 }
 
 func UpdateConfigLimit(c *gin.Context) {
@@ -67,11 +68,12 @@ func UpdateConfigLimit(c *gin.Context) {
 		// 如果沒有任何變更則返回
 		if req.Role == config.Role {
 			checkFlag = true
-			fmt.Println("config", config)
 			if req.DailyLimit.String() == config.DailyLimit.String() &&
 				req.MonthlyLimit.String() == config.MonthlyLimit.String() &&
 				req.Level1.String() == config.Level1.String() &&
 				req.Level2.String() == config.Level2.String() &&
+				req.VelocityDays == config.VelocityDays &&
+				req.VelocityTimes == config.VelocityTimes &&
 				req.Level1Days == config.Level1Days &&
 				req.Level2Days == config.Level2Days {
 				log.Error("no limit change", zap.Any("req", req))
@@ -90,19 +92,28 @@ func UpdateConfigLimit(c *gin.Context) {
 	}
 
 	updateSetting := domain.BTMRiskControlLimitSetting{
-		Role:         req.Role,
-		DailyLimit:   req.DailyLimit,
-		MonthlyLimit: req.MonthlyLimit,
-		Level1:       req.Level1,
-		Level2:       req.Level2,
-		Level1Days:   req.Level1Days,
-		Level2Days:   req.Level2Days,
+		Role:          req.Role,
+		DailyLimit:    req.DailyLimit,
+		MonthlyLimit:  req.MonthlyLimit,
+		Level1:        req.Level1,
+		Level2:        req.Level2,
+		Level1Days:    req.Level1Days,
+		Level2Days:    req.Level2Days,
+		VelocityDays:  req.VelocityDays,
+		VelocityTimes: req.VelocityTimes,
 	}
 
 	// 只要有修改過限額或EDD的用戶，都不需要更新
 	if err := repo.UpdateAllCustomerLimitSettingWithoutCustomized(repo.GetDb(c), operationUserInfo.Id, updateSetting, req.Reason); err != nil {
 		log.Error("repo.UpdateAllCustomerLimitSettingWithoutCustomized", zap.Any("err", err))
 		api.ErrResponse(c, "repo.UpdateAllCustomerLimitSettingWithoutCustomized", errors.InternalServer(error_code.ErrDBError, "repo.UpdateAllCustomerLimitSettingWithoutCustomized").WithCause(err))
+		return
+	}
+
+	// 只更新沒修改過 Velocity 的用戶
+	if err := repo.UpdateAllCustomerVelocitySettingWithoutCustomized(repo.GetDb(c), operationUserInfo.Id, updateSetting.VelocityDays, updateSetting.VelocityTimes, req.Reason); err != nil {
+		log.Error("repo.UpdateAllCustomerVelocitySettingWithoutCustomized", zap.Any("err", err))
+		api.ErrResponse(c, "repo.UpdateAllCustomerVelocitySettingWithoutCustomized", errors.InternalServer(error_code.ErrDBError, "repo.UpdateAllCustomerVelocitySettingWithoutCustomized").WithCause(err))
 		return
 	}
 

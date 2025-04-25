@@ -42,15 +42,17 @@ func (repo *repository) UpdateRiskControlLimitSetting(db *gorm.DB, operationUser
 		return errors.InternalServer(error_code.ErrDBError, "json.Marshal(beforeLimit)").WithCause(err)
 	}
 	afterLimit := model.BTMRiskControlLimitSetting{
-		ID:           beforeLimit.ID,
-		Role:         beforeLimit.Role,
-		DailyLimit:   newSetting.DailyLimit,
-		MonthlyLimit: newSetting.MonthlyLimit,
-		Level1:       newSetting.Level1,
-		Level2:       newSetting.Level2,
-		Level1Days:   newSetting.Level1Days,
-		Level2Days:   newSetting.Level2Days,
-		ChangeReason: reason,
+		ID:            beforeLimit.ID,
+		Role:          beforeLimit.Role,
+		DailyLimit:    newSetting.DailyLimit,
+		MonthlyLimit:  newSetting.MonthlyLimit,
+		Level1:        newSetting.Level1,
+		Level2:        newSetting.Level2,
+		Level1Days:    newSetting.Level1Days,
+		Level2Days:    newSetting.Level2Days,
+		VelocityDays:  newSetting.VelocityDays,
+		VelocityTimes: newSetting.VelocityTimes,
+		ChangeReason:  reason,
 	}
 	afterLimitJsonData, err := json.Marshal(afterLimit)
 	if err != nil {
@@ -77,13 +79,15 @@ func (repo *repository) UpdateRiskControlLimitSetting(db *gorm.DB, operationUser
 
 func BTMRiskControlLimitSettingModelToDomain(m model.BTMRiskControlLimitSetting) domain.BTMRiskControlLimitSetting {
 	return domain.BTMRiskControlLimitSetting{
-		ID:           m.ID,
-		Role:         domain.RiskControlRole(m.Role),
-		DailyLimit:   m.DailyLimit,
-		MonthlyLimit: m.MonthlyLimit,
-		Level1:       m.Level1,
-		Level2:       m.Level2,
-		Level1Days:   m.Level1Days,
-		Level2Days:   m.Level2Days,
+		ID:            m.ID,
+		Role:          domain.RiskControlRole(m.Role),
+		DailyLimit:    m.DailyLimit,
+		MonthlyLimit:  m.MonthlyLimit,
+		Level1:        m.Level1,
+		Level2:        m.Level2,
+		Level1Days:    m.Level1Days,
+		Level2Days:    m.Level2Days,
+		VelocityDays:  m.VelocityDays,
+		VelocityTimes: m.VelocityTimes,
 	}
 }

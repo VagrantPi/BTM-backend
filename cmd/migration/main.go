@@ -25,7 +25,7 @@ func main() {
 		&model.BTMRiskControlCustomerLimitSetting{},
 		&model.BTMRiskControlLimitSetting{},
 		// &model.BTMRiskControlThreshold{}, -- delete
-		&model.BTMRiskControlMachineRequestLimitLog{},
+		// &model.BTMRiskControlMachineRequestLimitLog{}, -- delete
 
 		// 2025_03_24_新增後台登入日誌
 		&model.BTMLoginLog{},
@@ -132,6 +132,15 @@ func main() {
 		UPDATE "public"."btm_risk_control_limit_settings" SET "level1" = '500000', "level2" = '2000000', "level1_days" = 7, "level2_days" = 60 WHERE "role" = 1;
 		UPDATE "public"."btm_risk_control_limit_settings" SET "level1" = '400000', "level2" = '1500000', "level1_days" = 7, "level2_days" = 60 WHERE "role" = 2;
 		UPDATE "public"."btm_risk_control_limit_settings" SET "level1" = '0', "level2" = '0', "level1_days" = 7, "level2_days" = 60 WHERE "role" = 3;
+	`).Error; err != nil {
+		panic(err)
+	}
+
+	// 2025_04_24_新增每種角色交易次數限制
+	if err := db.Exec(`
+		UPDATE "public"."btm_risk_control_limit_settings" SET "velocity_days" = '1', "velocity_times" = 5 WHERE "role" = 1;
+		UPDATE "public"."btm_risk_control_limit_settings" SET "velocity_days" = '1', "velocity_times" = 5 WHERE "role" = 2;
+		UPDATE "public"."btm_risk_control_limit_settings" SET "velocity_days" = '0', "velocity_times" = 0 WHERE "role" = 3;
 	`).Error; err != nil {
 		panic(err)
 	}

@@ -97,5 +97,10 @@ func CronJob() {
 		cronjob.ShapshotYesterdayVolumn()
 	})
 
+	// 每個小時，移除多餘的新增限額塞入假資料 log
+	cron.AddFunc("0 * * * *", func() {
+		cronjob.RemoveExtraMockTxHistoryLog()
+	})
+
 	cron.Start()
 }

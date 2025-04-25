@@ -84,10 +84,13 @@ type Repository interface {
 	CreateCustomerLimit(db *gorm.DB, customerID uuid.UUID) error
 	UpdateCustomerLimit(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newDailyLimit, newMonthlyLimit decimal.Decimal, reason string) error
 	UpdateCustomerEddSetting(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newLevel1, newLevel2 decimal.Decimal, newLevel1Days, newLevel2Days uint32) error
+	UpdateCustomerVelocity(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newVelocityDays, newVelocityTimes uint32, reason string) error
 	UpdateAllCustomerLimitSettingWithoutCustomized(db *gorm.DB, operationUserId int64, newSetting BTMRiskControlLimitSetting, reason string) error
+	UpdateAllCustomerVelocitySettingWithoutCustomized(db *gorm.DB, operationUserId int64, newVelocityDays, newVelocityTimes uint32, reason string) error
 	ChangeCustomerRole(db *gorm.DB, operationUserId int64, customerID uuid.UUID, newRole RiskControlRole, reason string) error
 	ResetCustomerRole(db *gorm.DB, operationUserId int64, customerID uuid.UUID) error
 	GetRiskControlRoles() ([]RiskControlRoleKeyValue, error)
+	GetAllCustomerLimitSetting(db *gorm.DB) ([]BTMRiskControlCustomerLimitSetting, error)
 
 	// BTMRiskControlLimitSetting
 	GetRiskControlLimitSetting(db *gorm.DB) ([]BTMRiskControlLimitSetting, error)
@@ -104,6 +107,9 @@ type Repository interface {
 	FetchByStatDate(db *gorm.DB, startDate, endDate string) ([]BTMDailyDeviceIncome, error)
 	FetchByStatDateAndGroupByDeviceId(db *gorm.DB, startDate, endDate string) ([]DeviceData, int64,
 		error)
+
+	// BTMMockTxHistoryLog
+	RemoveExtraMockTxHistoryLog(db *gorm.DB) error
 
 	/**
 	 * lamassu original

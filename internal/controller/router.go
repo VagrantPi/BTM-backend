@@ -5,6 +5,7 @@ import (
 	"BTM-backend/internal/controller/config"
 	"BTM-backend/internal/controller/customer"
 	"BTM-backend/internal/controller/debug"
+	"BTM-backend/internal/controller/hotfix"
 	"BTM-backend/internal/controller/riskControl"
 	"BTM-backend/internal/controller/sumsub"
 	"BTM-backend/internal/controller/tool"
@@ -62,8 +63,8 @@ func UserConfigRouter(apiGroup *gin.RouterGroup) {
 
 	group := apiGroup.Group("/config", middleware.Auth(), middleware.CheckRole())
 
-	group.GET("/limit", middleware.Auth(), middleware.CheckRole(), config.GetConfigLimit)
-	group.PATCH("/limit", middleware.Auth(), middleware.CheckRole(), config.UpdateConfigLimit)
+	group.GET("/limit", config.GetConfigLimit)
+	group.PATCH("/limit", config.UpdateConfigLimit)
 }
 
 func TxRouter(apiGroup *gin.RouterGroup) {
@@ -85,6 +86,7 @@ func RiskControlRouter(apiGroup *gin.RouterGroup) {
 	group.PATCH("/:customer_id/role/reset", riskControl.ResetCustomerRiskControlRole)
 	group.PATCH("/role_reset/batch", riskControl.ResetCustomerRiskControlRoleBatch)
 	group.PATCH("/:customer_id/limit", riskControl.UpdateCustomerRiskControlLimit)
+	group.PATCH("/:customer_id/velocity", riskControl.UpdateCustomerRiskControlVelocity)
 }
 
 func ViewRouter(apiGroup *gin.RouterGroup) {
@@ -105,4 +107,6 @@ func InternalRouter(apiGroup *gin.RouterGroup) {
 	toolGroup.GET("/complete_address_binding_log", tool.CompleteAddressBindingLog)
 	toolGroup.GET("/sync_daily_tx_volumn", tool.SyncDailyTxVolumn)
 
+	hotfixGroup := apiGroup.Group("/hotfix", middleware.ServerKeyAuth())
+	hotfixGroup.GET("/customer_limit_fill_default_config", hotfix.CustomerLimitFillDefaultConfig)
 }
