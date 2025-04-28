@@ -1,6 +1,7 @@
 package tool
 
 import (
+	"BTM-backend/configs"
 	"BTM-backend/internal/di"
 	"BTM-backend/internal/domain"
 	"BTM-backend/pkg/api"
@@ -23,7 +24,7 @@ func CompleteAddressBindingLog(c *gin.Context) {
 	c.Set("log", log)
 
 	// 撈出未被軟刪除的地址綁定
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
 		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))

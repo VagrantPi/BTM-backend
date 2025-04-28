@@ -18,7 +18,7 @@ func DownlaodCIBAndUpsert() (err error) {
 		_ = log.Sync()
 	}()
 
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
 		return

@@ -1,6 +1,7 @@
 package riskControl
 
 import (
+	"BTM-backend/configs"
 	"BTM-backend/internal/di"
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
@@ -10,7 +11,7 @@ import (
 )
 
 func GetRiskControlRoles(c *gin.Context) {
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
 		return

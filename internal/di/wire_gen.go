@@ -15,8 +15,11 @@ import (
 
 // Injectors from wire.go:
 
-func NewRepo() (domain.Repository, error) {
-	gormDB := db.ConnectToDatabase()
+func NewRepo(isMock bool) (domain.Repository, error) {
+	gormDB, err := db.ProvideDatabase(isMock)
+	if err != nil {
+		return nil, err
+	}
 	config := configs.NewConfigs()
 	repository := impl.NewRepository(gormDB, config)
 	return repository, nil

@@ -42,7 +42,7 @@ func Auth() gin.HandlerFunc {
 			return
 		}
 
-		repo, err := di.NewRepo()
+		repo, err := di.NewRepo(configs.C.Mock)
 		if err != nil {
 			log.Error("di repo error", zap.Any("err", err))
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{

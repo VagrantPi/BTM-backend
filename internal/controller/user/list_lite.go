@@ -1,6 +1,7 @@
 package user
 
 import (
+	"BTM-backend/configs"
 	"BTM-backend/internal/di"
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
@@ -27,7 +28,7 @@ func GetUsersLite(c *gin.Context) {
 	}()
 	c.Set("log", log)
 
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
 		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))

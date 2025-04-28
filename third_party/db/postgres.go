@@ -16,6 +16,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -23,8 +24,7 @@ import (
 var db *gorm.DB
 var dbDialector gorm.Dialector
 
-// ConnectToDatabase 這個只會給 di 使用，在一開始 di 就會連線了，如果拿去給地方使用有可能會錯誤
-func ConnectToDatabase() *gorm.DB {
+func ConnectToDatabase() (*gorm.DB, error) {
 	if db == nil {
 		var mu sync.Mutex
 		mu.Lock()
@@ -33,21 +33,46 @@ func ConnectToDatabase() *gorm.DB {
 		}
 		mu.Unlock()
 	}
-	return db
+	return db, nil
 }
 
-func StartDatabase() {
+func StartDatabase() error {
 	var err error
-
 	dbDialector = newPgDialector()
 	db, err = setupGORM(
 		dbDialector, newGormConfig(newGormLog()),
-	) // like setupBun or setupMysql, other libraries.
+	)
 	if err != nil {
-		log.Fatalf("database 啟用錯誤...: %v", err)
+		return err
 	}
 
 	log.Println("database 啟用成功")
+	return nil
+}
+
+func ConnectToMockDatabase() (*gorm.DB, error) {
+	if db == nil {
+		var mu sync.Mutex
+		mu.Lock()
+		if db == nil {
+			GenMockDB()
+		}
+		mu.Unlock()
+	}
+	return db, nil
+}
+
+func GenMockDB() error {
+	var err error
+	db, err = gorm.Open(sqlite.Open("mock.db"), &gorm.Config{
+		Logger: logger.Discard,
+	})
+	if err != nil {
+		return err
+	}
+
+	log.Println("mock database 啟用成功")
+	return nil
 }
 
 // setupGORM 連線後會做健康檢查，並返回連線池實例
@@ -195,6 +220,9 @@ func (l sLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, 
 	}
 }
 
-func ProvideDb() *gorm.DB {
+func ProvideDatabase(isMock bool) (*gorm.DB, error) {
+	if isMock {
+		return ConnectToMockDatabase()
+	}
 	return ConnectToDatabase()
 }

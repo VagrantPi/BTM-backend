@@ -1,6 +1,7 @@
 package riskControl
 
 import (
+	"BTM-backend/configs"
 	"BTM-backend/internal/di"
 	"BTM-backend/internal/domain"
 	"BTM-backend/pkg/api"
@@ -54,7 +55,7 @@ func GetCustomerRiskControlRole(c *gin.Context) {
 		return
 	}
 
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
 		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
@@ -123,7 +124,7 @@ func UpdateCustomerRiskControlRole(c *gin.Context) {
 		return
 	}
 
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
 		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
@@ -180,7 +181,7 @@ func ResetCustomerRiskControlRole(c *gin.Context) {
 		return
 	}
 
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
 		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))
@@ -241,7 +242,7 @@ func ResetCustomerRiskControlRoleBatch(c *gin.Context) {
 		customerIds = append(customerIds, customerID)
 	}
 
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
 		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))

@@ -12,6 +12,11 @@ import (
 	"github.com/google/wire"
 )
 
-func NewRepo() (domain.Repository, error) {
-	panic(wire.Build(impl.NewRepository, db.ConnectToDatabase, configs.NewConfigs))
+func NewRepo(isMock bool) (domain.Repository, error) {
+	wire.Build(
+		impl.NewRepository,
+		configs.NewConfigs,
+		db.ProvideDatabase,
+	)
+	return nil, nil // << 這是必要的，Wire 的語法規定要 return 一個空的
 }

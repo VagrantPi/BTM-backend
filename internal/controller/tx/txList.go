@@ -1,6 +1,7 @@
 package tx
 
 import (
+	"BTM-backend/configs"
 	"BTM-backend/internal/di"
 	"BTM-backend/internal/domain"
 	"BTM-backend/pkg/api"
@@ -49,7 +50,7 @@ func GetTxsList(c *gin.Context) {
 		return
 	}
 
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
 		api.ErrResponse(c, "di.NewRepo()", errors.InternalServer(error_code.ErrDiError, "di.NewRepo()").WithCause(err))

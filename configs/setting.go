@@ -1,6 +1,8 @@
 package configs
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/spf13/viper"
@@ -9,6 +11,7 @@ import (
 var C Config
 
 type Config struct {
+	Mock                    bool
 	Port                    string
 	ServerKey               string
 	SensitiveDataEncryptKey string
@@ -58,7 +61,9 @@ type SumsubConfig struct {
 }
 
 func loadConfig() {
+	fmt.Println("SERVER ENV mock", viper.GetBool("mock") || os.Getenv("mock") == "true")
 	C = Config{
+		Mock:                    viper.GetBool("mock") || os.Getenv("mock") == "true",
 		Port:                    viper.GetString("port"),
 		ServerKey:               viper.GetString("server_key"),
 		SensitiveDataEncryptKey: viper.GetString("sensitive_data_encrypt_key"),

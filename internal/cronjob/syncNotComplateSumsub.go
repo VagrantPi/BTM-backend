@@ -1,6 +1,7 @@
 package cronjob
 
 import (
+	"BTM-backend/configs"
 	"BTM-backend/internal/di"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/third_party/sumsub"
@@ -16,7 +17,7 @@ func SyncNotComplateSumsub() {
 		_ = log.Sync()
 	}()
 
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
 		return

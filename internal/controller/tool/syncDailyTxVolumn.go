@@ -1,6 +1,7 @@
 package tool
 
 import (
+	"BTM-backend/configs"
 	"BTM-backend/internal/di"
 	"BTM-backend/pkg/api"
 	"BTM-backend/pkg/error_code"
@@ -21,7 +22,7 @@ func SyncDailyTxVolumn(c *gin.Context) {
 		return
 	}
 
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		api.ErrResponse(c, "SyncDailyTxVolumn", errors.InternalServer(error_code.ErrDiError, "SyncDailyTxVolumn").WithCause(err))
 		return

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"BTM-backend/configs"
 	"BTM-backend/internal/di"
 	"BTM-backend/internal/repo/model"
 	"BTM-backend/third_party/db"
@@ -43,7 +44,7 @@ func main() {
 	}
 
 	// Initialize the repository
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		panic(err)
 	}
@@ -94,16 +95,16 @@ func main() {
 	// 	}
 
 	// 2025_03_07_新增初始限額
-	// 	if err := db.Exec(`
-	// INSERT INTO "public"."btm_risk_control_limit_settings" ("role", "daily_limit", "monthly_limit", "created_at", "updated_at")
-	// VALUES
-	//     (1, '300000', '1000000', NOW(), NOW()),
-	//     (2, '250000', '700000', NOW(), NOW()),
-	//     (3, '0', '0', NOW(), NOW())
-	// ON CONFLICT ("role") DO NOTHING;
-	// `).Error; err != nil {
-	// 		panic(err)
-	// 	}
+	if err := db.Exec(`
+	INSERT INTO "public"."btm_risk_control_limit_settings" ("role", "daily_limit", "monthly_limit", "created_at", "updated_at")
+	VALUES
+	    (1, '300000', '1000000', NOW(), NOW()),
+	    (2, '250000', '700000', NOW(), NOW()),
+	    (3, '0', '0', NOW(), NOW())
+	ON CONFLICT ("role") DO NOTHING;
+	`).Error; err != nil {
+		panic(err)
+	}
 
 	// 2025_03_24_移除 btm_roles.role
 	// if err := db.Exec(`ALTER TABLE IF EXISTS "public"."btm_roles" DROP COLUMN IF EXISTS "role";`).Error; err != nil {

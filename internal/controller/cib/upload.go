@@ -1,6 +1,7 @@
 package cib
 
 import (
+	"BTM-backend/configs"
 	"BTM-backend/internal/di"
 	"BTM-backend/pkg/logger"
 	"BTM-backend/third_party/cib"
@@ -20,7 +21,7 @@ func UploadCib(c *gin.Context) {
 	}()
 	c.Set("log", log)
 
-	repo, err := di.NewRepo()
+	repo, err := di.NewRepo(configs.C.Mock)
 	if err != nil {
 		log.Error("di.NewRepo()", zap.Any("err", err))
 		c.JSON(http.StatusOK, gin.H{
