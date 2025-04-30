@@ -8,6 +8,7 @@ import (
 	"BTM-backend/internal/controller/hotfix"
 	"BTM-backend/internal/controller/riskControl"
 	"BTM-backend/internal/controller/sumsub"
+	"BTM-backend/internal/controller/system"
 	"BTM-backend/internal/controller/tool"
 	"BTM-backend/internal/controller/tx"
 	"BTM-backend/internal/controller/user"
@@ -92,6 +93,14 @@ func RiskControlRouter(apiGroup *gin.RouterGroup) {
 func ViewRouter(apiGroup *gin.RouterGroup) {
 	group := apiGroup.Group("/view", middleware.Auth(), middleware.CheckRole())
 	group.GET("/tx_volumns", view.GetTxVolumns)
+}
+
+func SystemRouter(apiGroup *gin.RouterGroup) {
+	group := apiGroup.Group("/system", middleware.Auth(), middleware.CheckRole())
+	group.GET("/lamassu_log", system.GetLamassuLogs)
+	group.GET("/server_log", system.GetServerLogs)
+	group.GET("/download_log", system.DownloadLog)
+	group.GET("/mock_tx_limit_logs", system.GetMockTxHistoryLogs)
 }
 
 func InternalRouter(apiGroup *gin.RouterGroup) {

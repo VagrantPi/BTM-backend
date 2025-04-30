@@ -14,8 +14,8 @@ type BTMRiskControlCustomerLimitSetting struct {
 	Role                 uint8           `gorm:"not null; comment:'角色權限'"`
 	DailyLimit           decimal.Decimal `gorm:"not null; comment:'日交易限額'"`
 	MonthlyLimit         decimal.Decimal `gorm:"not null; comment:'月交易限額'"`
-	Level1               decimal.Decimal `gorm:"not null; default:0; comment:'等級門檻一'"`
-	Level2               decimal.Decimal `gorm:"not null; default:0; comment:'等級門檻二'"`
+	Level1               decimal.Decimal `gorm:"default:0; comment:'等級門檻一'"`
+	Level2               decimal.Decimal `gorm:"default:0; comment:'等級門檻二'"`
 	Level1Days           uint32          `gorm:"comment:'等級門檻一的天數'"`
 	Level2Days           uint32          `gorm:"comment:'等級門檻二的天數'"`
 	VelocityDays         uint32          `gorm:"comment:'交易次數限制天數'"`

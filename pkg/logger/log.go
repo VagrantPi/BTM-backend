@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/josestg/lazy"
+	"github.com/natefinch/lumberjack"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -13,30 +14,33 @@ import (
 var _zapLazy = lazy.New(func() (*Logger, error) {
 	AtomicLevel := zap.NewAtomicLevelAt(zap.InfoLevel)
 
-	zapOpts := make([]zap.Option, 0)
-	zapOpts = append(
-		zapOpts, zap.AddStacktrace(
-			zap.NewAtomicLevelAt(zapcore.ErrorLevel),
-		),
-		zap.AddCaller(),
-	)
 	if isDebug() {
 		AtomicLevel.SetLevel(zap.DebugLevel)
-		zapOpts = append(zapOpts, zap.Development())
 	}
 
 	encoder := zap.NewProductionEncoderConfig()
 	encoder.EncodeTime = zapcore.ISO8601TimeEncoder
 	encoder.EncodeLevel = zapcore.CapitalLevelEncoder
 
-	coreInfo := zapcore.NewCore(
+	logWriter := zapcore.AddSync(&lumberjack.Logger{
+		Filename: "logs/app.log", // log 檔案位置
+		MaxAge:   1825,           // 最多保留幾天
+		Compress: true,           // 是否壓縮舊檔
+	})
+
+	core := zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoder),
-		zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout)),
+		zapcore.NewMultiWriteSyncer(
+			zapcore.AddSync(os.Stdout), // 可選：也印在 stdout
+			logWriter,                  // 寫入 log 檔
+		),
 		AtomicLevel,
 	)
 
-	core := zapcore.NewTee(coreInfo)
-	zapLogger := zap.New(core, zapOpts...)
+	zapLogger := zap.New(core,
+		zap.AddCaller(),
+		zap.AddStacktrace(zapcore.ErrorLevel),
+	)
 	return &Logger{zapLogger}, nil
 })
 

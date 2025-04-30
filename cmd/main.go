@@ -6,20 +6,35 @@ import (
 	"BTM-backend/internal/cronjob"
 	"BTM-backend/internal/middleware"
 	"BTM-backend/pkg/api"
+	"BTM-backend/pkg/logger"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"time"
 	_ "time/tzdata"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
+	"github.com/natefinch/lumberjack"
 	"github.com/robfig/cron/v3"
+	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
 
 func main() {
+
+	log := logger.Zap()
+	defer log.Sync()
+
+	// 設置 Gin 的日誌格式
+	gin.DefaultWriter = io.MultiWriter(os.Stdout, &lumberjack.Logger{
+		Filename: "logs/app.log",
+		MaxAge:   1825,
+		Compress: true,
+	})
 
 	// 背景工作
 	go BackgroundWorker()
@@ -33,8 +48,30 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 	fmt.Printf("開始監聽 %v\n", configs.C.Port)
+	log.Info("Application starting...")
+
 	if err := s.ListenAndServe(); err != nil {
-		log.Fatal(err)
+		log.Error("s.ListenAndServe()", zap.Any("err", err))
+		panic(err)
+	}
+}
+
+// 自定義的 Gin 日誌格式
+func customGinLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		start := time.Now()
+		c.Next()
+		duration := time.Since(start)
+
+		logger := logger.Zap()
+		logger.Info("Gin request",
+			zap.Any("status", c.Writer.Status()),
+			zap.String("method", c.Request.Method),
+			zap.String("path", c.Request.URL.Path),
+			zap.String("ip", c.ClientIP()),
+			zap.String("user-agent", c.Request.UserAgent()),
+			zap.Duration("duration", duration),
+		)
 	}
 }
 
@@ -45,6 +82,7 @@ func setupGin() http.Handler {
 
 	r := gin.New()
 
+	r.Use(customGinLogger())
 	r.Use(middleware.CORS)
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.Use(middleware.RequestId)
@@ -64,6 +102,7 @@ func setupGin() http.Handler {
 	controller.CibRouter(apiGroup)
 	controller.RiskControlRouter(apiGroup)
 	controller.ViewRouter(apiGroup)
+	controller.SystemRouter(apiGroup)
 
 	return r
 }

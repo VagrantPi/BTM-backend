@@ -110,6 +110,7 @@ type Repository interface {
 
 	// BTMMockTxHistoryLog
 	RemoveExtraMockTxHistoryLog(db *gorm.DB) error
+	GetMockTxHistoryLogs(db *gorm.DB, limit int, page int, startAt, endAt time.Time) ([]BTMMockTxHistoryLog, int64, error)
 
 	/**
 	 * lamassu original
@@ -132,8 +133,7 @@ type Repository interface {
 	// device
 	GetDeviceAll(db *gorm.DB) (map[string]Device, error)
 	GetDeviceAllWithCache(db *gorm.DB) (map[string]Device, error)
-}
 
-type Sum struct {
-	Sum decimal.Decimal `json:"sum"`
+	// serverlog
+	GetServerLogs(db *gorm.DB, limit, page int, startAt, endAt time.Time) ([]ServerLog, int64, error)
 }
