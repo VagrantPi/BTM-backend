@@ -10,6 +10,12 @@ services:
       - configs/dev.env
     network_mode: "host"
     restart: unless-stopped
+    logging:
+      options:
+        max-size: "128m"
+        max-file: "8"
+    volumes:
+      - ./logs:/app/logs
   btm-frontend:
     image: btm-frontend:latest
     build:
@@ -27,6 +33,10 @@ services:
       - mynetwork
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    logging:
+      options:
+        max-size: "128m"
+        max-file: "8"
 networks:
   mynetwork:
     driver: bridge

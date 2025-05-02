@@ -4,6 +4,7 @@ import (
 	"BTM-backend/internal/domain"
 	"BTM-backend/internal/repo/model"
 	"BTM-backend/pkg/error_code"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
@@ -34,7 +35,7 @@ func (repo *repository) RemoveExtraMockTxHistoryLog(db *gorm.DB) error {
 	`).Error
 }
 
-func (repo *repository) GetMockTxHistoryLogs(db *gorm.DB, limit int, page int, startAt, endAt time.Time) ([]domain.BTMMockTxHistoryLog, int64, error) {
+func (repo *repository) GetMockTxHistoryLogs(db *gorm.DB, limit int, page int, startAt, endAt time.Time, customerId string) ([]domain.BTMMockTxHistoryLog, int64, error) {
 	if db == nil {
 		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
 	}
@@ -43,6 +44,10 @@ func (repo *repository) GetMockTxHistoryLogs(db *gorm.DB, limit int, page int, s
 
 	if !startAt.IsZero() && !endAt.IsZero() {
 		sql = sql.Where("created_at BETWEEN ? AND ?", startAt, endAt)
+	}
+
+	if strings.TrimSpace(customerId) != "" {
+		sql = sql.Where("customer_id = ?", customerId)
 	}
 
 	var total int64
@@ -55,6 +60,7 @@ func (repo *repository) GetMockTxHistoryLogs(db *gorm.DB, limit int, page int, s
 	err := sql.
 		Limit(limit).
 		Offset(offset).
+		Order("created_at desc").
 		Find(&list).
 		Error
 	if err != nil {
@@ -81,5 +87,8 @@ func BTMMockTxHistoryLogModelToDomain(log model.BTMMockTxHistoryLog) domain.BTMM
 		MonthLimit:          log.MonthLimit,
 		StartAt:             log.StartAt,
 		CreatedAt:           log.CreatedAt,
+		BanExpireDateRaw:    log.BanExpireDateRaw,
+		BanExpireDate:       log.BanExpireDate,
+		Role:                log.Role,
 	}
 }

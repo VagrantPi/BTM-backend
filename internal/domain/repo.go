@@ -110,7 +110,7 @@ type Repository interface {
 
 	// BTMMockTxHistoryLog
 	RemoveExtraMockTxHistoryLog(db *gorm.DB) error
-	GetMockTxHistoryLogs(db *gorm.DB, limit int, page int, startAt, endAt time.Time) ([]BTMMockTxHistoryLog, int64, error)
+	GetMockTxHistoryLogs(db *gorm.DB, limit int, page int, startAt, endAt time.Time, customerId string) ([]BTMMockTxHistoryLog, int64, error)
 
 	/**
 	 * lamassu original

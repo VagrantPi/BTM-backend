@@ -22,4 +22,5 @@ type BTMMockTxHistoryLog struct {
 	StartAt             string          `gorm:"column:start_at;not null; comment:'撈取交易紀錄開始時間，當解禁時間比較晚，則會是解禁時間'"`
 	BanExpireDateRaw    string          `gorm:"column:ban_expire_date_raw; comment:'用戶解禁時間（民國）'"`
 	BanExpireDate       string          `gorm:"column:ban_expire_date; comment:'用戶解禁時間'"`
+	Role                int64           `gorm:"column:role; comment:'角色權限'"`
 }

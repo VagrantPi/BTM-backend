@@ -12,10 +12,11 @@ import (
 )
 
 type GetMockTxHistoryLogsReq struct {
-	Limit   int       `form:"limit" binding:"required"`
-	Page    int       `form:"page" binding:"required"`
-	StartAt time.Time `form:"start_at"`
-	EndAt   time.Time `form:"end_at"`
+	Limit      int       `form:"limit" binding:"required"`
+	Page       int       `form:"page" binding:"required"`
+	StartAt    time.Time `form:"start_at"`
+	EndAt      time.Time `form:"end_at"`
+	CustomerId string    `form:"customer_id"`
 }
 
 type GetMockTxHistoryLogsResp struct {
@@ -37,7 +38,7 @@ func GetMockTxHistoryLogs(c *gin.Context) {
 		return
 	}
 
-	logs, total, err := repo.GetMockTxHistoryLogs(repo.GetDb(c), req.Limit, req.Page, req.StartAt, req.EndAt)
+	logs, total, err := repo.GetMockTxHistoryLogs(repo.GetDb(c), req.Limit, req.Page, req.StartAt, req.EndAt, req.CustomerId)
 	if err != nil {
 		api.ErrResponse(c, "repo.GetMockTxHistoryLogs()", errors.InternalServer(error_code.ErrDBError, "repo.GetMockTxHistoryLogs()").WithCause(err))
 		return

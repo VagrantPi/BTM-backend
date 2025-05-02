@@ -21,4 +21,5 @@ type BTMMockTxHistoryLog struct {
 	StartAt             string          `json:"start_at"`
 	BanExpireDateRaw    string          `json:"ban_expire_date_raw"`
 	BanExpireDate       string          `json:"ban_expire_date"`
+	Role                int64           `json:"role"`
 }
