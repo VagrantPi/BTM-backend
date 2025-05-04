@@ -132,6 +132,13 @@ func SearchCustomers(c *gin.Context) {
 			}
 		}
 
+		if req.CustomerType == domain.CustomerTypeBlackList {
+			// 如果上一動為恢復，理應在灰或白。卻被撈成黑名單，這情況下只有可能是因為 Lamassu 直接系統 block
+			if !v.IsCibBlock && v.EddType == "" {
+				v.ChangeRoleReason = domain.LamassuSystemBlockedReason
+			}
+		}
+
 		resp.Items[i] = SearchCustomersRepItem{
 			ID:                    v.ID,
 			Phone:                 v.Phone,

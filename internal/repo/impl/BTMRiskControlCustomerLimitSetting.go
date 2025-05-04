@@ -208,9 +208,16 @@ func (repo *repository) ResetCustomerRole(db *gorm.DB, operationUserId int64, cu
 		return err
 	}
 
-	if customerLimit.Role != domain.RiskControlRoleBlack.Uint8() {
+	var customer model.Customer
+	if err := db.Where("id = ?", customerID).First(&customer).Error; err != nil {
+		return err
+	}
+
+	if customerLimit.Role != domain.RiskControlRoleBlack.Uint8() && customer.AuthorizedOverride.String() != domain.CustomerAuthorizedOverrideBlocked.String() {
 		return errors.BadRequest(error_code.ErrInvalidRequest, "customer role need black")
 	}
+	// TODO: 客製化狀態並非黑名單，但系統已將其設定為黑名單
+	// isSystemBlock := customerLimit.Role != domain.RiskControlRoleBlack.Uint8() && customer.AuthorizedOverride.String() == domain.CustomerAuthorizedOverrideBlocked.String()
 
 	tx := db.Begin()
 	defer func() {
@@ -249,7 +256,7 @@ func (repo *repository) ResetCustomerRole(db *gorm.DB, operationUserId int64, cu
 		Level2Days:           customerLimit.Level2Days,
 		VelocityDays:         customerLimit.VelocityDays,
 		VelocityTimes:        customerLimit.VelocityTimes,
-		ChangeRoleReason:     "系統回復原始角色",
+		ChangeRoleReason:     domain.RecoverReason,
 		ChangeLimitReason:    "X",
 		ChangeVelocityReason: "X",
 	}
@@ -278,11 +285,12 @@ func (repo *repository) ResetCustomerRole(db *gorm.DB, operationUserId int64, cu
 	customerLimit.Role = customerLimit.LastRole // 返回原本角色
 	customerLimit.UpdatedAt = time.Now()
 	customerLimit.LastRole = customerLimit.Role
-	customerLimit.ChangeRoleReason = "系統回復原始角色"
+	customerLimit.ChangeRoleReason = domain.RecoverReason
 	customerLimit.ChangeLimitReason = "X"
 	customerLimit.ChangeVelocityReason = "X"
 	customerLimit.LastBlackToNormalAt = sql.NullTime{Time: time.Now(), Valid: true}
 	customerLimit.IsEdd = false
+	customerLimit.EddType = ""
 
 	if err := tx.Save(&customerLimit).Error; err != nil {
 		tx.Rollback()
@@ -498,6 +506,17 @@ func (repo *repository) GetRiskControlCustomerLimitSetting(db *gorm.DB, customer
 		if err := db.Save(&customerLimit).Error; err != nil {
 			return domain.BTMRiskControlCustomerLimitSetting{}, errors.InternalServer(error_code.ErrDBError, "GetRiskControlCustomerLimitSetting err").WithCause(err)
 		}
+	}
+
+	// 取得 lamassu customer 狀態
+	var customer model.Customer
+	if err := db.Where("id = ?", customerID).First(&customer).Error; err != nil {
+		return domain.BTMRiskControlCustomerLimitSetting{}, errors.InternalServer(error_code.ErrDBError, "GetRiskControlCustomerLimitSetting err").WithCause(err)
+	}
+
+	if customer.AuthorizedOverride.String() == domain.CustomerAuthorizedOverrideBlocked.String() {
+		customerLimit.Role = domain.RiskControlRoleBlack.Uint8()
+		customerLimit.ChangeRoleReason = domain.LamassuSystemBlockedReason
 	}
 
 	return BTMRiskControlCustomerLimitSettingModelToDomain(customerLimit), nil
@@ -886,19 +905,20 @@ func BTMRiskControlCustomerLimitSettingDomainToModel(item domain.BTMRiskControlC
 
 func BTMRiskControlCustomerLimitSettingModelToDomain(item model.BTMRiskControlCustomerLimitSetting) domain.BTMRiskControlCustomerLimitSetting {
 	return domain.BTMRiskControlCustomerLimitSetting{
-		ID:              item.ID,
-		Role:            domain.RiskControlRole(item.Role),
-		CustomerId:      item.CustomerId,
-		DailyLimit:      item.DailyLimit,
-		MonthlyLimit:    item.MonthlyLimit,
-		Level1:          item.Level1,
-		Level2:          item.Level2,
-		Level1Days:      item.Level1Days,
-		Level2Days:      item.Level2Days,
-		VelocityDays:    item.VelocityDays,
-		VelocityTimes:   item.VelocityTimes,
-		IsCustomized:    item.IsCustomized,
-		IsCustomizedEdd: item.IsCustomizedEdd,
-		EddType:         item.EddType,
+		ID:               item.ID,
+		Role:             domain.RiskControlRole(item.Role),
+		CustomerId:       item.CustomerId,
+		DailyLimit:       item.DailyLimit,
+		MonthlyLimit:     item.MonthlyLimit,
+		Level1:           item.Level1,
+		Level2:           item.Level2,
+		Level1Days:       item.Level1Days,
+		Level2Days:       item.Level2Days,
+		VelocityDays:     item.VelocityDays,
+		VelocityTimes:    item.VelocityTimes,
+		IsCustomized:     item.IsCustomized,
+		IsCustomizedEdd:  item.IsCustomizedEdd,
+		EddType:          item.EddType,
+		ChangeRoleReason: item.ChangeRoleReason,
 	}
 }

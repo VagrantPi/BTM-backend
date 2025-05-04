@@ -33,7 +33,13 @@ type CustomerWithWhiteListCreated struct {
 	IsCibBlock            bool      `json:"is_cib_block"`
 	EddType               string    `json:"edd_type"`
 	ChangeRoleReason      string    `json:"change_role_reason"`
+	AuthorizedOverride    string    `json:"authorized_override"`
 }
+
+const (
+	LamassuSystemBlockedReason string = "Lamassu 系統 block"
+	RecoverReason              string = "系統回復原始角色"
+)
 
 type CustomerAuthorizedOverride string
 

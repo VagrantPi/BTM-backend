@@ -8,6 +8,10 @@ import (
 
 type VerificationType string
 
+func (v VerificationType) String() string {
+	return string(v)
+}
+
 const (
 	VerificationTypeAutomatic VerificationType = "automatic"
 )
