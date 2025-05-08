@@ -10,13 +10,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func (repo *repository) GetCashIns(db *gorm.DB, customerID, phone string, startAt, endAt time.Time, limit int, page int) ([]domain.CashInTx, int, error) {
+func (repo *repository) GetCashIns(db *gorm.DB, customerID, phone string, startAt, endAt time.Time, limit int, page int) ([]domain.CashInTxWithInfo, int, error) {
 	if db == nil {
 		return nil, 0, errors.InternalServer(error_code.ErrDBError, "db is nil")
 	}
 
 	offset := (page - 1) * limit
-	list := []domain.CashInTx{}
+	list := []domain.CashInTxWithInfo{}
 
 	sql := db.Model(&model.CashInTx{}).
 		Select(
@@ -48,4 +48,22 @@ func (repo *repository) GetCashIns(db *gorm.DB, customerID, phone string, startA
 	}
 
 	return list, int(total), nil
+}
+
+func (repo *repository) GetCashInTxBySessionId(db *gorm.DB, sessionId string) (*domain.CashInTx, error) {
+	if db == nil {
+		return nil, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	var cashInTx domain.CashInTx
+	err := db.Model(&model.CashInTx{}).
+		Where("cash_in_txs.id::TEXT = ?", sessionId).
+		First(&cashInTx).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	return &cashInTx, nil
 }

@@ -19,6 +19,7 @@ type Config struct {
 	JWT                     JWTConfig
 	Cib                     CibConfig
 	Sumsub                  SumsubConfig
+	Twilio                  TwilioConfig
 }
 
 type GinConfig struct {
@@ -55,6 +56,11 @@ type SumsubConfig struct {
 	AppSecret        string
 	AppToken         string
 	WebhookSecretKey string
+}
+
+type TwilioConfig struct {
+	Username string
+	Password string
 }
 
 func loadConfig() {
@@ -94,6 +100,10 @@ func loadConfig() {
 			AppSecret:        viper.GetString("sumsub.app_secret"),
 			AppToken:         viper.GetString("sumsub.app_token"),
 			WebhookSecretKey: viper.GetString("sumsub.webhook_secret_key"),
+		},
+		Twilio: TwilioConfig{
+			Username: viper.GetString("twilio.username"),
+			Password: viper.GetString("twilio.password"),
 		},
 	}
 }

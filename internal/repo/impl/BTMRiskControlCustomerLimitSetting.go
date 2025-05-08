@@ -282,10 +282,17 @@ func (repo *repository) ResetCustomerRole(db *gorm.DB, operationUserId int64, cu
 		return errors.InternalServer(error_code.ErrUserUpdate, "UpdateCustomerAuthorizedOverride").WithCause(err)
 	}
 
+	// 在未使用系統變黑名單情況下，從 lamassu 切換到 blocked，此時如果按 reset，last_role 會是 0
+	if customerLimit.LastRole == 0 {
+		customerLimit.LastRole = domain.RiskControlRoleGray.Uint8() // 塞成灰名單
+		customerLimit.ChangeRoleReason = domain.RecoverReason + "，但因系統問題未紀錄黑名單前角色，因此將用戶轉成灰名單"
+	} else {
+		customerLimit.ChangeRoleReason = domain.RecoverReason
+	}
+
 	customerLimit.Role = customerLimit.LastRole // 返回原本角色
 	customerLimit.UpdatedAt = time.Now()
 	customerLimit.LastRole = customerLimit.Role
-	customerLimit.ChangeRoleReason = domain.RecoverReason
 	customerLimit.ChangeLimitReason = "X"
 	customerLimit.ChangeVelocityReason = "X"
 	customerLimit.LastBlackToNormalAt = sql.NullTime{Time: time.Now(), Valid: true}

@@ -80,18 +80,22 @@ func (repo *repository) DeleteBTMSumsub(db *gorm.DB, customerId string) error {
 	return db.Unscoped().Delete(&model.BTMSumsub{}, "customer_id = ?", customerId).Error
 }
 
-func (repo *repository) GetUnCompletedSumsubCustomerIds(db *gorm.DB) ([]string, error) {
+func (repo *repository) GetUnCompletedSumsubCustomerIds(db *gorm.DB, force bool) ([]string, error) {
 	if db == nil {
 		return nil, errors.InternalServer(error_code.ErrDBError, "db is nil")
 	}
 
 	var ids []string
-	err := db.Model(&model.Customer{}).
+	sql := db.Model(&model.Customer{}).
 		Select("customers.id").
-		Joins("LEFT JOIN btm_sumsubs ON btm_sumsubs.customer_id = customers.id::text").
-		Where("customers.phone != '' AND btm_sumsubs.status IS DISTINCT FROM 'GREEN'").
-		Find(&ids).Error
-	if err != nil {
+		Joins("LEFT JOIN btm_sumsubs ON btm_sumsubs.customer_id = customers.id::text")
+
+	if force {
+		sql = sql.Where("(customers.phone != '' AND btm_sumsubs.status IS DISTINCT FROM 'GREEN') OR btm_sumsubs.updated_at < ?", time.Now().AddDate(0, 0, -10))
+	} else {
+		sql = sql.Where("customers.phone != '' AND btm_sumsubs.status IS DISTINCT FROM 'GREEN'")
+	}
+	if err := sql.Find(&ids).Error; err != nil {
 		err = errors.InternalServer(error_code.ErrBTMSumsubGetItem, "GetBTMSumsub err").WithCause(err).
 			WithMetadata(map[string]string{
 				"status": "uncompleted",

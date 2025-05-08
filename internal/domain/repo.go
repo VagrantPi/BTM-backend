@@ -69,7 +69,7 @@ type Repository interface {
 	GetBTMSumsub(db *gorm.DB, customerId string) (*BTMSumsub, error)
 	UpdateBTMSumsubBanExpireDate(db *gorm.DB, customerId string, banExpireDate int64) error
 	DeleteBTMSumsub(db *gorm.DB, customerId string) error
-	GetUnCompletedSumsubCustomerIds(db *gorm.DB) ([]string, error)
+	GetUnCompletedSumsubCustomerIds(db *gorm.DB, force bool) ([]string, error)
 	SearchEddUsers(db *gorm.DB, customerId, phone, name string, eddStartAt, eddEndAt time.Time, limit int, page int) ([]CustomerWithEddInfo, int64, error)
 
 	// BTMChangeLog
@@ -128,7 +128,8 @@ type Repository interface {
 	GetLatestConfData(db *gorm.DB) (UserConfigJSON, error)
 
 	// cashInTx
-	GetCashIns(db *gorm.DB, customerID, phone string, startAt, endAt time.Time, limit int, page int) ([]CashInTx, int, error)
+	GetCashIns(db *gorm.DB, customerID, phone string, startAt, endAt time.Time, limit int, page int) ([]CashInTxWithInfo, int, error)
+	GetCashInTxBySessionId(db *gorm.DB, sessionId string) (*CashInTx, error)
 
 	// device
 	GetDeviceAll(db *gorm.DB) (map[string]Device, error)

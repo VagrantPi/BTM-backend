@@ -71,7 +71,7 @@ func GetCustomerIdNumber(c *gin.Context) {
 	if sumsubInfo == nil {
 		// fetch sumsub
 		idNumber, err := sumsub.FetchDataAdapter(c.Request.Context(), log, repo, customerID.String())
-		if err != nil {
+		if err != nil || idNumber == "" {
 			log.Error("sumsub.FetchDataAdapter", zap.Any("customerID", customerID), zap.Any("err", err))
 			api.ErrResponse(c, "sumsub.FetchDataAdapter", errors.InternalServer(error_code.ErrBTMSumsubGetItem, "sumsub.FetchDataAdapter").WithCause(err))
 			return

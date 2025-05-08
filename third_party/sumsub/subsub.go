@@ -157,9 +157,10 @@ func FetchDataAdapter(ctx context.Context, log *logger.Logger, repo domain.Repos
 		}
 	}
 
-	if idNumber == "" {
-		log.Error("idNumber is empty", zap.Any("customerID", customerID), zap.Any("idNumber", idNumber))
-		return "", errors.InternalServer(error_code.ErrBTMSumsubIdNumberNotFound, "idNumber is empty")
+	// 當狀態為 init 或是根本沒有身分證時，log 下來 回傳 sumsub success
+	if data.Review.ReviewStatus == "init" || idNumber == "" {
+		log.Error("data.Review.ReviewStatus == \"init\" || idNumber == \"\"", zap.Any("customerID", customerID), zap.Any("idNumber", idNumber))
+		return "", nil
 	}
 
 	// fetch id docs

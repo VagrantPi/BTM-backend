@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func SyncNotComplateSumsub() {
+func SyncNotComplateSumsub(force bool) {
 	log := logger.Zap().WithClassFunction("cronjob", "SyncNotComplateSumsub")
 	defer func() {
 		_ = log.Sync()
@@ -23,7 +23,7 @@ func SyncNotComplateSumsub() {
 	}
 
 	ctx := context.Background()
-	ids, err := repo.GetUnCompletedSumsubCustomerIds(repo.GetDb(ctx))
+	ids, err := repo.GetUnCompletedSumsubCustomerIds(repo.GetDb(ctx), force)
 	if err != nil {
 		log.Error("repo.GetUnCompletedSumsubCustomerIds()", zap.Any("err", err))
 		return

@@ -112,9 +112,12 @@ func InternalRouter(apiGroup *gin.RouterGroup) {
 	group.POST("/add_sumsub_tag", customer.AddSumsubTag)
 
 	toolGroup := apiGroup.Group("/tool", middleware.ServerKeyAuth())
-	toolGroup.GET("/sync_sumsub", tool.SyncAllCustomerSumsub)
+	toolGroup.POST("/sync_sumsub", tool.SyncAllCustomerSumsub)
 	toolGroup.GET("/complete_address_binding_log", tool.CompleteAddressBindingLog)
 	toolGroup.GET("/sync_daily_tx_volumn", tool.SyncDailyTxVolumn)
+	toolGroup.GET("/sumsub/:customer_id", sumsub.FetchDataAdapter)
+	toolGroup.POST("/resend_receipt/:session_id", tool.ResendReceipt)
+	toolGroup.GET("/sms_history", tool.GetSmsHistory)
 
 	hotfixGroup := apiGroup.Group("/hotfix", middleware.ServerKeyAuth())
 	hotfixGroup.GET("/customer_limit_fill_default_config", hotfix.CustomerLimitFillDefaultConfig)

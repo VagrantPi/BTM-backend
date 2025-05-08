@@ -141,7 +141,7 @@ func SearchCustomers(c *gin.Context) {
 
 		resp.Items[i] = SearchCustomersRepItem{
 			ID:                    v.ID,
-			Phone:                 v.Phone,
+			Phone:                 tools.MaskPhone(v.Phone),
 			Email:                 tools.MaskEmail(info.Email),
 			Name:                  tools.MaskName(v.Name),
 			Created:               v.Created,

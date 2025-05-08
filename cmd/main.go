@@ -128,7 +128,7 @@ func CronJob() {
 
 	// 每天處理未完成的 Sumsub 資料 - 每日 1:30
 	cron.AddFunc("30 1 * * *", func() {
-		cronjob.SyncNotComplateSumsub()
+		cronjob.SyncNotComplateSumsub(false)
 	})
 
 	// 每天凌晨 12:30 快照前天交易量 by 個台機器

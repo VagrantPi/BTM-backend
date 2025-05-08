@@ -22,7 +22,7 @@ type CashInTx struct {
 	Created              time.Time       `json:"created"`
 	Send                 bool            `json:"send"`
 	SendConfirmed        bool            `json:"sendConfirmed"`
-	TimedOut             bool            `json:"timedOut"`
+	Timedout             bool            `json:"timedout"`
 	SendTime             time.Time       `json:"sendTime"`
 	ErrorCode            string          `json:"errorCode"`
 	OperatorCompleted    bool            `json:"operatorCompleted"`
@@ -44,10 +44,10 @@ type CashInTx struct {
 	TxCustomerPhotoPath  string          `json:"txCustomerPhotoPath"`
 	WalletScore          int16           `json:"walletScore"`
 	Email                string          `json:"email"`
+}
 
-	// device
+type CashInTxWithInfo struct {
+	CashInTx
 	DeviceName string `json:"deviceName"`
-
-	// invoice
-	InvoiceNo string `json:"invoiceNo"`
+	InvoiceNo  string `json:"invoiceNo"`
 }
