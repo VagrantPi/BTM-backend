@@ -98,7 +98,10 @@ type Repository interface {
 
 	// BTMCustomerNote
 	CreateCustomerNote(db *gorm.DB, note BTMCustomerNote) error
+	GetCustomerNote(db *gorm.DB, noteId uint) (BTMCustomerNote, error)
 	GetCustomerNotes(db *gorm.DB, customerId uuid.UUID, noteType CustomerNoteType, limit int, page int) ([]BTMCustomerNote, int64, error)
+	DeleteCustomerNote(db *gorm.DB, noteId uint) error
+	UpdateCustomerNote(db *gorm.DB, note BTMCustomerNote) error
 
 	// BTMDailyDeviceIncome
 	SnapshotYesterday(db *gorm.DB) error

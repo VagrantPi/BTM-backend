@@ -57,6 +57,8 @@ func CustomerRouter(apiGroup *gin.RouterGroup) {
 	group.GET("/image", customer.GetSumsubImage)
 	group.GET("/:customer_id/notes", customer.GetCustomerNotes)
 	group.POST("/:customer_id/note", customer.CreateCustomerNote)
+	group.PATCH("/:customer_id/note/:note_id", customer.UpdateCustomerNote)
+	group.DELETE("/:customer_id/note/:note_id", customer.DeleteCustomerNote)
 }
 
 func UserConfigRouter(apiGroup *gin.RouterGroup) {

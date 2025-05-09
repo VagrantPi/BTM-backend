@@ -52,6 +52,37 @@ func (repo *repository) GetCustomerNotes(db *gorm.DB, customerId uuid.UUID, note
 	return notes, total, nil
 }
 
+func (repo *repository) GetCustomerNote(db *gorm.DB, noteId uint) (domain.BTMCustomerNote, error) {
+	if db == nil {
+		return domain.BTMCustomerNote{}, errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	var modelNote model.BTMCustomerNote
+	if err := db.First(&modelNote, noteId).Error; err != nil {
+		return domain.BTMCustomerNote{}, err
+	}
+
+	return CustomerNotesModelToDomain(modelNote), nil
+}
+
+func (repo *repository) DeleteCustomerNote(db *gorm.DB, noteId uint) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	return db.Delete(&model.BTMCustomerNote{}, noteId).Error
+}
+
+func (repo *repository) UpdateCustomerNote(db *gorm.DB, note domain.BTMCustomerNote) error {
+	if db == nil {
+		return errors.InternalServer(error_code.ErrDBError, "db is nil")
+	}
+
+	return db.Model(&model.BTMCustomerNote{}).
+		Where("id = ?", note.ID).
+		Updates(CustomerNotesDomainToModel(note)).Error
+}
+
 func CustomerNotesDomainToModel(note domain.BTMCustomerNote) model.BTMCustomerNote {
 	return model.BTMCustomerNote{
 		CustomerId:        note.CustomerId,
