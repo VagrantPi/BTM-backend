@@ -91,9 +91,9 @@ func (repo *repository) GetUnCompletedSumsubCustomerIds(db *gorm.DB, force bool)
 		Joins("LEFT JOIN btm_sumsubs ON btm_sumsubs.customer_id = customers.id::text")
 
 	if force {
-		sql = sql.Where("(customers.phone != '' AND btm_sumsubs.status IS DISTINCT FROM 'GREEN') OR btm_sumsubs.updated_at < ?", time.Now().AddDate(0, 0, -10))
+		sql = sql.Where("customers.phone != ''")
 	} else {
-		sql = sql.Where("customers.phone != '' AND btm_sumsubs.status IS DISTINCT FROM 'GREEN'")
+		sql = sql.Where("(customers.phone != '' AND btm_sumsubs.status IS DISTINCT FROM 'GREEN') OR btm_sumsubs.updated_at < ?", time.Now().AddDate(0, 0, -10))
 	}
 	if err := sql.Find(&ids).Error; err != nil {
 		err = errors.InternalServer(error_code.ErrBTMSumsubGetItem, "GetBTMSumsub err").WithCause(err).

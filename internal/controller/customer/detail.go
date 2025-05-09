@@ -110,7 +110,11 @@ func GetBTMUserInfoDetail(c *gin.Context) {
 	// 地址取得
 	address := ""
 	if len(info.Info.Addresses) > 0 {
-		address = info.Info.Addresses[0].FormattedAddress
+		country := domain.ISO31661[info.Info.Addresses[0].Country]
+		if country == "" {
+			country = domain.ISO31661[info.Info.Addresses[0].Country]
+		}
+		address = info.Info.Addresses[0].PostCode + country + info.Info.Addresses[0].State + info.Info.Addresses[0].Town + info.Info.Addresses[0].Street + info.Info.Addresses[0].SubStreet
 	}
 
 	occupation := ""
